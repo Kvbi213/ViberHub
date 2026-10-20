@@ -1,0 +1,33 @@
+{
+  "name": "web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@vibehub/contracts": "workspace:*",
+    "@vibehub/event-protocol": "workspace:*",
+    "@vibehub/ui": "workspace:*",
+    "firebase": "^10.13.1",
+    "firebase-admin": "^12.5.0",
+    "lucide-react": "^0.441.0",
+    "next": "15.0.0",
+    "react": "^19.0.0-rc-69d4b800-20241021",
+    "react-dom": "^19.0.0-rc-69d4b800-20241021",
+    "zod": "^3.23.8",
+    "zustand": "^4.5.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.5.4",
+    "@types/react": "^18.3.5",
+    "@types/react-dom": "^18.3.0",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.11",
+    "typescript": "^5.5.4"
+  }
+}

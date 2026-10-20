@@ -1,0 +1,23 @@
+{
+  "name": "vibehub-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "VibeHub — Local-first agent observability and collaborative coding platform",
+  "scripts": {
+    "dev": "pnpm --filter web dev",
+    "dev:bridge": "pnpm --filter bridge dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "test": "pnpm -r test",
+    "clean": "pnpm -r exec rimraf dist .next node_modules"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4",
+    "vitest": "^2.0.5",
+    "rimraf": "^6.0.1"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  }
+}

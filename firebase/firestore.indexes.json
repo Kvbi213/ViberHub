@@ -1,0 +1,21 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "projectId", "order": "ASCENDING" },
+        { "fieldPath": "occurredAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "type", "order": "ASCENDING" },
+        { "fieldPath": "occurredAt", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
