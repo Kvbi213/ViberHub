@@ -29,25 +29,35 @@ export function AgentConnectionModal({
   const aiSystemPrompt = `Jesteś agentem AI pracującym w projekcie zintegrowanym z klastrem VibeHub.
 Twoim celem jest raportowanie postępów, statusu pracy oraz edytowanych plików do pokoju obserwacyjnego VibeHub.
 
-Gdy wykonujesz istotne kroki, generujesz kod lub kończysz zadanie, wyślij raport telemetrii przez HTTP POST na endpoint:
-URL: https://viber-hub.vercel.app/api/v1/telemetry/push
+Gdy wykonujesz istotne kroki, generujesz kod lub modyfikujesz plik, wyślij raport telemetrii przez HTTP POST na endpoint:
+URL: https://viber-hub.vercel.app/api/v1/agents/active
 Headers: {"Content-Type": "application/json"}
 Body (JSON):
 {
   "roomId": "${roomId}",
-  "provider": "antigravity", // lub "cursor", "claude-code", "windsurf", "cline"
-  "agentId": "ai_agent_${roomId}",
-  "name": "Mój Asystent AI",
-  "status": "working", // dozwolone: "working", "waiting", "idle", "error"
-  "activity": "Krótki opis zadania, które aktualnie wykonujesz",
-  "tool": "edit_file", // nazwa narzędzia (np. edit_file, run_command, git_commit)
-  "file": "ścieżka/do/edytowanego/pliku.ts",
-  "diff": "+ dodana linia kodu\\n- usunięta linia kodu",
-  "machine": "Stacja Deweloperska",
-  "operatorName": "Ty"
+  "agents": [
+    {
+      "id": "ai_agent_${roomId}",
+      "provider": "antigravity", // lub "cursor", "claude-code", "windsurf"
+      "name": "Mój Asystent AI",
+      "model": "Coding AI Model",
+      "status": "working", // "working" | "waiting" | "idle" | "error"
+      "activity": "Krótki opis zadania, które aktualnie wykonujesz",
+      "currentTool": "edit_file",
+      "activeFile": "apps/web/app/rooms/page.tsx",
+      "fileStats": "+ modified",
+      "diffSnippet": [
+        { "line": 1, "type": "+", "text": "dodana linia kodu" },
+        { "line": 2, "type": "-", "text": "usunięta linia kodu" }
+      ],
+      "machine": "Stacja Deweloperska",
+      "operatorName": "Ty",
+      "lastActiveAt": new Date().toISOString()
+    }
+  ]
 }
 
-Zawsze informuj o rozpoczęciu i zakończeniu edycji kodu, aby stan w VibeHub Room Collab był widoczny na żywo.`;
+Raportuj stan regularnie, aby stan w VibeHub Room Collab był widoczny na żywo w czasie rzeczywistym.`;
 
   const mcpConfigJson = JSON.stringify(
     {
@@ -68,51 +78,79 @@ Zawsze informuj o rozpoczęciu i zakończeniu edycji kodu, aby stan w VibeHub Ro
 
   const ps1TelemetrySnippet = `$body = @{
   roomId = "${roomId}"
-  provider = "antigravity"
-  agentId = "agy_live_terminal"
-  name = "Terminal Agent (PowerShell)"
-  status = "working"
-  activity = "Aktywne kodowanie i weryfikacja modułów"
-  tool = "run_command"
-  file = "apps/web/app/rooms/page.tsx"
-  diff = "+ export const telemetryReady = true;"
-} | ConvertTo-Json
+  agents = @(
+    @{
+      id = "agy_live_terminal"
+      provider = "antigravity"
+      name = "Terminal Agent (PowerShell)"
+      model = "Gemini / Claude"
+      status = "working"
+      activity = "Aktywne kodowanie i weryfikacja modułów"
+      currentTool = "run_command"
+      activeFile = "apps/web/app/rooms/page.tsx"
+      fileStats = "+ modified"
+      diffSnippet = @(
+        @{ line = 1; type = "+"; text = "export const telemetryReady = true;" }
+      )
+      lastActiveAt = (Get-Date).ToString("o")
+    }
+  )
+} | ConvertTo-Json -Depth 5
 
-Invoke-RestMethod -Uri "https://viber-hub.vercel.app/api/v1/telemetry/push" -Method POST -Headers @{"Content-Type"="application/json"} -Body $body`;
+Invoke-RestMethod -Uri "https://viber-hub.vercel.app/api/v1/agents/active" -Method POST -Headers @{"Content-Type"="application/json"} -Body $body`;
 
-  const bashCurlSnippet = `curl -X POST "https://viber-hub.vercel.app/api/v1/telemetry/push" \\
+  const bashCurlSnippet = `curl -X POST "https://viber-hub.vercel.app/api/v1/agents/active" \\
   -H "Content-Type: application/json" \\
   -d '{
     "roomId": "${roomId}",
-    "provider": "custom",
-    "agentId": "agent_bash",
-    "name": "Custom AI Agent",
-    "status": "working",
-    "activity": "Synchronizacja telemetrii kodu",
-    "tool": "code_generation",
-    "file": "src/index.ts",
-    "diff": "+ const vibe = true;"
+    "agents": [
+      {
+        "id": "agent_bash",
+        "provider": "custom",
+        "name": "Custom AI Agent",
+        "model": "OpenAI / Claude",
+        "status": "working",
+        "activity": "Synchronizacja telemetrii kodu",
+        "currentTool": "code_generation",
+        "activeFile": "src/index.ts",
+        "fileStats": "+ modified",
+        "diffSnippet": [
+          { "line": 1, "type": "+", "text": "const vibe = true;" }
+        ],
+        "lastActiveAt": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"
+      }
+    ]
   }'`;
 
   const executeLiveTest = async () => {
     setTestStatus('loading');
     setTestResponse(null);
     try {
-      const res = await fetch('https://viber-hub.vercel.app/api/v1/telemetry/push', {
+      const res = await fetch('https://viber-hub.vercel.app/api/v1/agents/active', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           roomId,
-          provider: 'antigravity',
-          agentId: `test_agent_${Date.now().toString(36)}`,
-          name: 'Antigravity Test Agent',
-          status: 'working',
-          activity: 'Weryfikacja natychmiastowego przepływu telemetrii w pokoju',
-          tool: 'live_test_ping',
-          file: 'apps/web/app/(dashboard)/rooms/[roomId]/RoomCollabView.tsx',
-          diff: '+ // Zweryfikowano działanie klastra VibeHub\n+ const clusterStatus = "ONLINE_200";',
-          machine: 'VibeHub Web Console',
-          operatorName: 'Operator VibeHub',
+          agents: [
+            {
+              id: `test_agent_${Date.now().toString(36)}`,
+              provider: 'antigravity',
+              name: 'Antigravity Test Agent',
+              model: 'Gemini 3.8 Flash',
+              status: 'working',
+              activity: 'Weryfikacja natychmiastowego przepływu telemetrii w pokoju',
+              currentTool: 'live_test_ping',
+              activeFile: 'apps/web/app/(dashboard)/rooms/[roomId]/RoomCollabView.tsx',
+              fileStats: '+ modified',
+              diffSnippet: [
+                { line: 1, type: '+', text: '// Zweryfikowano działanie klastra VibeHub' },
+                { line: 2, type: '+', text: 'const clusterStatus = "ONLINE_200";' },
+              ],
+              machine: 'VibeHub Web Console',
+              operatorName: 'Operator VibeHub',
+              lastActiveAt: new Date().toISOString(),
+            },
+          ],
         }),
       });
 
