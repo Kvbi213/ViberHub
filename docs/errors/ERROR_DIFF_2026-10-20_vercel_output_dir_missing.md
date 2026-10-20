@@ -1,4 +1,4 @@
-# 🚨 ERROR_DIFF :: Vercel Build Failure [NEXT_OUTPUT_DIR_MISSING]
+# 🚨 ERROR_DIFF :: Vercel Build Failure [NEXT_OUTPUT_DIR_MISSING & ROUTES_MANIFEST_MISSING]
 > Data: 2026-10-20 | Priorytet: KRYTYCZNY | Komponent: Vercel Microserver Build Pipeline
 
 ---
@@ -7,40 +7,51 @@
 
 ### Raw Error Output:
 ```text
-Error: [NEXT_OUTPUT_DIR_MISSING] The Next.js output directory "apps/web/.next" was not found at "/vercel/path0/apps/web/apps/web/.next". This is usually caused by one of the following:
-1. The "Output Directory" setting in your project is misconfigured. Check your project settings and ensure the output directory matches your Next.js configuration.
-2. If using Turborepo, ensure your task outputs include the Next.js build directory. Add "apps/web/.next/**" to the "outputs" array in your turbo.json for the build task.
+The file "/vercel/path0/apps/web/public/routes-manifest.json" couldn't be found. This is usually caused by one of the following:
+1. The "Output Directory" setting in your project is misconfigured. Ensure it matches your Next.js "distDir" configuration (defaults to ".next").
+2. If using Turborepo, ensure your task outputs include the Next.js build directory. Add ".next/**" (or your custom distDir) to the "outputs" array in turbo.json for the build task.
 3. The build command did not complete successfully. Check the build logs above for errors.
-Learn More: https://err.sh/vercel/vercel/now-next-routes-manifest
 ```
 
 ### Klasyfikacja defektu:
-- **Typ:** Nieprawidłowość konfiguracji środowiskowej (Vercel Project Settings vs Monorepo Architecture).
+- **Typ:** Niezgodność konfiguratora buildera Vercel z trybem eksportu statycznego (`output: 'export'`).
 - **Przyczyna źródłowa:**
-  1. W panelu Vercel (Project Settings -> General) pole **Root Directory** jest ustawione na `apps/web`.
-  2. Pole **Output Directory** ma włączony przełącznik **Override** ze starą wartością `apps/web/.next`.
-  3. Pole **Framework Preset** jest ustawione na `Next.js`.
-  4. W konsekwencji Vercel uruchamia build w `/vercel/path0/apps/web` i oczekuje katalogu wyjściowego w `/vercel/path0/apps/web/apps/web/.next`, który jest podwojoną, nieistniejącą ścieżką.
-  5. Dodatkowo Vercel próbuje wdrażać aplikację jako frontend Next.js, podczas gdy rolą Vercel w nowej architekturze jest wyłącznie mikroserwer backendowy (`api/index.ts`), a frontend stoi na Firebase Hosting (`apps/web/out`).
+  1. Projekt w Vercel budowany jest w kontekście `apps/web` jako aplikacja Next.js.
+  2. Wcześniejsza konfiguracja `output: 'export'` w `apps/web/next.config.mjs` wymuszała eksport statyczny do katalogu `out/`, uniemożliwiając generowanie pliku `.next/routes-manifest.json` oraz serwerowych funkcji Route Handlers.
+  3. Dodatkowo wcześniejsze wskazanie `outputDirectory: "public"` powodowało, że builder Next.js szukał pliku manifestu w `public/routes-manifest.json`.
 
 ---
 
 ## 2. SOLUTION (KOD I UZASADNIENIE)
 
-### Krok 1: Korekta ustawień w panelu Vercel (Project Settings)
-W panelu projektu `viber-hub` w zakładce **Settings -> General**:
-1. **Root Directory**: Zmienić z `apps/web` na `./` (katalog główny repozytorium).
-2. **Framework Preset**: Zmienić z `Next.js` na `Other`.
-3. **Build Command**: Wyłączyć przełącznik Override (Vercel pobierze polecenie z `vercel.json`: `pnpm --filter @vibehub/* build`).
-4. **Output Directory**: Wyłączyć przełącznik Override (Disabled).
+### Krok 1: Warunkowy eksport statyczny w `apps/web/next.config.mjs`
+```javascript
+const isExport = process.env.BUILD_TARGET === 'export' || process.env.EXPORT_STATIC === 'true';
 
-### Krok 2: Wzmocnienie repozytorium (`dual-root resilience`)
-Dodanie `apps/web/vercel.json` z jawnym `framework: null`, aby wyeliminować wymuszenie Next.js nawet w przypadku uruchomienia w podkatalogu.
+const nextConfig = {
+  ...(isExport ? { output: 'export' } : {}),
+  images: {
+    unoptimized: true,
+  },
+};
+```
+- Na Vercelu: `next build` kompiluje standardowy bundle serwerowy z `.next/routes-manifest.json` oraz serwerowymi endpointami API (`/api/v1/*`).
+- Na potrzeby Firebase: `BUILD_TARGET=export pnpm --filter web build` eksportuje statyczny frontend do `apps/web/out`.
+
+### Krok 2: Przywrócenie i zabezpieczenie Route Handlers w `apps/web/app/api/v1/`
+Zaimplementowano Route Handlers z pełną obsługą CORS (`Access-Control-Allow-Origin: *`, preflight `OPTIONS 200 OK`):
+- `/api/v1/system/status`
+- `/api/v1/events/batch` (zapis do Cloud Firestore `viberhub-8842f`)
+- `/api/v1/bridge/pair`
+- `/api/v1/bridge/heartbeat`
+
+### Krok 3: Oczyszczenie `vercel.json`
+Usunięto mylącą właściwość `outputDirectory: "public"`, pozwalając builderowi Next.js automatycznie rozpoznać `.next`.
 
 ---
 
 ## 3. POST-MORTEM
-- **STATUS:** PENDING_OPERATOR_CONFIG_APPLY
-- **APPROACH:** Eliminacja konfliktu między ustawieniami panelu Vercel (zablokowanymi na Next.js) a nowym podziałem architektonicznym (Backend Node.js Serverless na Vercel, Frontend na Firebase Hosting).
-- **IMPROVED:** Pełna przejrzystość ścieżek budowania i brak zależności od frameworka Next.js na serwerze API.
-- **BROKE:** Brak.
+- **STATUS:** RESOLVED_AND_VERIFIED_LOCALLY
+- **APPROACH:** Unifikacja środowiskowa — Next.js w Vercel kompiluje natywne Serverless Route Handlers w `.next`, podczas gdy Firebase Hosting serwuje wyeksportowany wcześniej statyczny katalog `apps/web/out`.
+- **IMPROVED:** Pełna zgodność z builderem Vercel, brak kolizji manifestów routingu, zachowanie natywnych funkcji mikroserwera API na Vercel.
+- **BROKE:** Brak regresji.
