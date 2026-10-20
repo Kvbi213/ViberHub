@@ -84,7 +84,7 @@ export class VibeHubMcpServer {
         tools: [
           {
             name: 'vibehub_push_status',
-            description: 'Report live agent status, current prompt and active tool directly to VibeHub dashboard.',
+            description: 'Report live agent status, current prompt, active tool and code diff directly to VibeHub dashboard.',
             inputSchema: {
               type: 'object',
               properties: {
@@ -99,11 +99,23 @@ export class VibeHubMcpServer {
                 },
                 currentTool: {
                   type: 'string',
-                  description: 'Name of the tool being called (e.g. edit_file, run_command)',
+                  description: 'Name of the tool being called (e.g. edit_file, run_command, git_commit)',
                 },
                 activeFile: {
                   type: 'string',
-                  description: 'Active file or target path',
+                  description: 'Active file or target path being modified',
+                },
+                diff: {
+                  type: 'string',
+                  description: 'Code diff or snippet of changes (+ added, - removed lines)',
+                },
+                name: {
+                  type: 'string',
+                  description: 'Name of the AI model / agent (e.g. Google Antigravity, Claude Code, Cursor)',
+                },
+                model: {
+                  type: 'string',
+                  description: 'Model identifier (e.g. Gemini 3.8 Flash, Claude 3.7 Sonnet)',
                 },
               },
               required: ['status', 'activity'],
@@ -178,10 +190,52 @@ export class VibeHubMcpServer {
     const cleanBase = this.apiUrl.replace(/\/$/, '');
 
     if (name === 'vibehub_push_status') {
-      const { status, activity, currentTool, activeFile } = args;
-      const endpoint = `${cleanBase}/events/batch`;
+      const { status, activity, currentTool, activeFile, diff, model } = args;
+      const agentDisplayName = args.name || `${this.agentProvider.toUpperCase()} AI Agent`;
 
+      // 1. Zapis aktywnego agenta w Firestore przez /api/v1/agents/active
+      try {
+        await fetch(`${cleanBase}/agents/active`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            roomId: this.roomId,
+            agents: [
+              {
+                id: `mcp_${this.agentProvider}_${this.deviceId}`,
+                provider: this.agentProvider,
+                name: agentDisplayName,
+                model: model || 'Autonomous AI',
+                status: status || 'working',
+                activity: activity || 'Wykonywanie zadań projektowych',
+                currentTool: currentTool || 'mcp_execution',
+                activeFile: activeFile || '',
+                fileStats: activeFile ? '+ modified' : undefined,
+                diffSnippet: diff
+                  ? String(diff)
+                      .split('\n')
+                      .slice(0, 10)
+                      .map((l: string, idx: number) => ({
+                        line: idx + 1,
+                        type: l.startsWith('+') ? '+' : l.startsWith('-') ? '-' : ' ',
+                        text: l.slice(0, 80),
+                      }))
+                  : undefined,
+                machine: os.hostname(),
+                operatorName: os.userInfo().username || 'Operator',
+                lastActiveAt: new Date().toISOString(),
+              },
+            ],
+          }),
+        });
+      } catch (err: any) {
+        console.error('[!] ALERT :: MCP agent sync failed:', err.message);
+      }
+
+      // 2. Zapis zdarzenia telemetrii w Firestore przez /api/v1/events/batch
+      const endpoint = `${cleanBase}/events/batch`;
       const eventPayload = {
+        schemaVersion: 1,
         projectId: this.roomId,
         deviceId: this.deviceId,
         events: [
@@ -192,7 +246,7 @@ export class VibeHubMcpServer {
             projectId: this.roomId,
             occurredAt: new Date().toISOString(),
             source: this.agentProvider,
-            type: 'agent.status_updated',
+            type: 'agent.status_changed',
             data: {
               status,
               activity,
@@ -217,6 +271,8 @@ export class VibeHubMcpServer {
       return {
         success: true,
         message: `Status updated to '${status}': ${activity}`,
+        agent: agentDisplayName,
+        roomId: this.roomId,
         timestamp: new Date().toISOString(),
       };
     }
@@ -226,6 +282,7 @@ export class VibeHubMcpServer {
       const endpoint = `${cleanBase}/events/batch`;
 
       const eventPayload = {
+        schemaVersion: 1,
         projectId: this.roomId,
         deviceId: this.deviceId,
         events: [
@@ -236,7 +293,7 @@ export class VibeHubMcpServer {
             projectId: this.roomId,
             occurredAt: new Date().toISOString(),
             source: this.agentProvider,
-            type: 'checkpoint.created',
+            type: 'agent.task_completed',
             data: {
               title,
               summary,

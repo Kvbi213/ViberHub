@@ -234,23 +234,48 @@ async function main() {
 
   if (command === 'setup-mcp') {
     const home = os.homedir();
-    const mcpConfigPath = path.join(home, '.gemini', 'antigravity', 'mcp.json');
-    let configObj: any = { mcpServers: {} };
-    try {
-      if (fs.existsSync(mcpConfigPath)) {
-        configObj = JSON.parse(fs.readFileSync(mcpConfigPath, 'utf-8'));
+    const serverDefinition = {
+      command: 'vibehub',
+      args: ['mcp'],
+      env: {
+        VIBEHUB_ROOM_ID: 'viberhub-8842f',
+        VIBEHUB_API_URL: DEFAULT_API_URL,
+      },
+    };
+
+    const targetPaths = [
+      path.join(home, '.gemini', 'antigravity', 'mcp.json'),
+      path.join(home, '.cursor', 'mcp.json'),
+      path.join(process.cwd(), '.mcp.json'),
+      path.join(home, 'AppData', 'Roaming', 'Claude', 'claude_desktop_config.json'),
+    ];
+
+    let registeredCount = 0;
+    for (const targetPath of targetPaths) {
+      try {
+        const dir = path.dirname(targetPath);
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir, { recursive: true });
+        }
+        let configObj: any = { mcpServers: {} };
+        if (fs.existsSync(targetPath)) {
+          try {
+            configObj = JSON.parse(fs.readFileSync(targetPath, 'utf-8'));
+          } catch {
+            configObj = { mcpServers: {} };
+          }
+        }
+        if (!configObj.mcpServers) configObj.mcpServers = {};
+        configObj.mcpServers['vibehub'] = serverDefinition;
+        fs.writeFileSync(targetPath, JSON.stringify(configObj, null, 2), 'utf-8');
+        console.log(`[+] SUCCESS :: Zarejestrowano VibeHub MCP Server w: ${targetPath}`);
+        registeredCount++;
+      } catch (err: any) {
+        // Ignoruj opcjonalne ścieżki
       }
-      if (!configObj.mcpServers) configObj.mcpServers = {};
-      configObj.mcpServers['vibehub'] = {
-        command: 'vibehub',
-        args: ['mcp'],
-      };
-      fs.writeFileSync(mcpConfigPath, JSON.stringify(configObj, null, 2), 'utf-8');
-      console.log(`[+] SUCCESS :: Zarejestrowano VibeHub MCP Server w: ${mcpConfigPath}`);
-      console.log(`[*] INFO :: Agenty w Antigravity mają teraz bezpośredni dostęp do narzędzi VibeHub.`);
-    } catch (err: any) {
-      console.error(`[!] ALERT :: Błąd rejestracji MCP: ${err.message}`);
     }
+    console.log(`[*] INFO :: Serwer MCP VibeHub aktywny w ${registeredCount} lokalizacjach!`);
+    console.log(`[*] INFO :: Agenty AI (Antigravity, Cursor, Claude) mają teraz natywny dostęp do narzędzia 'vibehub_push_status'.`);
     process.exit(0);
   }
 

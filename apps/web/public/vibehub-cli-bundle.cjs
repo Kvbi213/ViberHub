@@ -6745,7 +6745,7 @@ var VibeHubMcpServer = class {
         tools: [
           {
             name: "vibehub_push_status",
-            description: "Report live agent status, current prompt and active tool directly to VibeHub dashboard.",
+            description: "Report live agent status, current prompt, active tool and code diff directly to VibeHub dashboard.",
             inputSchema: {
               type: "object",
               properties: {
@@ -6760,11 +6760,23 @@ var VibeHubMcpServer = class {
                 },
                 currentTool: {
                   type: "string",
-                  description: "Name of the tool being called (e.g. edit_file, run_command)"
+                  description: "Name of the tool being called (e.g. edit_file, run_command, git_commit)"
                 },
                 activeFile: {
                   type: "string",
-                  description: "Active file or target path"
+                  description: "Active file or target path being modified"
+                },
+                diff: {
+                  type: "string",
+                  description: "Code diff or snippet of changes (+ added, - removed lines)"
+                },
+                name: {
+                  type: "string",
+                  description: "Name of the AI model / agent (e.g. Google Antigravity, Claude Code, Cursor)"
+                },
+                model: {
+                  type: "string",
+                  description: "Model identifier (e.g. Gemini 3.8 Flash, Claude 3.7 Sonnet)"
                 }
               },
               required: ["status", "activity"]
@@ -6832,9 +6844,43 @@ var VibeHubMcpServer = class {
   async executeTool(name, args) {
     const cleanBase = this.apiUrl.replace(/\/$/, "");
     if (name === "vibehub_push_status") {
-      const { status, activity, currentTool, activeFile } = args;
+      const { status, activity, currentTool, activeFile, diff, model } = args;
+      const agentDisplayName = args.name || `${this.agentProvider.toUpperCase()} AI Agent`;
+      try {
+        await fetch(`${cleanBase}/agents/active`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            roomId: this.roomId,
+            agents: [
+              {
+                id: `mcp_${this.agentProvider}_${this.deviceId}`,
+                provider: this.agentProvider,
+                name: agentDisplayName,
+                model: model || "Autonomous AI",
+                status: status || "working",
+                activity: activity || "Wykonywanie zada\u0144 projektowych",
+                currentTool: currentTool || "mcp_execution",
+                activeFile: activeFile || "",
+                fileStats: activeFile ? "+ modified" : void 0,
+                diffSnippet: diff ? String(diff).split("\n").slice(0, 10).map((l, idx) => ({
+                  line: idx + 1,
+                  type: l.startsWith("+") ? "+" : l.startsWith("-") ? "-" : " ",
+                  text: l.slice(0, 80)
+                })) : void 0,
+                machine: import_os5.default.hostname(),
+                operatorName: import_os5.default.userInfo().username || "Operator",
+                lastActiveAt: (/* @__PURE__ */ new Date()).toISOString()
+              }
+            ]
+          })
+        });
+      } catch (err) {
+        console.error("[!] ALERT :: MCP agent sync failed:", err.message);
+      }
       const endpoint = `${cleanBase}/events/batch`;
       const eventPayload = {
+        schemaVersion: 1,
         projectId: this.roomId,
         deviceId: this.deviceId,
         events: [
@@ -6845,7 +6891,7 @@ var VibeHubMcpServer = class {
             projectId: this.roomId,
             occurredAt: (/* @__PURE__ */ new Date()).toISOString(),
             source: this.agentProvider,
-            type: "agent.status_updated",
+            type: "agent.status_changed",
             data: {
               status,
               activity,
@@ -6868,6 +6914,8 @@ var VibeHubMcpServer = class {
       return {
         success: true,
         message: `Status updated to '${status}': ${activity}`,
+        agent: agentDisplayName,
+        roomId: this.roomId,
         timestamp: (/* @__PURE__ */ new Date()).toISOString()
       };
     }
@@ -6875,6 +6923,7 @@ var VibeHubMcpServer = class {
       const { title, summary, files } = args;
       const endpoint = `${cleanBase}/events/batch`;
       const eventPayload = {
+        schemaVersion: 1,
         projectId: this.roomId,
         deviceId: this.deviceId,
         events: [
@@ -6885,7 +6934,7 @@ var VibeHubMcpServer = class {
             projectId: this.roomId,
             occurredAt: (/* @__PURE__ */ new Date()).toISOString(),
             source: this.agentProvider,
-            type: "checkpoint.created",
+            type: "agent.task_completed",
             data: {
               title,
               summary,
@@ -7120,23 +7169,45 @@ async function main() {
   }
   if (command === "setup-mcp") {
     const home = import_os6.default.homedir();
-    const mcpConfigPath = import_path5.default.join(home, ".gemini", "antigravity", "mcp.json");
-    let configObj = { mcpServers: {} };
-    try {
-      if (import_fs4.default.existsSync(mcpConfigPath)) {
-        configObj = JSON.parse(import_fs4.default.readFileSync(mcpConfigPath, "utf-8"));
+    const serverDefinition = {
+      command: "vibehub",
+      args: ["mcp"],
+      env: {
+        VIBEHUB_ROOM_ID: "viberhub-8842f",
+        VIBEHUB_API_URL: DEFAULT_API_URL
       }
-      if (!configObj.mcpServers) configObj.mcpServers = {};
-      configObj.mcpServers["vibehub"] = {
-        command: "vibehub",
-        args: ["mcp"]
-      };
-      import_fs4.default.writeFileSync(mcpConfigPath, JSON.stringify(configObj, null, 2), "utf-8");
-      console.log(`[+] SUCCESS :: Zarejestrowano VibeHub MCP Server w: ${mcpConfigPath}`);
-      console.log(`[*] INFO :: Agenty w Antigravity maj\u0105 teraz bezpo\u015Bredni dost\u0119p do narz\u0119dzi VibeHub.`);
-    } catch (err) {
-      console.error(`[!] ALERT :: B\u0142\u0105d rejestracji MCP: ${err.message}`);
+    };
+    const targetPaths = [
+      import_path5.default.join(home, ".gemini", "antigravity", "mcp.json"),
+      import_path5.default.join(home, ".cursor", "mcp.json"),
+      import_path5.default.join(process.cwd(), ".mcp.json"),
+      import_path5.default.join(home, "AppData", "Roaming", "Claude", "claude_desktop_config.json")
+    ];
+    let registeredCount = 0;
+    for (const targetPath of targetPaths) {
+      try {
+        const dir = import_path5.default.dirname(targetPath);
+        if (!import_fs4.default.existsSync(dir)) {
+          import_fs4.default.mkdirSync(dir, { recursive: true });
+        }
+        let configObj = { mcpServers: {} };
+        if (import_fs4.default.existsSync(targetPath)) {
+          try {
+            configObj = JSON.parse(import_fs4.default.readFileSync(targetPath, "utf-8"));
+          } catch {
+            configObj = { mcpServers: {} };
+          }
+        }
+        if (!configObj.mcpServers) configObj.mcpServers = {};
+        configObj.mcpServers["vibehub"] = serverDefinition;
+        import_fs4.default.writeFileSync(targetPath, JSON.stringify(configObj, null, 2), "utf-8");
+        console.log(`[+] SUCCESS :: Zarejestrowano VibeHub MCP Server w: ${targetPath}`);
+        registeredCount++;
+      } catch (err) {
+      }
     }
+    console.log(`[*] INFO :: Serwer MCP VibeHub aktywny w ${registeredCount} lokalizacjach!`);
+    console.log(`[*] INFO :: Agenty AI (Antigravity, Cursor, Claude) maj\u0105 teraz natywny dost\u0119p do narz\u0119dzia 'vibehub_push_status'.`);
     process.exit(0);
   }
   if (command === "reset") {
