@@ -182,3 +182,27 @@
   - Wyeksportowano zaktualizowany frontend i wdrożono na Firebase Hosting (`https://viberhub-8842f.web.app`).
   - Rozwiązano restrykcję `Executable files are forbidden on the Spark billing plan` poprzez enkapsulację skryptów w archiwum ZIP oraz serwowanie `install.ps1` i `vibehub-cli-bundle.cjs`.
 - `[*]` Zsynchronizowano dokumentację projektową w Obsidian Vault (`C:\Users\Jakub Lis\Documents\OBSIDIAN\PROJEKTY\VibeHub\`).
+
+
+---
+
+## v 0.1.9 — 2026-10-20
+- `[+]` **Dynamiczny pokój Room Collab i pełna eliminacja atrap (`RoomCollabView.tsx`)**:
+  - Usunięto statyczny mock `devA`, zahardkodowany plik `firestore.rules` oraz sztuczny proces PID 8412.
+  - Zaimplementowano dynamiczny selektor agentów bazujący na kolekcji `activeAgents` ze stanu bazy Cloud Firestore w czasie rzeczywistym.
+  - Dodano obsługę widoku wielu agentów (np. Google Antigravity, Claude Code, Cursor) działających równolegle w różnych czatach lub projektach.
+  - Podpięto prawdziwe diffy kodu (`diffSnippet`), aktywne pliki (`activeFile`) oraz wskaźniki narzędzi (`currentTool`).
+- `[+]` **Konsola zdarzeń i podgląd na żywo**:
+  - W zakładce `Console Tail` podpięto autentyczne zdarzenia telemetrii z Firestore (`events`) z etykietami czasowymi, źródłem (`antigravity`, `git`, `system`) i kolorami badge'y.
+  - Wdrożono dwustanowy podgląd: Obserwator Agenta (telemetria procesora i strumień wyjściowy) vs Podgląd Aplikacji Webowej (zewnętrzny tunel mTLS).
+- `[+]` **Centrum połączeń AI i integracji MCP (`AgentConnectionModal.tsx`)**:
+  - Utworzono modal z gotowym promptem systemowym dla agentów AI (Cursor, Claude Code, Antigravity, Windsurf) do bezpośredniego raportowania postępu.
+  - Zaimplementowano definicję JSON serwera MCP (`mcpServers.vibehub`) do szybkiej konfiguracji `mcp.json`.
+  - Dodano 1-linijkowe polecenia PowerShell oraz Bash curl do bezpośredniego wypychania telemetrii przez HTTP POST (`/api/v1/agents/active`).
+  - Wdrożono przycisk interaktywnego testu łączności na żywo bezpośrednio z przeglądarki z weryfikacją odpowiedzi klastra.
+- `[+]` **Trwały nasłuch klastra (`Shell.tsx`)**:
+  - Przeniesiono listener `initFirestoreLiveListener(roomId)` do głównego komponentu Shell, zapewniając nieprzerwaną synchronizację danych czasu rzeczywistego na wszystkich podstronach.
+- `[+]` **Wdrożenie produkcyjne**:
+  - Zbudowano i wdrożono zaktualizowany frontend na Firebase Hosting (`https://viberhub-8842f.web.app`).
+  - Zsynchronizowano mikroserwer Vercel (`https://viber-hub.vercel.app`) przez Git push do `origin main`.
+- `[*]` Zsynchronizowano dokumentację projektową w Obsidian Vault (`C:\Users\Jakub Lis\Documents\OBSIDIAN\PROJEKTY\VibeHub\`).
