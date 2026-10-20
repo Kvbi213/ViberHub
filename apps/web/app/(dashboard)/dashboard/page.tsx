@@ -39,7 +39,7 @@ export default function DashboardPage() {
   });
 
   const handleCopyCli = () => {
-    navigator.clipboard.writeText('npx @vibehub/bridge pair --token=vh_live_9f8a20d4c82e');
+    navigator.clipboard.writeText('vibehub pair VH-9428-XK');
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -74,8 +74,7 @@ export default function DashboardPage() {
         <div className="flex items-center gap-2 bg-slate-50/90 border border-black/[0.06] border-t border-white/90 px-3 py-1 rounded-xl shadow-xs max-w-full overflow-hidden">
           <span className="material-symbols-outlined text-[15px] text-[#0071E3]">terminal</span>
           <span className="font-mono-code text-[12px] text-[#3A3A3C] truncate tracking-[0.01em]">
-            npx @vibehub/bridge pair --token=
-            <span className="text-[#0071E3] font-semibold">vh_live_9f8a20d4...</span>
+            vibehub pair <span className="text-[#0071E3] font-semibold">VH-9428-XK</span>
           </span>
           <button
             onClick={handleCopyCli}

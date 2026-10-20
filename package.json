@@ -5,7 +5,9 @@
   "description": "VibeHub — Local-first agent observability and collaborative coding platform",
   "scripts": {
     "dev": "pnpm --filter web dev",
-    "dev:bridge": "pnpm --filter bridge dev",
+    "dev:bridge": "pnpm --filter @vibehub/bridge dev",
+    "bridge": "pnpm --filter @vibehub/bridge start",
+    "bridge:pair": "pnpm --filter @vibehub/bridge pair",
     "build": "pnpm -r build",
     "build:firebase": "node scripts/build-firebase.mjs",
     "deploy:firebase": "node scripts/build-firebase.mjs && firebase deploy --only hosting --project viberhub-8842f",

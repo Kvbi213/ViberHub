@@ -74,20 +74,35 @@ export default function SettingsBridgePage() {
             VibeHub bez przekazywania kluczy głównych:
           </p>
 
-          <div className="flex items-center gap-4 bg-slate-50 border border-black/[0.06] p-4 rounded-xl">
-            <span className="text-2xl font-black font-mono tracking-widest text-[#0071E3] select-all">
-              {pairingCode}
-            </span>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-slate-50 border border-black/[0.06] p-4 rounded-xl">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl font-black font-mono tracking-widest text-[#0071E3] select-all">
+                {pairingCode}
+              </span>
+              <span className="text-xs text-[#8E8E93] font-mono">
+                vibehub pair {pairingCode}
+              </span>
+            </div>
             <button
               onClick={() => {
-                navigator.clipboard.writeText(`npx @vibehub/bridge pair ${pairingCode}`);
+                navigator.clipboard.writeText(`vibehub pair ${pairingCode}`);
                 setCopied(true);
                 setTimeout(() => setCopied(false), 2000);
               }}
-              className="apple-btn ml-auto px-4 py-2 rounded-xl bg-[#0071E3] text-white text-xs font-semibold shadow-xs"
+              className="apple-btn px-4 py-2 rounded-xl bg-[#0071E3] text-white text-xs font-semibold shadow-xs flex items-center justify-center gap-1.5"
             >
-              {copied ? 'Skopiowano komendę!' : 'Kopiuj polecenie terminala'}
+              <span className="material-symbols-outlined text-[15px]">
+                {copied ? 'check' : 'terminal'}
+              </span>
+              {copied ? 'Skopiowano: vibehub pair ' + pairingCode : 'Kopiuj: vibehub pair ' + pairingCode}
             </button>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 text-[11px] font-mono text-[#636366] bg-slate-100/70 p-2.5 rounded-lg border border-black/[0.04]">
+            <span className="font-semibold text-[#1C1C1E]">Alternatywne metody:</span>
+            <code className="bg-white px-2 py-0.5 rounded border border-black/[0.06]">npx vibehub pair {pairingCode}</code>
+            <span>lub w repozytorium:</span>
+            <code className="bg-white px-2 py-0.5 rounded border border-black/[0.06]">pnpm bridge pair {pairingCode}</code>
           </div>
         </div>
 

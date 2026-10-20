@@ -1,13 +1,18 @@
 {
-  "name": "bridge",
-  "version": "0.1.0",
+  "name": "@vibehub/bridge",
+  "version": "0.1.4",
   "private": true,
   "bin": {
-    "vibehub-bridge": "./dist/index.js"
+    "vibehub": "./bin/cli.js",
+    "vibehub-bridge": "./bin/cli.js"
   },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "tsx watch src/cli.ts",
     "build": "tsc",
+    "start": "node bin/cli.js",
+    "pair": "node bin/cli.js pair",
     "lint": "tsc --noEmit",
     "test": "vitest"
   },
