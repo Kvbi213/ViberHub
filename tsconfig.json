@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    "paths": {
+      "@vibehub/contracts": ["./packages/contracts/src"],
+      "@vibehub/event-protocol": ["./packages/event-protocol/src"],
+      "@vibehub/adapter-sdk": ["./packages/adapter-sdk/src"]
+    }
+  },
+  "include": ["api/**/*"]
+}

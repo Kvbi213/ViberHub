@@ -9,6 +9,7 @@ out/
 build/
 dist/
 *.tsbuildinfo
+.firebase/
 
 # Environment & Credentials (CRITICAL - ZERO LEAKS)
 .env

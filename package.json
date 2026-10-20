@@ -12,12 +12,18 @@
     "clean": "pnpm -r exec rimraf dist .next node_modules"
   },
   "devDependencies": {
+    "rimraf": "^6.0.1",
     "typescript": "^5.5.4",
-    "vitest": "^2.0.5",
-    "rimraf": "^6.0.1"
+    "vitest": "^2.0.5"
   },
   "engines": {
     "node": ">=20.0.0",
     "pnpm": ">=9.0.0"
+  },
+  "dependencies": {
+    "@vibehub/contracts": "workspace:*",
+    "@vibehub/event-protocol": "workspace:*",
+    "firebase": "^10.14.1",
+    "zod": "^3.23.8"
   }
 }

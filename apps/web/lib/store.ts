@@ -236,7 +236,13 @@ export const useVibeHubStore = create<VibeHubState>((set, get) => ({
       ],
     };
     try {
-      await fetch('/api/v1/events/batch', {
+      const apiBase =
+        typeof window !== 'undefined' &&
+        (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+          ? ''
+          : process.env.NEXT_PUBLIC_API_URL || 'https://viber-hub-git-main-kvbi.vercel.app';
+
+      await fetch(`${apiBase}/api/v1/events/batch`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(eventPayload),
@@ -249,7 +255,13 @@ export const useVibeHubStore = create<VibeHubState>((set, get) => ({
 
   syncWithSystemTelemetry: async () => {
     try {
-      const res = await fetch('/api/v1/system/status');
+      const apiBase =
+        typeof window !== 'undefined' &&
+        (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+          ? ''
+          : process.env.NEXT_PUBLIC_API_URL || 'https://viber-hub-git-main-kvbi.vercel.app';
+
+      const res = await fetch(`${apiBase}/api/v1/system/status`);
       if (!res.ok) return;
       const data = await res.json();
 

@@ -36,3 +36,14 @@
 - `[+]` Wdrożono reaktywny nasłuch `onSnapshot` w Zustand store oraz akcję `simulateNextStep` emitującą rzeczywiste zdarzenia do bazy Firestore.
 - `[+]` Pomyślnie zoptymalizowano i zweryfikowano produkcyjny build Next.js (`next build` 10/10 tras) oraz uruchomiono procesy w tle na porcie 3000.
 - `[*]` Zsynchronizowano stan projektu z repozytorium Obsidian Vault w `C:\Users\Jakub Lis\Documents\OBSIDIAN\PROJEKTY\VibeHub\`.
+
+---
+
+## v 0.1.3 — 2026-10-20
+- `[+]` Zrealizowano rozdzielenie architektoniczne: Frontend na Firebase Hosting (`https://viberhub-8842f.web.app`), Backend API na mikroserwerze Vercel (`https://viber-hub-git-main-kvbi.vercel.app`).
+- `[+]` Zaimplementowano dedykowany mikroserwer Vercel Serverless w `api/index.ts` oraz routery `api/v1/system/status.ts`, `api/v1/events/batch.ts`, `api/v1/bridge/pair.ts`, `api/v1/bridge/heartbeat.ts`.
+- `[+]` Wprowadzono uniwersalną obsługę CORS dla zapytań przeglądarkowych z domeny Firebase Hosting i preflight OPTIONS na Vercel CDN Edge.
+- `[+]` Skonfigurowano integrację zapisu batchu zdarzeń z mikroserwera Vercel bezpośrednio do bazy Cloud Firestore (`viberhub-8842f`) w regionie `europe-central2`.
+- `[+]` Skonfigurowano `apps/web` jako czysty eksport statyczny Next.js 15 (`output: 'export'`), wygenerowano bundle (11/11 tras) i pomyślnie wdrożono na Firebase Hosting.
+- `[*]` Zsynchronizowano `vercel.json` pod lekki build pakietów monorepo bez zbędnego budowania frontendu na Vercel.
+- `[*]` Zsynchronizowano dokumentację projektową z Obsidian Vault (`C:\Users\Jakub Lis\Documents\OBSIDIAN\PROJEKTY\VibeHub\`).
