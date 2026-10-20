@@ -90,7 +90,7 @@ export const useVibeHubStore = create<VibeHubState>((set, get) => ({
   isBridgeConnected: true,
   bridgeLatency: 14,
   activeProject: 'apps/web',
-  tunnelUrl: 'viber-hub-git-main-kvbi.vercel.app/dashboard',
+  tunnelUrl: 'viber-hub.vercel.app',
   eventsIngestedToday: 48,
   activeBridgesCount: 2,
   gitBranch: 'main',
@@ -315,7 +315,7 @@ export const useVibeHubStore = create<VibeHubState>((set, get) => ({
         typeof window !== 'undefined' &&
         (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
           ? ''
-          : process.env.NEXT_PUBLIC_API_URL || 'https://viber-hub-git-main-kvbi.vercel.app';
+          : process.env.NEXT_PUBLIC_API_URL || 'https://viber-hub.vercel.app';
 
       await fetch(`${apiBase}/api/v1/events/batch`, {
         method: 'POST',
@@ -340,7 +340,7 @@ export const useVibeHubStore = create<VibeHubState>((set, get) => ({
         typeof window !== 'undefined' &&
         (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
           ? ''
-          : process.env.NEXT_PUBLIC_API_URL || 'https://viber-hub-git-main-kvbi.vercel.app';
+          : process.env.NEXT_PUBLIC_API_URL || 'https://viber-hub.vercel.app';
 
       const res = await fetch(`${apiBase}/api/v1/system/status`);
       if (!res.ok) return;
