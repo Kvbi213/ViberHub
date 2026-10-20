@@ -3,12 +3,12 @@ import { getAuth, Auth } from 'firebase/auth';
 import { getFirestore, Firestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 'AIzaSyA4FBH8pMWE3V6Dd5zGCes4Pp5pqMzZoww',
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || 'vibehub-mesh.firebaseapp.com',
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'vibehub-mesh',
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || 'vibehub-mesh.firebasestorage.app',
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '951110449404',
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || '1:951110449404:web:e1c8ec521806a009963f79',
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 'AIzaSyAHmamkyjzSzGF8gTv1A1ouU7XIM2Dd4bU',
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || 'viberhub-8842f.firebaseapp.com',
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'viberhub-8842f',
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || 'viberhub-8842f.firebasestorage.app',
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '221916880520',
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || '1:221916880520:web:c9f0772ba68ba25a27893d',
 };
 
 let app: FirebaseApp;
