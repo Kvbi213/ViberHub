@@ -65,4 +65,5 @@
   - Skonfigurowano uniwersalny CORS oraz preflight OPTIONS dla wszystkich tras API.
   - Skierowano ruch do publicznej domeny produkcyjnej `https://viber-hub.vercel.app` bez wymuszonego SSO.
 - `[+]` Wprowadzono zautomatyzowany skrypt eksportu i wdrożenia na Firebase Hosting (`scripts/build-firebase.ps1`).
+- `[+]` Zaimplementowano standalone CLI runner w `apps/bridge/src/cli.ts` (`vibehub`, `vibehub-bridge`) obsługujący parowanie (`pair`), start demona telemetrycznego oraz globalne powiązanie w systemie przez `npm link`.
 - `[*]` Zsynchronizowano dokumentację projektową w Obsidian Vault (`C:\Users\Jakub Lis\Documents\OBSIDIAN\PROJEKTY\VibeHub\`).
