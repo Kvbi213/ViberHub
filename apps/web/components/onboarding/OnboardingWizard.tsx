@@ -270,6 +270,20 @@ export function OnboardingWizard() {
                 <span className="text-[11px] text-[#636366]">
                   Możesz uruchomić to polecenie w dowolnym momencie w swoim projekcie. Możesz też przejść do Dashboardu bez uruchamiania Bridge — agenci będą symulowani w chmurze.
                 </span>
+
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-xl bg-emerald-50/80 border border-emerald-200/80 gap-2">
+                  <div className="text-[11px] text-emerald-950 font-medium">
+                    Nie masz jeszcze komendy vibehub w terminalu?
+                  </div>
+                  <a
+                    href="/vibehub-cli-bundle.zip"
+                    download="vibehub-cli-bundle.zip"
+                    className="apple-btn px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold flex items-center justify-center gap-1 shadow-xs shrink-0"
+                  >
+                    <span className="material-symbols-outlined text-[14px]">download</span>
+                    Zgraj Paczkę CLI (.ZIP)
+                  </a>
+                </div>
               </div>
 
               <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200/60 flex items-center gap-3">

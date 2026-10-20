@@ -164,3 +164,21 @@
   - Przebudowano i wdrożono zaktualizowany frontend na Firebase Hosting (`https://viberhub-8842f.web.app`).
   - Przebudowano i zaktualizowano globalny symlink CLI `@vibehub/bridge` (`vibehub`, `vibehub-bridge`).
 - `[*]` Zsynchronizowano dokumentację projektową w Obsidian Vault (`C:\Users\Jakub Lis\Documents\OBSIDIAN\PROJEKTY\VibeHub\`).
+
+---
+
+## v 0.1.8 — 2026-10-20
+- `[+]` **Wdrożenie przycisku "Zgraj Bridge CLI" i centrum instalatora terminala (`apps/web/`)**:
+  - Utworzono komponent modalu [`apps/web/components/bridge/BridgeDownloadModal.tsx`](file:///c:/Users/Jakub%20Lis/Desktop/01_PROJEKTY/ViberHub/apps/web/components/bridge/BridgeDownloadModal.tsx) umożliwiający natychmiastowe zgranie pakietów CLI i skryptów parowania.
+  - Dodano podświetlany, interaktywny przycisk `[⚡ Zgraj Bridge CLI]` w nagłówku aplikacji [`Shell.tsx`](file:///c:/Users/Jakub%20Lis/Desktop/01_PROJEKTY/ViberHub/apps/web/components/layout/Shell.tsx) (dostępny z dowolnego miejsca w aplikacji).
+  - Wdrożono dedykowaną kartę szybkiej instalacji w widoku [`/settings`](file:///c:/Users/Jakub%20Lis/Desktop/01_PROJEKTY/ViberHub/apps/web/app/(dashboard)/settings/page.tsx) oraz w 4. kroku kreatora [`OnboardingWizard.tsx`](file:///c:/Users/Jakub%20Lis/Desktop/01_PROJEKTY/ViberHub/apps/web/components/onboarding/OnboardingWizard.tsx).
+- `[+]` **Autonomiczny pakiet dystrybucyjny Bridge CLI (`apps/web/public/`)**:
+  - Skompilowano jednoplikowy, w pełni niezależny silnik CLI `vibehub-cli-bundle.cjs` (248 KB, zero zewnętrznych zależności `node_modules`).
+  - Utworzono spakowaną paczkę ZIP [`vibehub-cli-bundle.zip`](file:///c:/Users/Jakub%20Lis/Desktop/01_PROJEKTY/ViberHub/apps/web/public/vibehub-cli-bundle.zip) (56 KB) zawierającą launchery `vibehub.cmd`, `vibehub.ps1`, instalator `install.bat`, skrypt `install.ps1`, `install.sh` oraz instrukcję `README-CLI.txt`.
+  - Opracowano 1-klikowy instalator PowerShell dla Windows:
+    `powershell -c "irm https://viberhub-8842f.web.app/install.ps1 | iex"`
+    (automatycznie pobiera bundle, instaluje w `~/.vibehub/bin` i konfiguruje zmienną `PATH`).
+- `[+]` **Wdrożenie produkcyjne**:
+  - Wyeksportowano zaktualizowany frontend i wdrożono na Firebase Hosting (`https://viberhub-8842f.web.app`).
+  - Rozwiązano restrykcję `Executable files are forbidden on the Spark billing plan` poprzez enkapsulację skryptów w archiwum ZIP oraz serwowanie `install.ps1` i `vibehub-cli-bundle.cjs`.
+- `[*]` Zsynchronizowano dokumentację projektową w Obsidian Vault (`C:\Users\Jakub Lis\Documents\OBSIDIAN\PROJEKTY\VibeHub\`).

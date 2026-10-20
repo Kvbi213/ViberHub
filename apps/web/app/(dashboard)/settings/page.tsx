@@ -5,6 +5,7 @@ import { useVibeHubStore } from '@/lib/store';
 import { fetchDevices, DeviceRecord } from '@/lib/firestore-service';
 import { db } from '@/lib/firebase';
 import { collection, onSnapshot } from 'firebase/firestore';
+import { BridgeDownloadModal } from '@/components/bridge/BridgeDownloadModal';
 
 export default function SettingsBridgePage() {
   const { roomId } = useVibeHubStore();
@@ -12,6 +13,7 @@ export default function SettingsBridgePage() {
   const [copied, setCopied] = useState(false);
   const [devices, setDevices] = useState<DeviceRecord[]>([]);
   const [loading, setLoading] = useState(true);
+  const [downloadModalOpen, setDownloadModalOpen] = useState(false);
 
   useEffect(() => {
     // 1. Początkowe pobranie urządzeń
@@ -111,6 +113,31 @@ export default function SettingsBridgePage() {
             <span>lub w repozytorium:</span>
             <code className="bg-white px-2 py-0.5 rounded border border-black/[0.06]">pnpm bridge pair {pairingCode}</code>
           </div>
+
+          {/* Quick Download Action Box */}
+          <div className="p-4 rounded-xl bg-gradient-to-r from-emerald-50 via-teal-50/50 to-blue-50/40 border border-emerald-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-1">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-sm shrink-0">
+                <span className="material-symbols-outlined text-[22px]">download</span>
+              </div>
+              <div>
+                <div className="text-xs font-bold text-[#1C1C1E] flex items-center gap-2">
+                  <span>Brakuje Ci polecenia vibehub w terminalu?</span>
+                  <span className="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-mono font-bold">Standalone Bundle</span>
+                </div>
+                <div className="text-[11px] text-[#636366] mt-0.5">
+                  Zgraj gotową paczkę CLI (.ZIP / .BAT / .PS1), aby komendy terminalowe działały bezpośrednio na Twoim komputerze.
+                </div>
+              </div>
+            </div>
+            <button
+              onClick={() => setDownloadModalOpen(true)}
+              className="apple-btn px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-semibold shadow-[0_3px_12px_rgba(16,185,129,0.3)] flex items-center justify-center gap-2 transition shrink-0 cursor-pointer"
+            >
+              <span className="material-symbols-outlined text-[16px]">terminal</span>
+              Zgraj Paczkę CLI
+            </button>
+          </div>
         </div>
 
         {/* Active Connected Devices List */}
@@ -199,6 +226,12 @@ export default function SettingsBridgePage() {
             )}
           </div>
         </div>
+
+        <BridgeDownloadModal
+          isOpen={downloadModalOpen}
+          onClose={() => setDownloadModalOpen(false)}
+          pairingCode={pairingCode}
+        />
       </div>
   );
 }

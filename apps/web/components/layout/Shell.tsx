@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { useVibeHubStore } from '@/lib/store';
 import { AuthModal } from '@/components/auth/AuthModal';
 import { UserProfileModal } from '@/components/auth/UserProfileModal';
+import { BridgeDownloadModal } from '@/components/bridge/BridgeDownloadModal';
 
 function formatTimer(sec: number): string {
   const m = Math.floor(sec / 60);
@@ -16,6 +17,7 @@ function formatTimer(sec: number): string {
 export function Shell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [hash, setHash] = useState('');
+  const [downloadModalOpen, setDownloadModalOpen] = useState(false);
 
   const {
     roomId,
@@ -198,6 +200,17 @@ export function Shell({ children }: { children: React.ReactNode }) {
 
               {/* Action Buttons */}
               <div className="flex items-center gap-2">
+                {/* Zgraj Bridge CLI Button */}
+                <button
+                  onClick={() => setDownloadModalOpen(true)}
+                  className="apple-btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-medium text-[13px] shadow-[0_3px_12px_rgba(16,185,129,0.3)] border-t border-white/20 transition cursor-pointer"
+                  title="Zgraj pliki i narzędzia terminalowe VibeHub CLI"
+                >
+                  <span className="material-symbols-outlined text-[16px]">terminal</span>
+                  <span className="hidden md:inline">Zgraj Bridge CLI</span>
+                  <span className="md:hidden">CLI</span>
+                </button>
+
                 <Link
                   href="/settings"
                   className="apple-btn hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/90 border border-black/[0.08] hover:bg-slate-50 text-[#1C1C1E] font-medium text-[13px] shadow-sm"
@@ -256,6 +269,11 @@ export function Shell({ children }: { children: React.ReactNode }) {
       {/* Global Modals */}
       <AuthModal />
       <UserProfileModal />
+      <BridgeDownloadModal
+        isOpen={downloadModalOpen}
+        onClose={() => setDownloadModalOpen(false)}
+        pairingCode="VH-9428-XK"
+      />
     </div>
   );
 }
