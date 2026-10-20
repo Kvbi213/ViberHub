@@ -57,10 +57,12 @@
   - Wprowadzono precyzyjną detekcję hashy URL (`#diffs`), eliminując podwójne zaznaczanie pozycji "Room Collab & Preview" oraz "Code & Git Diffs".
 - `[+]` Zaimplementowano moduł **Firebase Authentication & User Stats**:
   - Rejestracja i logowanie: Email/Hasło, Google Auth oraz szybki 1-klikowy "Tryb Gościa".
+  - Wbudowano silnik odpornościowy na błąd `auth/configuration-not-found` z bezpośrednim zapisem w Firestore `users/{uid}`, gwarantujący nieprzerwaną pracę bez płatnych konfiguracji GCP.
   - Śledzenie czasu programowania w parze w czasie rzeczywistym (`activeCoopSessionSeconds`, auto-sync co 30s do Firestore `users/{uid}`).
   - Pasek postępu, rangi kooperacyjne ("Co-op Novice", "Pair Pilot Pro", "Architect Elite") oraz szczegółowy modal profilu `UserProfileModal.tsx`.
 - `[+]` Rozbudowano mikroserwer backendowy na Vercelu:
-  - Wdrożono endpointy `/api/v1/users/stats` (odczyt/zapis statystyk użytkownika) oraz `/api/v1/rooms/stats` (statystyki mesh).
+  - Wdrożono endpointy `/api/v1/health` (healthcheck 24/7), `/api/v1/users/stats` (odczyt/zapis statystyk użytkownika) oraz `/api/v1/rooms/stats` (statystyki mesh).
   - Skonfigurowano uniwersalny CORS oraz preflight OPTIONS dla wszystkich tras API.
+  - Skierowano ruch do publicznej domeny produkcyjnej `https://viber-hub.vercel.app` bez wymuszonego SSO.
 - `[+]` Wprowadzono zautomatyzowany skrypt eksportu i wdrożenia na Firebase Hosting (`scripts/build-firebase.ps1`).
 - `[*]` Zsynchronizowano dokumentację projektową w Obsidian Vault (`C:\Users\Jakub Lis\Documents\OBSIDIAN\PROJEKTY\VibeHub\`).
