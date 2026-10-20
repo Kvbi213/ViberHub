@@ -14,3 +14,17 @@
 - `[+]` Opracowano szczegółowy przewodnik projektowy i drzewo topografii UI w `docs/TOPOGRAPHY_TREE.md` oraz `docs/DESIGN_SYSTEM_GUIDE.md`.
 - `[*]` Przygotowano szkielet monorepo (`apps/web`, `apps/bridge`, `packages/contracts`, `packages/event-protocol`, `packages/adapter-sdk`, `packages/ui`, `firebase/`).
 - `[*]` Zsynchronizowano pełną dokumentację techniczną z Obsidian Vault w `C:\Users\Jakub Lis\Documents\OBSIDIAN\PROJEKTY\VibeHub\` oraz zarejestrowano w `INDEX_PROJEKTY.md`.
+
+---
+
+## v 0.1.1 — 2026-10-20
+- `[+]` Zaimplementowano kompletny system designu **Milky Glass Observability & Apple Fluid Motion** w oparciu o specyfikację z `plikizzewnatrz`.
+- `[+]` Wdrożono widok główny **Live Agent Pair Observability** (`/dashboard` i `/`) z podziałem na Dev 1 (Antigravity Agent) oraz Dev 2 (Claude Code Agent), barometrem metryk i strumieniem zdarzeń.
+- `[+]` Wdrożono widok **Room Collab & Live Preview** (`/rooms/[roomId]`) z responsywnym podglądem aplikacji (Desktop 1440px / Tablet 768px / Mobile 375px), paskiem tunelu mTLS oraz panelem diffów Git i logów konsoli.
+- `[+]` Wdrożono moduł **Zarządzania Stacjami i Parowania Bridge** (`/settings`) z jednorazowymi kodami (`VH-9428-XK`), odwoływalnymi tokenami i statusem liveness.
+- `[+]` Wdrożono interaktywną **Matrycę Prywatności L1–L4** (`/privacy`) z audytem czarnej listy sekretów (Zero Trust).
+- `[+]` Skonfigurowano integrację Firebase (Firestore, Auth, Storage) z bezpiecznym buforem offline i reaktywnym storem Zustand.
+- `[+]` Wdrożono serwerowe endpointy API w Next.js: `/api/v1/bridge/pair`, `/api/v1/bridge/heartbeat`, `/api/v1/events/batch`.
+- `[+]` Zbudowano i pomyślnie zweryfikowano produkcyjny bundle Next.js 15 (`next build` — 10/10 stron wygenerowanych bez błędów).
+- `[*]` Zsynchronizowano dokumentację projektową w Obsidian (`06_Master_GUI_Design_Document.md`, zrzuty ekranu `screen_live_pair.png` i `screen_room_collab.png`).
+

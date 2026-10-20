@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Geist:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/><style>
+  @layer base {
+    html, body {
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    body {
+      overscroll-behavior: none;
+    }
+    main > :first-child {
+      margin-top: 0 !important;
+    }
+    main > :last-child {
+      margin-bottom: 0 !important;
+    }
+  }
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Apple Fluid Motion Spring Curves & Easing */
+  .apple-spring {
+    transition: all 260ms cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  .apple-press {
+    transition: transform 160ms cubic-bezier(0.32, 0.72, 0, 1), box-shadow 160ms ease;
+  }
+  .apple-press:active {
+    transform: scale(0.97);
+  }
+  
+  /* Glass Rim Light */
+  .glass-window {
+    background: rgba(255, 255, 255, 0.76);
+    backdrop-filter: blur(28px) saturate(190%);
+    -webkit-backdrop-filter: blur(28px) saturate(190%);
+    border: 1px solid rgba(255, 255, 255, 0.65);
+    border-top: 1px solid rgba(255, 255, 255, 0.95);
+    box-shadow: 0 16px 44px -8px rgba(0, 0, 0, 0.06), 0 2px 6px rgba(0, 0, 0, 0.02), inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  }
+  
+  .glass-card {
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    border-top: 1px solid rgba(255, 255, 255, 0.95);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.035), 0 1px 2px rgba(0, 0, 0, 0.02);
+  }
+
+  .glass-capsule {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-top: 1px solid rgba(255, 255, 255, 0.9);
+  }
+
+  /* Optical Typography SF Pro / SF Mono classes */
+  .sf-headline-xl {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif;
+    letter-spacing: -0.032em;
+    font-weight: 650;
+  }
+  .sf-headline-md {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif;
+    letter-spacing: -0.022em;
+    font-weight: 600;
+  }
+  .sf-title-sm {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif;
+    letter-spacing: -0.015em;
+  }
+  .sf-mono {
+    font-family: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+    letter-spacing: 0.018em;
+  }
+
+  /* Wave graph pulse */
+  @keyframes appleWavePulse {
+    0%, 100% { transform: scale(1); opacity: 0.9; }
+    50% { transform: scale(1.6); opacity: 0.3; }
+  }
+  .wave-pulse-ring {
+    animation: appleWavePulse 2.4s cubic-bezier(0.32, 0.72, 0, 1) infinite;
+    transform-origin: center;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, ::before, ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+    .wave-pulse-ring, .animate-ping, .animate-pulse, .animate-spin {
+      animation: none !important;
+    }
+  }
+</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "on-primary": "#ffffff",
+          "surface-variant": "#e3e2e7",
+          "on-surface-variant": "#414753",
+          "secondary-container": "#6ffb85",
+          "inverse-on-surface": "#f1f0f5",
+          "surface-container-lowest": "#ffffff",
+          "primary-fixed-dim": "#abc7ff",
+          "outline": "#717785",
+          "on-surface": "#1a1b1f",
+          "secondary": "#006e28",
+          "on-error-container": "#93000a",
+          "surface-container-high": "#e9e7ed",
+          "error": "#ba1a1a",
+          "on-secondary-container": "#00732a",
+          "on-secondary-fixed-variant": "#00531c",
+          "tertiary-fixed": "#ffdcbf",
+          "on-secondary-fixed": "#002107",
+          "inverse-surface": "#2f3034",
+          "surface-tint": "#005cbb",
+          "surface-bright": "#faf9fe",
+          "primary": "#0059b5",
+          "primary-container": "#0071e3",
+          "tertiary-container": "#ab6200",
+          "outline-variant": "#c1c6d6",
+          "secondary-fixed-dim": "#53e16f",
+          "surface-container": "#eeedf3",
+          "tertiary-fixed-dim": "#ffb874",
+          "on-tertiary-fixed-variant": "#6a3b00",
+          "primary-fixed": "#d7e2ff",
+          "on-error": "#ffffff",
+          "on-primary-container": "#fcfbff",
+          "secondary-fixed": "#72fe88",
+          "inverse-primary": "#abc7ff",
+          "on-tertiary-fixed": "#2d1600",
+          "surface-dim": "#dad9df",
+          "surface-container-highest": "#e3e2e7",
+          "on-secondary": "#ffffff",
+          "error-container": "#ffdad6",
+          "on-background": "#1a1b1f",
+          "surface-container-low": "#f4f3f8",
+          "tertiary": "#884d00",
+          "surface": "#faf9fe",
+          "on-primary-fixed-variant": "#00458f",
+          "on-tertiary-container": "#fffaf9",
+          "on-tertiary": "#ffffff",
+          "background": "#faf9fe",
+          "on-primary-fixed": "#001b3f",
+          // Apple Semantics
+          "apple-blue": "#0071E3",
+          "apple-green": "#34C759",
+          "apple-orange": "#FF9500",
+          "apple-red": "#FF3B30"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "2xl": "1rem",
+          "3xl": "1.25rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "margin": "1.5rem",
+          "space-sm": "0.5rem",
+          "space-xs": "0.25rem",
+          "gutter": "1rem",
+          "space-xl": "2rem",
+          "space-lg": "1.25rem",
+          "space-md": "0.75rem"
+        },
+        "fontFamily": {
+          "body-sm": ["-apple-system", "BlinkMacSystemFont", "SF Pro Text", "Inter"],
+          "headline-xl": ["-apple-system", "BlinkMacSystemFont", "SF Pro Display", "Inter"],
+          "headline-xl-mobile": ["-apple-system", "BlinkMacSystemFont", "SF Pro Display", "Inter"],
+          "body-md": ["-apple-system", "BlinkMacSystemFont", "SF Pro Text", "Inter"],
+          "headline-sm": ["-apple-system", "BlinkMacSystemFont", "SF Pro Text", "Inter"],
+          "label-md": ["Geist", "-apple-system"],
+          "body-lg": ["-apple-system", "BlinkMacSystemFont", "SF Pro Text", "Inter"],
+          "label-lg": ["Geist", "-apple-system"],
+          "headline-lg": ["-apple-system", "BlinkMacSystemFont", "SF Pro Display", "Inter"],
+          "headline-lg-mobile": ["-apple-system", "BlinkMacSystemFont", "SF Pro Display", "Inter"],
+          "headline-md": ["-apple-system", "BlinkMacSystemFont", "SF Pro Display", "Inter"],
+          "label-sm": ["Geist", "-apple-system"],
+          "mono-metric": ["SF Mono", "JetBrains Mono", "Menlo"],
+          "mono-code": ["SF Mono", "JetBrains Mono", "Menlo"],
+          "mono-status": ["SF Mono", "JetBrains Mono", "Menlo"],
+          "title-sm": ["-apple-system", "BlinkMacSystemFont", "SF Pro Text", "Inter"]
+        }
+      }
+    }
+  }
+</script></head><body class="bg-[#F6F7F9] font-body-md text-on-surface antialiased min-h-screen relative selection:bg-apple-blue/15 selection:text-apple-blue"><div class="fixed inset-0 pointer-events-none -z-10 overflow-hidden"><div class="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-blue-100/50 blur-3xl"></div><div class="absolute top-1/3 -right-24 w-[30rem] h-[30rem] rounded-full bg-emerald-50/60 blur-3xl"></div><div class="absolute -bottom-32 left-1/3 w-[36rem] h-[36rem] rounded-full bg-indigo-50/40 blur-3xl"></div></div><aside class="fixed left-0 top-0 h-full w-64 bg-white/70 backdrop-blur-2xl border-r border-black/[0.06] z-50 flex flex-col justify-between shadow-[0_4px_24px_rgba(0,0,0,0.03)]"><div class="flex flex-col"><div class="h-14 px-space-lg flex items-center justify-between border-b border-black/[0.05]"><div class="flex items-center gap-space-sm"><span class="w-2.5 h-2.5 rounded-full bg-apple-green shadow-[0_0_8px_rgba(52,199,89,0.5)] animate-pulse"></span><span class="sf-mono text-xs text-on-surface tracking-wider font-semibold">VIBE_CORE</span></div><span class="px-space-xs py-0.5 rounded-md bg-black/[0.04] sf-mono text-[11px] text-on-surface-variant font-medium">v2.4-rt</span></div><div class="px-space-md py-space-sm"><div class="px-space-sm py-space-xs mb-space-xs sf-mono text-[10px] text-outline uppercase tracking-wider font-semibold">Navigation Engine</div><nav class="flex flex-col gap-1" data-active-classes="bg-white text-apple-blue font-semibold shadow-sm border border-black/[0.06]"><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-xl text-on-surface-variant hover:bg-black/[0.03] hover:text-on-surface apple-spring apple-press" data-path="overview-live-agent-monitor" href="#"><span class="material-symbols-outlined text-[18px]">monitoring</span><span class="sf-title-sm text-sm">Dashboard</span></a><a aria-current="page" class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-xl apple-spring bg-white text-apple-blue font-semibold shadow-[0_1px_4px_rgba(0,0,0,0.06)] border border-black/[0.06]" data-path="room-collab-live-preview" href="#"><span class="material-symbols-outlined text-[18px] text-apple-blue">group_work</span><span class="sf-title-sm text-sm">Room Collab &amp; Preview</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-xl text-on-surface-variant hover:bg-black/[0.03] hover:text-on-surface apple-spring apple-press" data-path="code-activity-git-diffs" href="#"><span class="material-symbols-outlined text-[18px]">difference</span><span class="sf-title-sm text-sm">Code &amp; Git Diffs</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-xl text-on-surface-variant hover:bg-black/[0.03] hover:text-on-surface apple-spring apple-press" data-path="bridge-devices" href="#"><span class="material-symbols-outlined text-[18px]">developer_board</span><span class="sf-title-sm text-sm">Bridge &amp; Devices</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-xl text-on-surface-variant hover:bg-black/[0.03] hover:text-on-surface apple-spring apple-press" data-path="privacy-permission-matrix" href="#"><span class="material-symbols-outlined text-[18px]">admin_panel_settings</span><span class="sf-title-sm text-sm">Privacy &amp; Permissions</span></a></nav></div></div><div class="p-space-md border-t border-black/[0.05]"><div class="rounded-xl bg-white/90 border border-black/[0.06] p-space-sm flex flex-col gap-space-xs shadow-sm"><div class="flex items-center justify-between"><span class="sf-mono text-[11px] text-on-surface-variant uppercase font-semibold">Kernel Daemon</span><span class="sf-mono text-[11px] text-apple-green font-bold">ONLINE</span></div><div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden"><div class="bg-apple-green h-full w-[82%] rounded-full shadow-[0_0_6px_rgba(52,199,89,0.4)]"></div></div><div class="flex items-center justify-between sf-mono text-[10px] text-outline"><span>Mem: 412MB</span><span>Loop: 0.8ms</span></div></div></div></aside><div class="pl-64"><header class="fixed top-0 left-64 right-0 h-14 bg-white/70 backdrop-blur-2xl z-40 border-b border-black/[0.06] shadow-[0_1px_3px_rgba(0,0,0,0.02)]"><div class="h-14 w-full px-space-lg flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-lg"><div class="flex items-center gap-space-sm"><img alt="VibeHub Logo" class="h-7 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuChqzj4qpYyNuxqByuNKi4qjcOvNpEylgk83G8TiStvYs9NZ3M-tgEhlenT0CrAJymobViFWlwEtikLtcGY_q9jvFZrPCYMZF-PRTfwVIXDZm09HejFNeJlsjGy5NRcFcwSii9r_j6CgKLbeRSeb21PWHIxBjzTR6VupfsVFbJX-M5K3onkze-AL6rfe6czU4AZ_9IolT7sDW2GyuCL2V0iJNPFql3RygKMPZ1mIcLmqBLtFh79q_Gw"/><span class="sf-headline-md text-lg text-on-surface font-semibold tracking-tight">VibeHub</span></div><div class="hidden xl:flex items-center gap-space-xs px-space-sm py-1 rounded-lg bg-black/[0.03] border border-black/[0.04]"><span class="material-symbols-outlined text-outline text-[16px]">corporate_fare</span><span class="sf-mono text-xs text-on-surface font-medium">Team Antigravity / Room #409</span><span class="material-symbols-outlined text-outline text-[16px]">expand_more</span></div></div><div class="flex items-center gap-space-md"><div class="hidden md:flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-emerald-50 border border-emerald-200/60 shadow-[0_1px_4px_rgba(52,199,89,0.12)]"><span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-apple-green opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-apple-green"></span></span><span class="sf-mono text-[11px] text-[#006e28] font-medium tracking-wide">Bridge: Connected (macOS M3 Max - 12ms)</span></div><div class="hidden lg:flex items-center gap-1 sf-mono text-[10px]"><span class="px-1.5 py-0.5 rounded bg-blue-50 border border-blue-200/60 text-apple-blue font-bold">[L1:SOCK]</span><span class="px-1.5 py-0.5 rounded bg-sky-50 border border-sky-200/60 text-sky-700 font-bold">[L2:DIFF]</span><span class="px-1.5 py-0.5 rounded bg-emerald-50 border border-emerald-200/60 text-[#006e28] font-bold">[L3:PROC]</span><span class="px-1.5 py-0.5 rounded bg-slate-100 text-outline font-bold">[L4:HOOK]</span></div><div class="flex items-center gap-space-xs"><button class="hidden sm:inline-flex items-center gap-1 px-space-sm py-1.5 rounded-lg bg-black/[0.04] hover:bg-black/[0.07] text-on-surface sf-title-sm text-xs font-medium apple-spring apple-press" type="button"><span class="material-symbols-outlined text-[16px] text-apple-blue">sensors</span>Pair Bridge</button><button class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-apple-blue text-white hover:bg-[#0059b5] sf-title-sm text-xs font-medium apple-spring apple-press shadow-[0_1px_6px_rgba(0,113,227,0.3)]" type="button"><span class="material-symbols-outlined text-[16px]">person_add</span>Invite Peer</button><button aria-label="Notifications" class="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-black/[0.04] apple-spring apple-press relative" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-apple-blue"></span></button><div class="pl-space-xs flex items-center"><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-white shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdBWfKpuEMp_ecO7IvyuI9UoQr9veHEPrajP3kI8Ak2hh-SIQkOApybpc__m_NgW1sIRAu_SfOC2hatQYZsVRUpaszcEKzET4VpE_bS0QE7A3iBRwAHc-6yaSKlzZTstwETPjMGz3x8Cu8Y7X9dRCJt-R5XYGi5qAnQjdw7eYXxRKqiN4KxEtWbN2TQYoVr8OOcnFVpz0YkeovSnhf4JMvcTY1ptovF4ALeSTCkp5eKgzjphCTEkQq"/></div></div></div></div></header><main class="relative pt-14 bg-transparent w-full"><div class="flex flex-col w-full">
+<!-- Sub-Header / Workspace Control Matrix -->
+<section class="w-full bg-white/70 backdrop-blur-2xl border-b border-black/[0.06] px-6 py-2.5 flex flex-col xl:flex-row xl:items-center justify-between gap-space-sm shadow-[0_2px_8px_rgba(0,0,0,0.02)] relative z-30">
+<div class="flex flex-wrap items-center gap-space-sm">
+<!-- Room Switcher Pill -->
+<div class="flex items-center gap-1.5 bg-black/[0.04] border border-black/[0.04] px-2.5 py-1 rounded-lg">
+<span class="w-2 h-2 rounded-full bg-apple-green animate-pulse"></span>
+<span class="sf-mono text-[10px] text-outline uppercase tracking-wider font-semibold">ROOM</span>
+<button class="flex items-center gap-1 sf-title-sm text-xs font-semibold text-on-surface hover:text-apple-blue apple-spring" type="button">
+<span>#409: Antigravity Core</span>
+<span class="material-symbols-outlined text-[16px] text-outline">unfold_more</span>
+</button>
+</div>
+<!-- Project Selector Pill -->
+<div class="flex items-center bg-black/[0.04] p-0.5 rounded-lg border border-black/[0.04]">
+<button class="px-space-sm py-1 rounded-md bg-white text-apple-blue sf-mono text-xs font-semibold flex items-center gap-1.5 apple-spring apple-press shadow-sm" id="btn-project-web" type="button">
+<span class="material-symbols-outlined text-[14px]">language</span>
+<span>apps/web</span>
+<span class="sf-mono text-[10px] text-on-surface-variant bg-black/[0.04] px-1 rounded">Next.js 15</span>
+</button>
+<button class="px-space-sm py-1 rounded-md text-outline hover:text-on-surface sf-mono text-xs flex items-center gap-1.5 apple-spring apple-press" id="btn-project-bridge" type="button">
+<span class="material-symbols-outlined text-[14px]">hub</span>
+<span>apps/bridge</span>
+<span class="sf-mono text-[10px] text-outline px-1 rounded">Node.js 22</span>
+</button>
+</div>
+<!-- Observability Level Indicator -->
+<div class="hidden 2xl:flex items-center gap-1 sf-mono text-[11px] bg-sky-50 border border-sky-200/50 px-2.5 py-1 rounded-lg">
+<span class="text-sky-700/70 uppercase font-semibold">ENGINE:</span>
+<span class="text-apple-blue font-bold tracking-wide">[L4:KERNEL_TUNNEL]</span>
+</div>
+</div>
+<!-- Central Interactive Tunnel URL Bar (Apple macOS Pill) -->
+<div class="flex-1 max-w-2xl mx-auto w-full px-space-xs">
+<div class="glass-capsule hover:bg-white focus-within:bg-white rounded-xl flex items-center px-3 py-1.5 shadow-[0_1px_3px_rgba(0,0,0,0.03)] apple-spring focus-within:ring-2 focus-within:ring-apple-blue/20">
+<div class="flex items-center gap-1 text-apple-green pr-1.5">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">lock</span>
+<span class="sf-mono text-[10px] tracking-widest text-[#006e28] font-bold">mTLS</span>
+</div>
+<span class="text-outline/70 sf-mono text-xs select-none">https://</span>
+<input aria-label="Secure Tunnel URL" class="bg-transparent border-none outline-none sf-mono text-xs text-on-surface flex-1 px-1 focus:ring-0 placeholder:text-outline font-medium" id="tunnel-url-input" type="text" value="preview-tunnel.vibehub.internal:3000/dashboard"/>
+<div class="flex items-center gap-1 pl-space-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-apple-green"></span>
+<span class="sf-mono text-[10px] text-outline font-medium">HTTP/2</span>
+<button class="p-1 rounded text-outline hover:text-apple-blue hover:bg-black/[0.04] apple-spring apple-press" id="copy-url-btn" title="Copy tunnel path" type="button">
+<span class="material-symbols-outlined text-[15px]">content_copy</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Split View Controls & Sync Action -->
+<div class="flex items-center gap-space-xs justify-end">
+<div class="flex items-center bg-black/[0.04] p-0.5 rounded-lg border border-black/[0.04]">
+<button class="p-1 rounded bg-white text-apple-blue shadow-sm apple-spring apple-press" id="view-mode-single" title="Single Frame View" type="button">
+<span class="material-symbols-outlined text-[18px]">crop_square</span>
+</button>
+<button class="p-1 rounded text-outline hover:text-on-surface apple-spring apple-press" id="view-mode-split" title="Bento Split View" type="button">
+<span class="material-symbols-outlined text-[18px]">vertical_split</span>
+</button>
+</div>
+<div class="h-4 w-px bg-black/[0.08] mx-1"></div>
+<button class="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white/80 hover:bg-white text-on-surface sf-title-sm text-xs font-medium border border-black/[0.06] shadow-sm apple-spring apple-press" id="sync-refresh-btn" type="button">
+<span class="material-symbols-outlined text-[16px] text-apple-blue animate-spin" id="refresh-icon" style="animation-duration: 4s;">sync</span>
+<span class="hidden sm:inline sf-mono text-[10px] tracking-wider uppercase font-semibold">Live Stream</span>
+</button>
+</div>
+</section>
+<!-- Main Canvas Matrix -->
+<div class="w-full flex-1 p-6 grid grid-cols-1 lg:grid-cols-12 gap-5">
+<!-- LEFT: Sandbox Viewport (8 Columns Desktop) -->
+<div class="lg:col-span-8 flex flex-col gap-3.5">
+<!-- Frame Toolbar Panel (macOS toolbar style) -->
+<div class="glass-card rounded-2xl p-2.5 px-3.5 flex flex-wrap items-center justify-between gap-space-sm">
+<!-- Viewport Dimensions & Responsive Selector -->
+<div class="flex items-center gap-space-sm">
+<div class="flex items-center bg-black/[0.04] p-0.5 rounded-lg border border-black/[0.04]">
+<button class="px-space-sm py-1 rounded-md bg-white text-apple-blue sf-mono text-xs font-semibold flex items-center gap-1 shadow-sm apple-spring apple-press" id="device-desktop" type="button">
+<span class="material-symbols-outlined text-[16px]">desktop_windows</span>
+<span>1280×800</span>
+</button>
+<button class="px-space-sm py-1 rounded-md text-outline hover:text-on-surface sf-mono text-xs flex items-center gap-1 apple-spring apple-press" id="device-mobile" type="button">
+<span class="material-symbols-outlined text-[16px]">smartphone</span>
+<span>390×844</span>
+</button>
+</div>
+<!-- Zoom Selector -->
+<div class="hidden sm:flex items-center gap-1 bg-black/[0.04] px-1.5 py-0.5 rounded-lg sf-mono text-xs text-outline border border-black/[0.04]">
+<button class="p-1 hover:text-on-surface apple-spring apple-press" id="zoom-out-btn" type="button"><span class="material-symbols-outlined text-[14px]">remove</span></button>
+<span class="text-on-surface font-semibold px-1" id="zoom-level">100%</span>
+<button class="p-1 hover:text-on-surface apple-spring apple-press" id="zoom-in-btn" type="button"><span class="material-symbols-outlined text-[14px]">add</span></button>
+</div>
+</div>
+<!-- Frame Status & Fallback Protocol -->
+<div class="flex items-center gap-space-sm">
+<div class="flex items-center gap-1.5 bg-emerald-50 border border-emerald-200/60 px-2.5 py-1 rounded-lg">
+<span class="w-2 h-2 rounded-full bg-apple-green shadow-[0_0_6px_rgba(52,199,89,0.5)]"></span>
+<span class="sf-mono text-[11px] text-[#006e28] font-semibold uppercase">Direct Tunnel Active</span>
+</div>
+<button class="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-black/[0.04] hover:bg-black/[0.08] text-on-surface sf-title-sm text-xs apple-spring apple-press" id="capture-frame-btn" type="button">
+<span class="material-symbols-outlined text-[16px] text-outline">screenshot_region</span>
+<span class="sf-mono text-[10px] font-semibold uppercase">Capture</span>
+</button>
+</div>
+</div>
+<!-- Sandbox Interactive Stage (Safari-styled frosted milky frame with translucent chrome & double glass edge) -->
+<div class="w-full glass-window rounded-2xl flex flex-col overflow-hidden min-h-[640px] relative apple-spring duration-300" id="viewport-stage">
+<!-- macOS / Safari Window Header Bar -->
+<div class="h-11 bg-white/70 backdrop-blur-2xl px-4 flex items-center justify-between border-b border-black/[0.06] select-none relative z-30">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-[#FF5F56] border border-[#E0443E]/50 inline-block shadow-xs hover:opacity-85 cursor-pointer"></span>
+<span class="w-3 h-3 rounded-full bg-[#FFBD2E] border border-[#DEA123]/50 inline-block shadow-xs hover:opacity-85 cursor-pointer"></span>
+<span class="w-3 h-3 rounded-full bg-apple-green border border-[#1AAB29]/50 inline-block shadow-xs hover:opacity-85 cursor-pointer"></span>
+<div class="h-3.5 w-px bg-slate-300/70 mx-1.5"></div>
+<div class="flex items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined text-[15px] hover:text-slate-700 cursor-pointer apple-spring">arrow_back_ios</span>
+<span class="material-symbols-outlined text-[15px] opacity-40">arrow_forward_ios</span>
+</div>
+</div>
+<!-- Safari Address Capsule with Glass Depth -->
+<div class="flex items-center gap-1.5 px-3.5 py-1 rounded-lg bg-white/80 backdrop-blur-xl border border-white/90 shadow-[0_1px_3px_rgba(0,0,0,0.04),inset_0_1px_1px_rgba(255,255,255,0.9)] text-[11px] sf-mono text-slate-600">
+<span class="w-1.5 h-1.5 rounded-full bg-apple-green"></span>
+<span class="material-symbols-outlined text-[13px] text-apple-green">lock</span>
+<span class="font-medium text-slate-800">preview-tunnel.vibehub.in</span>
+<span class="text-slate-400">/dashboard</span>
+</div>
+<div class="flex items-center gap-2 text-slate-400">
+<span class="material-symbols-outlined text-[16px] hover:text-slate-700 cursor-pointer apple-spring">share</span>
+<span class="material-symbols-outlined text-[16px] hover:text-slate-700 cursor-pointer apple-spring">add</span>
+</div>
+</div>
+<!-- Peer Cursor Overlay Mocking Active Collaboration (Spring Motion) -->
+<div class="absolute z-40 top-36 left-48 pointer-events-none flex flex-col gap-1 transition-transform duration-[600ms] ease-[cubic-bezier(0.32,0.72,0,1)]" id="peer-cursor">
+<svg class="w-5 h-5 text-apple-blue filter drop-shadow-[0_2px_6px_rgba(0,113,227,0.4)]" fill="currentColor" viewbox="0 0 24 24">
+<path d="M4.5 2.5L18.5 11.5L12 13L9.5 20L4.5 2.5Z"></path>
+</svg>
+<div class="bg-apple-blue text-white px-2 py-0.5 rounded-full sf-mono text-[10px] uppercase font-bold tracking-tight shadow-md flex items-center gap-1 ring-1 ring-white">
+<span>Ziomek</span>
+<span class="text-[9px] opacity-80">/dashboard:chart</span>
+</div>
+</div>
+<!-- Simulated Rendered Next.js Application Canvas -->
+<div class="w-full flex-1 bg-[#FAFAFC] flex flex-col overflow-y-auto" id="app-sim-viewport">
+<!-- Next.js Mock App Top Navigation Bar -->
+<div class="h-11 bg-white/90 backdrop-blur-md px-space-md flex items-center justify-between border-b border-black/[0.05]">
+<div class="flex items-center gap-space-sm">
+<span class="sf-mono text-xs font-bold text-apple-blue tracking-wide">antigravity.ui</span>
+<span class="text-slate-300 sf-mono text-xs">/</span>
+<span class="sf-title-sm text-xs text-slate-700 font-medium">Dashboard Overview</span>
+</div>
+<div class="flex items-center gap-1.5">
+<div class="h-2 w-2 rounded-full bg-apple-green"></div>
+<span class="sf-mono text-[11px] text-slate-500 font-medium">HMR 0.1s</span>
+</div>
+</div>
+<!-- App Mock Content with Rich Data Visualizations & Modern Elements -->
+<div class="p-space-lg flex flex-col gap-4 flex-1">
+<!-- Metric Banner Row -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+<div class="bg-white rounded-xl p-3.5 flex flex-col justify-between border border-black/[0.05] shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+<div class="flex items-center justify-between text-slate-500">
+<span class="sf-mono text-[10px] uppercase tracking-wider font-semibold">Agent Throughput</span>
+<span class="material-symbols-outlined text-[18px] text-apple-green">bolt</span>
+</div>
+<div class="my-1.5">
+<span class="sf-headline-xl text-3xl text-slate-900 font-bold tracking-tight">1,482</span>
+<span class="sf-mono text-xs text-[#006e28] ml-1 font-semibold">ops/sec</span>
+</div>
+<div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+<div class="bg-apple-green h-full w-[74%] rounded-full shadow-[0_0_6px_rgba(52,199,89,0.3)]"></div>
+</div>
+</div>
+<div class="bg-white rounded-xl p-3.5 flex flex-col justify-between border border-black/[0.05] shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+<div class="flex items-center justify-between text-slate-500">
+<span class="sf-mono text-[10px] uppercase tracking-wider font-semibold">Edge Latency</span>
+<span class="material-symbols-outlined text-[18px] text-apple-blue">speed</span>
+</div>
+<div class="my-1.5">
+<span class="sf-headline-xl text-3xl text-slate-900 font-bold tracking-tight">14.2</span>
+<span class="sf-mono text-xs text-apple-blue ml-1 font-semibold">ms</span>
+</div>
+<div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+<div class="bg-apple-blue h-full w-[28%] rounded-full shadow-[0_0_6px_rgba(0,113,227,0.3)]"></div>
+</div>
+</div>
+<div class="bg-white rounded-xl p-3.5 flex flex-col justify-between border border-black/[0.05] shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+<div class="flex items-center justify-between text-slate-500">
+<span class="sf-mono text-[10px] uppercase tracking-wider font-semibold">Memory Allocation</span>
+<span class="material-symbols-outlined text-[18px] text-indigo-500">memory</span>
+</div>
+<div class="my-1.5">
+<span class="sf-headline-xl text-3xl text-slate-900 font-bold tracking-tight">384</span>
+<span class="sf-mono text-xs text-indigo-600 ml-1 font-semibold">MB</span>
+</div>
+<div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+<div class="bg-indigo-500 h-full w-[45%] rounded-full shadow-[0_0_6px_rgba(99,102,241,0.3)]"></div>
+</div>
+</div>
+</div>
+<!-- Bento Preview Row: SVG Telemetry Wave & Live Component State -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-3.5">
+<!-- Visualized SVG Vector Wave -->
+<div class="md:col-span-7 bg-white rounded-xl p-4 flex flex-col justify-between border border-black/[0.05] shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+<div class="flex items-center justify-between mb-2">
+<div>
+<h3 class="sf-headline-md text-base text-slate-900 font-semibold">Active Vector Ingestion</h3>
+<p class="font-body-sm text-xs text-slate-500">L4 Socket Trace Pipeline (Zero packet drops)</p>
+</div>
+<span class="sf-mono text-[11px] text-[#006e28] bg-emerald-50 border border-emerald-200/60 px-2 py-0.5 rounded-full font-bold">60 FPS</span>
+</div>
+<!-- Inline SVG Vector Wave Graph in Apple Light aesthetic with Pulsing Point -->
+<div class="w-full h-36 flex items-center relative my-2 bg-gradient-to-b from-blue-50/20 to-transparent rounded-lg p-1">
+<svg class="w-full h-full overflow-visible" preserveaspectratio="none" viewbox="0 0 500 120">
+<defs>
+<lineargradient id="streamGradApple" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#0071E3" stop-opacity="0.2"></stop>
+<stop offset="60%" stop-color="#34C759" stop-opacity="0.08"></stop>
+<stop offset="100%" stop-color="#ffffff" stop-opacity="0"></stop>
+</lineargradient>
+<lineargradient id="lineGradApple" x1="0%" x2="100%" y1="0%" y2="0%">
+<stop offset="0%" stop-color="#0071E3"></stop>
+<stop offset="65%" stop-color="#34C759"></stop>
+<stop offset="100%" stop-color="#30B0C7"></stop>
+</lineargradient>
+</defs>
+<!-- Soft Apple Gridlines -->
+<line stroke="#000000" stroke-dasharray="3 3" stroke-opacity="0.05" stroke-width="1" x1="0" x2="500" y1="30" y2="30"></line>
+<line stroke="#000000" stroke-dasharray="3 3" stroke-opacity="0.05" stroke-width="1" x1="0" x2="500" y1="70" y2="70"></line>
+<line stroke="#000000" stroke-dasharray="3 3" stroke-opacity="0.05" stroke-width="1" x1="0" x2="500" y1="105" y2="105"></line>
+<path d="M0,80 Q40,30 80,60 T160,40 T240,75 T320,25 T400,65 T500,30 L500,120 L0,120 Z" fill="url(#streamGradApple)"></path>
+<path d="M0,80 Q40,30 80,60 T160,40 T240,75 T320,25 T400,65 T500,30" fill="none" stroke="url(#lineGradApple)" stroke-linecap="round" stroke-width="2.5"></path>
+<!-- Realtime Pulsing Apple Green Point -->
+<circle class="wave-pulse-ring" cx="320" cy="25" fill="#34C759" opacity="0.4" r="9"></circle>
+<circle cx="320" cy="25" fill="#34C759" r="4.5" stroke="#FFFFFF" stroke-width="2"></circle>
+</svg>
+</div>
+<div class="flex items-center justify-between pt-1 sf-mono text-[11px] text-slate-400">
+<span>T-30s</span>
+<span>T-15s</span>
+<span class="text-apple-green font-bold">REALTIME</span>
+</div>
+</div>
+<!-- Component Sandbox Sandbox Card with Image Context -->
+<div class="md:col-span-5 bg-white rounded-xl p-4 flex flex-col justify-between border border-black/[0.05] shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+<div class="flex items-center justify-between mb-2">
+<h4 class="sf-title-sm text-sm text-slate-900 font-semibold">Bridge Micro-Agent</h4>
+<span class="sf-mono text-[10px] text-indigo-700 bg-indigo-50 border border-indigo-200/50 px-2 py-0.5 rounded-full font-bold">ID: #0921-X</span>
+</div>
+<div class="relative w-full h-28 rounded-lg overflow-hidden mb-2.5 border border-black/[0.04]">
+<img class="w-full h-full object-cover" data-alt="Futuristic cybernetic microchip core radiating deep obsidian, cyan, and emerald electronic circuits with optical data streams and high precision telemetry interfaces" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNH1oYcswplEBrh2c8emwyIrjQFp1a7xwj8LfU5qWfl0dfThDUo5vOUCmt6nRo6xYHhuu09VSxERU8IV6TJG72bZKuqYH7ZcXqtQcUeCcI3L3j3JVyBlDUPyPa1_8MRpvKO76LaUCEI5Uyc5WOO5TKBv3lB1yUwmPobz0Y56hhv43KpWleSijaH1reoUfSiPfiTsxkIYJMJd1bXQChRfLRsc57k6teaEeJamAhUoK1rCMjOUjYTeCd"/>
+<div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent flex items-end p-2">
+<span class="sf-mono text-[10px] text-white px-2 py-0.5 bg-black/40 backdrop-blur-md rounded-md">Sub-Agent Loop: Nominal</span>
+</div>
+</div>
+<div class="space-y-1.5 pt-0.5">
+<div class="flex justify-between font-body-sm text-xs text-slate-500">
+<span>Task Execution:</span>
+<span class="sf-mono text-xs text-slate-800 font-semibold">Auto-Refactor Tree</span>
+</div>
+<div class="flex justify-between font-body-sm text-xs text-slate-500">
+<span>Branch Target:</span>
+<span class="sf-mono text-xs text-apple-blue font-semibold">feat/bridge-sync</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Operational Activity Strip inside App -->
+<div class="bg-white rounded-xl p-3.5 flex flex-col sm:flex-row items-center justify-between gap-space-sm border border-black/[0.05] shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+<div class="flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200/50 flex items-center justify-center text-apple-blue">
+<span class="material-symbols-outlined text-[22px]">terminal</span>
+</div>
+<div>
+<div class="sf-title-sm text-sm text-slate-900 font-semibold">Peer Antigravity Connected</div>
+<div class="font-body-sm text-xs text-slate-500">Encrypted stream synced to local unix socket: /tmp/vibehub.sock</div>
+</div>
+</div>
+<button class="px-4 py-1.5 rounded-lg bg-apple-blue hover:bg-[#0059b5] text-white sf-title-sm text-xs font-semibold apple-spring apple-press shadow-sm" type="button">
+                Inspect Route Tree
+              </button>
+</div>
+</div>
+</div>
+<!-- Bottom Preview Status Bar -->
+<div class="h-8 bg-white/90 backdrop-blur-md px-4 flex items-center justify-between text-slate-500 sf-mono text-[11px] border-t border-black/[0.05]">
+<div class="flex items-center gap-space-sm">
+<span class="text-[#006e28] flex items-center gap-1 font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-apple-green"></span>
+              LIVE_SOCKET_SYNC
+            </span>
+<span class="text-slate-300">|</span>
+<span>DOM Node Count: 489</span>
+<span class="text-slate-300">|</span>
+<span class="hidden md:inline">Renderer: Chrome Headless v122</span>
+</div>
+<div>
+<span class="text-slate-500 font-medium">Capture Frame: #4,208 (8.1 MB/s)</span>
+</div>
+</div>
+</div>
+</div>
+<!-- RIGHT: Observability & Tunnel Inspector Sidebar (4 Columns Desktop) -->
+<div class="lg:col-span-4 flex flex-col gap-3.5">
+<!-- Diagnostic Telemetry Card (L4) -->
+<div class="glass-card rounded-2xl p-4 flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-apple-blue text-[18px]">query_stats</span>
+<h2 class="sf-title-sm text-xs text-slate-900 font-bold uppercase tracking-wider">Preview Diagnostics (L4)</h2>
+</div>
+<span class="sf-mono text-[10px] text-[#006e28] bg-emerald-50 border border-emerald-200/60 px-2 py-0.5 rounded-full font-bold">200 OK</span>
+</div>
+<div class="grid grid-cols-3 gap-2">
+<div class="bg-slate-50/90 rounded-xl p-2.5 text-center border border-black/[0.03]">
+<span class="sf-mono text-[10px] text-slate-400 uppercase font-semibold block">Local Port</span>
+<span class="sf-mono text-lg text-slate-900 mt-0.5 font-bold block">3000</span>
+<span class="sf-mono text-[10px] text-apple-blue font-semibold">Proxied</span>
+</div>
+<div class="bg-slate-50/90 rounded-xl p-2.5 text-center border border-black/[0.03]">
+<span class="sf-mono text-[10px] text-slate-400 uppercase font-semibold block">RTT Latency</span>
+<span class="sf-mono text-lg text-[#006e28] mt-0.5 font-bold block">18ms</span>
+<span class="sf-mono text-[10px] text-slate-400">WireGuard</span>
+</div>
+<div class="bg-slate-50/90 rounded-xl p-2.5 text-center border border-black/[0.03]">
+<span class="sf-mono text-[10px] text-slate-400 uppercase font-semibold block">Net State</span>
+<span class="sf-mono text-lg text-apple-blue mt-0.5 font-bold block">mTLS</span>
+<span class="sf-mono text-[10px] text-slate-500 font-medium">Zero Exposure</span>
+</div>
+</div>
+<div class="bg-slate-50/90 rounded-xl p-2.5 flex items-center justify-between sf-mono text-xs border border-black/[0.03]">
+<span class="text-slate-500 text-[11px]">Socket Tunnel Daemon:</span>
+<span class="text-slate-800 sf-mono text-[11px] font-semibold">vibehub-d::pid(4921)</span>
+</div>
+</div>
+<!-- Peer Presence & Active Collab State -->
+<div class="glass-card rounded-2xl p-4 flex flex-col gap-2.5">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-apple-blue text-[18px]">person_pin_circle</span>
+<h3 class="sf-title-sm text-xs text-slate-900 font-bold uppercase tracking-wider">Peer Presence</h3>
+</div>
+<span class="flex h-2 w-2 relative">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-apple-green opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-apple-green"></span>
+</span>
+</div>
+<div class="bg-slate-50/90 rounded-xl p-3 flex items-start gap-space-sm border border-black/[0.03]">
+<div class="w-10 h-10 rounded-full bg-blue-100 text-apple-blue flex items-center justify-center font-bold text-sm shadow-xs border border-blue-200/60">
+            ZK
+          </div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between">
+<span class="sf-title-sm text-sm text-slate-900 font-semibold truncate">Ziomek (Lead Arch)</span>
+<span class="sf-mono text-[11px] text-[#006e28] font-bold">Active</span>
+</div>
+<p class="font-body-sm text-xs text-slate-500 truncate">macOS Sonoma • M3 Max 64GB</p>
+<div class="mt-1 flex items-center gap-1 sf-mono text-[10px] text-apple-blue bg-blue-50/90 border border-blue-100 px-2 py-0.5 rounded-md w-fit">
+<span class="material-symbols-outlined text-[12px]">visibility</span>
+<span class="truncate">/rooms/room-409/projects/web</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Live Stream Console & UI Exception Log Tail (macOS console style) -->
+<div class="glass-card rounded-2xl p-4 flex flex-col flex-1 min-h-[320px]">
+<div class="flex items-center justify-between mb-2.5">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-apple-blue text-[18px]">terminal</span>
+<h3 class="sf-title-sm text-xs text-slate-900 font-bold uppercase tracking-wider">Logs &amp; Exceptions</h3>
+</div>
+<div class="flex items-center gap-1">
+<button class="p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-black/[0.04] apple-spring apple-press" id="clear-logs-btn" title="Clear Buffer" type="button">
+<span class="material-symbols-outlined text-[16px]">clear_all</span>
+</button>
+<span class="sf-mono text-[10px] text-slate-500 bg-slate-100 px-2 py-0.5 rounded font-semibold">AUTO-TAIL</span>
+</div>
+</div>
+<!-- Terminal Output Window with Sanitized Stack Traces -->
+<div class="bg-slate-50/95 border border-slate-200/80 rounded-xl p-3 sf-mono text-xs text-slate-800 flex-1 overflow-y-auto space-y-1.5 max-h-[300px] shadow-inner" id="log-window">
+<div class="flex items-start gap-1.5 sf-mono text-[11px]">
+<span class="text-slate-400">10:42:01.012</span>
+<span class="text-apple-blue font-bold">[L4:BRIDGE]</span>
+<span class="text-slate-700">Tunnel socket hooked to loopback: 127.0.0.1:3000</span>
+</div>
+<div class="flex items-start gap-1.5 sf-mono text-[11px]">
+<span class="text-slate-400">10:42:01.890</span>
+<span class="text-apple-blue font-bold">[L2:HMR]</span>
+<span class="text-slate-700">Compiled /dashboard/page.tsx in 118ms</span>
+</div>
+<div class="flex items-start gap-1.5 sf-mono text-[11px]">
+<span class="text-slate-400">10:42:04.142</span>
+<span class="text-[#006e28] font-bold">[NEXT_TELEMETRY]</span>
+<span class="text-slate-700">GET /api/agent/stream 200 OK (14ms)</span>
+</div>
+<div class="bg-amber-50/80 border border-amber-200/70 rounded-lg p-2 flex flex-col gap-0.5">
+<div class="flex items-start gap-1.5 sf-mono text-[11px] text-apple-orange font-semibold">
+<span class="text-slate-400">10:42:09.605</span>
+<span>[WARN:UI_HYDRATION]</span>
+<span>Prop mismatch on client element `data-theme`</span>
+</div>
+<div class="text-slate-500 sf-mono text-[10px] pl-4 leading-tight">
+              at div in DashboardLayout (/apps/web/components/layout.tsx:42:9)<br/>
+              secrets scrubbed by bridge proxy daemon [0 tokens redacted]
+            </div>
+</div>
+<div class="flex items-start gap-1.5 sf-mono text-[11px]">
+<span class="text-slate-400">10:42:12.301</span>
+<span class="text-indigo-600 font-bold">[PRESENCE_SYNC]</span>
+<span class="text-slate-700">Peer cursor focus -&gt; /dashboard/metrics (x: 480, y: 220)</span>
+</div>
+<div class="flex items-start gap-1.5 sf-mono text-[11px]">
+<span class="text-slate-400">10:42:15.819</span>
+<span class="text-[#006e28] font-bold">[BRIDGE_IPC]</span>
+<span class="text-slate-700">Snapshot frame capture #4209 flushed (0 errs)</span>
+</div>
+</div>
+<!-- Terminal Input Prompt -->
+<div class="mt-2.5 flex items-center gap-1.5 bg-slate-50/90 border border-slate-200/80 rounded-xl px-3 py-1.5">
+<span class="sf-mono text-xs text-apple-blue font-bold">&gt;</span>
+<input aria-label="Filter console logs" class="bg-transparent border-none outline-none sf-mono text-slate-800 flex-1 placeholder:text-slate-400 text-xs focus:ring-0" placeholder="filter logs or run bridge probe..." type="text"/>
+<span class="sf-mono text-[10px] text-slate-400 font-medium">ESC to clear</span>
+</div>
+</div>
+<!-- Tunnel & Stream Controls Strip -->
+<div class="glass-card rounded-2xl p-4 flex flex-col gap-2.5">
+<h4 class="sf-title-sm text-xs text-slate-900 font-bold uppercase tracking-wider">Tunnel &amp; Stream Controls</h4>
+<div class="grid grid-cols-2 gap-2">
+<button class="flex items-center justify-center gap-1.5 px-space-sm py-2 rounded-xl bg-slate-50/90 hover:bg-slate-100 text-slate-800 sf-title-sm text-xs font-semibold border border-black/[0.04] apple-spring apple-press" id="pause-stream-btn" type="button">
+<span class="material-symbols-outlined text-[17px] text-apple-blue">pause_circle</span>
+<span>Pause Stream</span>
+</button>
+<button class="flex items-center justify-center gap-1.5 px-space-sm py-2 rounded-xl bg-slate-50/90 hover:bg-slate-100 text-slate-800 sf-title-sm text-xs font-semibold border border-black/[0.04] apple-spring apple-press" id="force-snapshot-btn" type="button">
+<span class="material-symbols-outlined text-[17px] text-apple-blue">camera</span>
+<span>Force Snapshot</span>
+</button>
+</div>
+<button class="w-full flex items-center justify-center gap-1.5 px-space-sm py-2 rounded-xl bg-rose-50 hover:bg-rose-100/80 text-apple-red sf-title-sm text-xs font-semibold border border-rose-200/60 apple-spring apple-press mt-0.5" id="revoke-tunnel-btn" type="button">
+<span class="material-symbols-outlined text-[17px]">key_off</span>
+<span>Revoke Tunnel Access</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Client-Side Micro-Interactions Script -->
+<script>
+    (function() {
+      // Toggle Responsive Device Viewports
+      const devDesktop = document.getElementById('device-desktop');
+      const devMobile = document.getElementById('device-mobile');
+      const stage = document.getElementById('viewport-stage');
+      const zoomText = document.getElementById('zoom-level');
+      let currentZoom = 100;
+
+      if (devDesktop && devMobile && stage) {
+        devDesktop.addEventListener('click', () => {
+          stage.classList.remove('max-w-sm', 'mx-auto');
+          devDesktop.classList.add('bg-white', 'text-apple-blue', 'shadow-sm');
+          devDesktop.classList.remove('text-outline');
+          devMobile.classList.remove('bg-white', 'text-apple-blue', 'shadow-sm');
+          devMobile.classList.add('text-outline');
+        });
+
+        devMobile.addEventListener('click', () => {
+          stage.classList.add('max-w-sm', 'mx-auto');
+          devMobile.classList.add('bg-white', 'text-apple-blue', 'shadow-sm');
+          devMobile.classList.remove('text-outline');
+          devDesktop.classList.remove('bg-white', 'text-apple-blue', 'shadow-sm');
+          devDesktop.classList.add('text-outline');
+        });
+      }
+
+      // Zoom Controls
+      const zoomIn = document.getElementById('zoom-in-btn');
+      const zoomOut = document.getElementById('zoom-out-btn');
+      const simViewport = document.getElementById('app-sim-viewport');
+
+      if (zoomIn && zoomOut && zoomText && simViewport) {
+        zoomIn.addEventListener('click', () => {
+          if (currentZoom < 150) {
+            currentZoom += 10;
+            zoomText.textContent = currentZoom + '%';
+            simViewport.style.transition = 'transform 240ms cubic-bezier(0.32, 0.72, 0, 1)';
+            simViewport.style.transform = `scale(${currentZoom / 100})`;
+            simViewport.style.transformOrigin = 'top center';
+          }
+        });
+
+        zoomOut.addEventListener('click', () => {
+          if (currentZoom > 70) {
+            currentZoom -= 10;
+            zoomText.textContent = currentZoom + '%';
+            simViewport.style.transition = 'transform 240ms cubic-bezier(0.32, 0.72, 0, 1)';
+            simViewport.style.transform = `scale(${currentZoom / 100})`;
+            simViewport.style.transformOrigin = 'top center';
+          }
+        });
+      }
+
+      // Copy Tunnel URL
+      const copyBtn = document.getElementById('copy-url-btn');
+      const urlInput = document.getElementById('tunnel-url-input');
+      if (copyBtn && urlInput) {
+        copyBtn.addEventListener('click', () => {
+          navigator.clipboard.writeText('https://' + urlInput.value);
+          const icon = copyBtn.querySelector('.material-symbols-outlined');
+          if (icon) {
+            icon.textContent = 'check';
+            icon.classList.add('text-apple-green');
+            setTimeout(() => { 
+              icon.textContent = 'content_copy';
+              icon.classList.remove('text-apple-green');
+            }, 1500);
+          }
+        });
+      }
+
+      // Peer Cursor Movement Simulation (Fluid Apple spring transition)
+      const peerCursor = document.getElementById('peer-cursor');
+      if (peerCursor) {
+        const positions = [
+          { x: 190, y: 140 },
+          { x: 420, y: 260 },
+          { x: 280, y: 380 },
+          { x: 160, y: 210 }
+        ];
+        let pIndex = 0;
+        setInterval(() => {
+          pIndex = (pIndex + 1) % positions.length;
+          peerCursor.style.transform = `translate(${positions[pIndex].x}px, ${positions[pIndex].y}px)`;
+        }, 3200);
+      }
+
+      // Pause / Resume Stream Micro-action
+      const pauseBtn = document.getElementById('pause-stream-btn');
+      let isPaused = false;
+      if (pauseBtn) {
+        pauseBtn.addEventListener('click', () => {
+          isPaused = !isPaused;
+          const label = pauseBtn.querySelector('span:not(.material-symbols-outlined)');
+          const icon = pauseBtn.querySelector('.material-symbols-outlined');
+          if (isPaused) {
+            label.textContent = 'Resume Stream';
+            icon.textContent = 'play_arrow';
+            icon.classList.remove('text-apple-blue');
+            icon.classList.add('text-apple-green');
+          } else {
+            label.textContent = 'Pause Stream';
+            icon.textContent = 'pause_circle';
+            icon.classList.remove('text-apple-green');
+            icon.classList.add('text-apple-blue');
+          }
+        });
+      }
+
+      // Clear Logs Micro-action
+      const clearBtn = document.getElementById('clear-logs-btn');
+      const logWindow = document.getElementById('log-window');
+      if (clearBtn && logWindow) {
+        clearBtn.addEventListener('click', () => {
+          logWindow.innerHTML = '<div class="text-slate-400 sf-mono text-[11px] py-2 text-center">[Log buffer flushed by user]</div>';
+        });
+      }
+    })();
+  </script>
+</div></main></div></body></html>

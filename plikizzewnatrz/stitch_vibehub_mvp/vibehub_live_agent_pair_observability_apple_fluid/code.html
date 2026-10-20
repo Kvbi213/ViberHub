@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Geist:wght@100..900&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<style>
+  @layer base {
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: #F8F9FB;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    body {
+      overscroll-behavior: none;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", system-ui, sans-serif;
+    }
+    main > :first-child { margin-top: 0 !important; }
+    main > :last-child { margin-bottom: 0 !important; }
+  }
+  ::-webkit-scrollbar { display: none; }
+
+  /* Apple Fluid Motion Spring Curves & Depth Styles */
+  :root {
+    --apple-spring: cubic-bezier(0.32, 0.72, 0, 1);
+    --apple-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .apple-card {
+    transition: transform 0.28s var(--apple-spring), box-shadow 0.28s var(--apple-spring), border-color 0.28s var(--apple-spring);
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.02);
+  }
+  .apple-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 34px -4px rgba(0, 0, 0, 0.06), 0 2px 6px rgba(0, 0, 0, 0.03);
+  }
+  .apple-card:active {
+    transform: scale(0.992) translateY(0);
+    box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.04);
+  }
+
+  /* Micro-interactive Agent Action Card */
+  .apple-agent-card {
+    transition: transform 0.24s var(--apple-spring), box-shadow 0.24s var(--apple-spring), border-color 0.24s var(--apple-spring), background-color 0.24s var(--apple-spring);
+  }
+  .apple-agent-card:hover {
+    border-color: rgba(0, 113, 227, 0.22);
+    box-shadow: 0 10px 28px -4px rgba(0, 113, 227, 0.08);
+  }
+  .apple-agent-card:active {
+    transform: scale(0.985);
+  }
+
+  .apple-btn {
+    transition: transform 0.2s var(--apple-spring), box-shadow 0.2s var(--apple-spring), background-color 0.2s ease, opacity 0.2s ease;
+  }
+  .apple-btn:hover {
+    transform: scale(1.02);
+  }
+  .apple-btn:active {
+    transform: scale(0.96);
+  }
+
+  /* Apple Translucent Glass Surfaces */
+  .apple-glass {
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+  }
+
+  /* Optical Typography */
+  .apple-display {
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+  }
+  .apple-headline {
+    letter-spacing: -0.018em;
+  }
+  .apple-subtext {
+    letter-spacing: -0.006em;
+  }
+
+  /* Subtle Apple Glow Pulses */
+  @keyframes softPulseGreen {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+      box-shadow: 0 0 0 0 rgba(52, 199, 89, 0.45);
+    }
+    50% {
+      opacity: 0.85;
+      transform: scale(1.08);
+      box-shadow: 0 0 0 6px rgba(52, 199, 89, 0);
+    }
+  }
+
+  @keyframes softPulseOrange {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+      box-shadow: 0 0 0 0 rgba(255, 149, 0, 0.45);
+    }
+    50% {
+      opacity: 0.85;
+      transform: scale(1.08);
+      box-shadow: 0 0 0 6px rgba(255, 149, 0, 0);
+    }
+  }
+
+  .status-pulse-green {
+    animation: softPulseGreen 2.4s var(--apple-spring) infinite;
+  }
+  .status-pulse-orange {
+    animation: softPulseOrange 2s var(--apple-spring) infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, ::before, ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      transform: none !important;
+    }
+  }
+</style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "on-primary": "#ffffff",
+          "surface-variant": "#e3e2e7",
+          "on-surface-variant": "#636366",
+          "secondary-container": "#fef3c7",
+          "inverse-on-surface": "#f1f0f5",
+          "surface-container-lowest": "#ffffff",
+          "primary-fixed-dim": "#abc7ff",
+          "outline": "#8E8E93",
+          "on-surface": "#1C1C1E",
+          "secondary": "#FF9500",
+          "on-error-container": "#93000a",
+          "surface-container-high": "#e9e7ed",
+          "error": "#FF3B30",
+          "on-secondary-container": "#92400e",
+          "on-secondary-fixed-variant": "#00531c",
+          "tertiary-fixed": "#ffdcbf",
+          "on-secondary-fixed": "#002107",
+          "inverse-surface": "#2f3034",
+          "surface-tint": "#0071e3",
+          "surface-bright": "#faf9fe",
+          "primary": "#0071e3",
+          "primary-container": "#0071e3",
+          "tertiary-container": "#e0f2fe",
+          "outline-variant": "#e5e7eb",
+          "secondary-fixed-dim": "#53e16f",
+          "surface-container": "#f4f4f7",
+          "tertiary-fixed-dim": "#ffb874",
+          "on-tertiary-fixed-variant": "#6a3b00",
+          "primary-fixed": "#d7e2ff",
+          "on-error": "#ffffff",
+          "on-primary-container": "#fcfbff",
+          "secondary-fixed": "#72fe88",
+          "inverse-primary": "#abc7ff",
+          "on-tertiary-fixed": "#2d1600",
+          "surface-dim": "#e5e7eb",
+          "surface-container-highest": "#f3f4f6",
+          "on-secondary": "#ffffff",
+          "error-container": "#fee2e2",
+          "on-background": "#1C1C1E",
+          "surface-container-low": "#f9fafb",
+          "tertiary": "#0284c7",
+          "surface": "#F8F9FB",
+          "on-primary-fixed-variant": "#00458f",
+          "on-tertiary-container": "#0369a1",
+          "on-tertiary": "#ffffff",
+          "background": "#F8F9FB",
+          "on-primary-fixed": "#001b3f"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.5rem",
+          "lg": "0.75rem",
+          "xl": "1rem",
+          "2xl": "1.25rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "gutter-desktop": "1.5rem",
+          "gutter": "1rem",
+          "margin": "1.5rem",
+          "space-xs": "0.25rem",
+          "space-sm": "0.5rem",
+          "space-md": "0.75rem",
+          "space-lg": "1.25rem",
+          "space-xl": "2rem"
+        },
+        "fontFamily": {
+          "mono-metric": ["JetBrains Mono", "monospace"],
+          "headline-lg": ["-apple-system", "BlinkMacSystemFont", "SF Pro Display", "Inter", "sans-serif"],
+          "title-sm": ["-apple-system", "BlinkMacSystemFont", "SF Pro Text", "Inter", "sans-serif"],
+          "mono-code": ["JetBrains Mono", "Geist", "monospace"],
+          "display": ["-apple-system", "BlinkMacSystemFont", "SF Pro Display", "Inter", "sans-serif"],
+          "body-dim": ["-apple-system", "BlinkMacSystemFont", "SF Pro Text", "Inter", "sans-serif"],
+          "headline-md": ["-apple-system", "BlinkMacSystemFont", "SF Pro Display", "Inter", "sans-serif"],
+          "mono-status": ["JetBrains Mono", "monospace"],
+          "body-default": ["-apple-system", "BlinkMacSystemFont", "SF Pro Text", "Inter", "sans-serif"]
+        }
+      }
+    }
+  };
+</script></head><body class="bg-[#F8F9FB] text-[#1C1C1E] antialiased selection:bg-blue-100 selection:text-blue-900 relative min-h-screen">
+<!-- Subtle radial ambient background glow & Apple specular gradient -->
+<div class="fixed inset-0 pointer-events-none z-0 bg-[radial-gradient(ellipse_90%_50%_at_50%_0%,rgba(255,255,255,0.95),rgba(244,245,248,0.7))]"></div>
+<!-- Milky Frosted Sidebar with Apple Translucent Material & Specular Edge -->
+<aside class="fixed left-0 top-0 h-full w-64 bg-white/75 apple-glass border-r border-black/[0.06] border-t border-white/80 z-50 flex flex-col justify-between shadow-[0_8px_32px_rgba(0,0,0,0.03),0_1px_2px_rgba(0,0,0,0.02)]"><div class="flex flex-col"><div class="h-14 px-space-lg flex items-center justify-between border-b border-black/[0.05] bg-white/40"><div class="flex items-center gap-space-sm"><span class="w-2.5 h-2.5 rounded-full bg-[#34C759] status-pulse-green"></span><span class="font-mono-code text-[12px] text-[#1C1C1E] uppercase tracking-wider font-semibold">VIBE_CORE</span></div><span class="px-space-xs py-0.5 rounded-md bg-black/[0.04] border border-black/[0.04] font-mono-status text-[10px] font-medium text-[#636366]">v2.4-rt</span></div><div class="px-space-md py-space-sm"><div class="px-space-sm py-space-xs mb-space-xs font-mono-status text-[10px] text-[#8E8E93] uppercase tracking-wider font-semibold">Navigation Engine</div><nav class="flex flex-col gap-1.5"><a aria-current="page" class="apple-btn flex items-center gap-space-sm px-3 py-2 rounded-xl bg-[#0071e3] text-white font-medium shadow-[0_4px_16px_rgba(0,113,227,0.28)] border-t border-white/20" data-path="overview-live-agent-monitor" href="#"><span class="material-symbols-outlined text-[18px]">monitoring</span><span class="font-title-sm text-[13px] apple-subtext">Dashboard</span></a><a class="apple-btn flex items-center gap-space-sm px-3 py-2 rounded-xl text-[#636366] hover:bg-black/[0.04] hover:text-[#1C1C1E] font-medium text-[13px]" data-path="room-collab-live-preview" href="#"><span class="material-symbols-outlined text-[18px]">group_work</span><span class="font-title-sm text-[13px] apple-subtext">Room Collab &amp; Preview</span></a><a class="apple-btn flex items-center gap-space-sm px-3 py-2 rounded-xl text-[#636366] hover:bg-black/[0.04] hover:text-[#1C1C1E] font-medium text-[13px]" data-path="code-activity-git-diffs" href="#"><span class="material-symbols-outlined text-[18px]">difference</span><span class="font-title-sm text-[13px] apple-subtext">Code &amp; Git Diffs</span></a><a class="apple-btn flex items-center gap-space-sm px-3 py-2 rounded-xl text-[#636366] hover:bg-black/[0.04] hover:text-[#1C1C1E] font-medium text-[13px]" data-path="bridge-devices" href="#"><span class="material-symbols-outlined text-[18px]">developer_board</span><span class="font-title-sm text-[13px] apple-subtext">Bridge &amp; Devices</span></a><a class="apple-btn flex items-center gap-space-sm px-3 py-2 rounded-xl text-[#636366] hover:bg-black/[0.04] hover:text-[#1C1C1E] font-medium text-[13px]" data-path="privacy-permission-matrix" href="#"><span class="material-symbols-outlined text-[18px]">admin_panel_settings</span><span class="font-title-sm text-[13px] apple-subtext">Privacy &amp; Permissions</span></a></nav></div></div><div class="p-space-md border-t border-black/[0.05] bg-white/40"><div class="rounded-xl bg-white/80 border border-black/[0.05] border-t border-white/90 p-3 flex flex-col gap-space-xs shadow-[0_2px_8px_rgba(0,0,0,0.02)]"><div class="flex items-center justify-between"><span class="font-mono-status text-[11px] text-[#636366] uppercase font-medium">Kernel Daemon</span><span class="font-mono-status text-[11px] text-[#34C759] font-bold">ONLINE</span></div><div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden"><div class="bg-[#34C759] h-full w-[82%] rounded-full shadow-[0_0_6px_rgba(52,199,89,0.4)] transition-all duration-700 ease-out"></div></div><div class="flex items-center justify-between font-mono-status text-[10px] text-[#8E8E93] tracking-[0.01em]"><span>Mem: 412MB</span><span>Loop: 0.8ms</span></div></div></div></aside>
+<!-- Main Wrapper -->
+<div class="pl-64 relative z-10">
+<!-- Frosted Glass Header with Apple Specular Highlights -->
+<header class="fixed top-0 left-64 right-0 h-14 bg-white/80 apple-glass border-b border-black/[0.06] border-t border-white/80 z-40 shadow-[0_4px_24px_rgba(0,0,0,0.02),0_1px_2px_rgba(0,0,0,0.01)]"><div class="h-14 w-full px-space-lg flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-lg"><div class="flex items-center gap-space-sm"><img alt="VibeHub Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuChqzj4qpYyNuxqByuNKi4qjcOvNpEylgk83G8TiStvYs9NZ3M-tgEhlenT0CrAJymobViFWlwEtikLtcGY_q9jvFZrPCYMZF-PRTfwVIXDZm09HejFNeJlsjGy5NRcFcwSii9r_j6CgKLbeRSeb21PWHIxBjzTR6VupfsVFbJX-M5K3onkze-AL6rfe6czU4AZ_9IolT7sDW2GyuCL2V0iJNPFql3RygKMPZ1mIcLmqBLtFh79q_Gw"/><span class="font-headline-md text-base text-[#1C1C1E] font-semibold tracking-[-0.025em]">VibeHub</span></div><div class="apple-btn hidden xl:flex items-center gap-space-xs px-3 py-1 rounded-full bg-slate-100/80 border border-black/[0.05] text-[#3A3A3C] shadow-sm cursor-pointer"><span class="material-symbols-outlined text-[#8E8E93] text-[16px]">corporate_fare</span><span class="font-mono-code text-[12px] font-medium text-[#1C1C1E] tracking-[0.01em]">Team Antigravity / Room #409</span><span class="material-symbols-outlined text-[#8E8E93] text-[16px]">expand_more</span></div></div><div class="flex items-center gap-space-md"><div class="hidden md:flex items-center gap-space-xs px-3 py-1 rounded-full bg-emerald-50/80 border border-emerald-200/60 shadow-sm"><span class="w-2 h-2 rounded-full bg-[#34C759] status-pulse-green"></span><span class="font-mono-status text-[11px] text-emerald-800 font-semibold tracking-wide">Bridge: Connected (macOS M3 Max - 12ms)</span></div><div class="hidden lg:flex items-center gap-1 font-mono-status text-[11px] tracking-[0.01em]"><span class="px-2 py-0.5 rounded-md bg-blue-50 text-[#0071e3] border border-blue-100 font-bold">[L1:SOCK]</span><span class="px-2 py-0.5 rounded-md bg-sky-50 text-sky-700 border border-sky-100 font-bold">[L2:DIFF]</span><span class="px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 border border-amber-100 font-bold">[L3:PROC]</span><span class="px-2 py-0.5 rounded-md bg-slate-100 text-[#8E8E93] border border-slate-200/60 font-bold">[L4:HOOK]</span></div><div class="flex items-center gap-space-xs"><button class="apple-btn hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/90 border border-black/[0.08] hover:bg-slate-50 text-[#1C1C1E] font-medium text-[13px] shadow-sm" type="button"><span class="material-symbols-outlined text-[16px] text-[#0071e3]">sensors</span>Pair Bridge</button><button class="apple-btn hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0071e3] text-white hover:bg-blue-600 font-medium text-[13px] shadow-[0_3px_12px_rgba(0,113,227,0.28)] border-t border-white/20" type="button"><span class="material-symbols-outlined text-[16px]">person_add</span>Invite Peer</button><button aria-label="Notifications" class="apple-btn p-1.5 rounded-xl text-[#636366] hover:text-[#1C1C1E] hover:bg-black/[0.04] relative" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#34C759] ring-2 ring-white"></span></button><div class="pl-space-xs flex items-center"><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-white shadow-sm transition-transform duration-200 hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdBWfKpuEMp_ecO7IvyuI9UoQr9veHEPrajP3kI8Ak2hh-SIQkOApybpc__m_NgW1sIRAu_SfOC2hatQYZsVRUpaszcEKzET4VpE_bS0QE7A3iBRwAHc-6yaSKlzZTstwETPjMGz3x8Cu8Y7X9dRCJt-R5XYGi5qAnQjdw7eYXxRKqiN4KxEtWbN2TQYoVr8OOcnFVpz0YkeovSnhf4JMvcTY1ptovF4ALeSTCkp5eKgzjphCTEkQq"/></div></div></div></div></header>
+<main class="relative pt-14 w-full"><div class="flex flex-col w-full">
+<!-- Command Strip / Session Banner -->
+<div class="w-full bg-white/70 apple-glass border-b border-black/[0.05] border-t border-white/80 px-gutter-desktop py-space-sm flex flex-wrap items-center justify-between gap-space-md shadow-[0_4px_20px_rgb(0,0,0,0.02)]">
+<div class="flex items-center gap-space-md flex-wrap">
+<div class="flex items-center gap-space-xs px-2.5 py-1 rounded-full bg-emerald-50/90 border border-emerald-200/60 shadow-xs">
+<span class="w-2 h-2 rounded-full bg-[#34C759] status-pulse-green"></span>
+<span class="font-mono-status text-[11px] text-emerald-800 uppercase font-bold tracking-wider">SECURE MESH</span>
+</div>
+<div class="h-3 w-px bg-slate-200"></div>
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px] text-[#0071e3]">hub</span>
+<span class="font-title-sm text-[13px] text-[#1C1C1E] font-semibold apple-subtext">Room: Antigravity Lab</span>
+<span class="px-2 py-0.5 rounded-full bg-slate-100 border border-black/[0.05] font-mono-status text-[11px] text-[#636366] font-medium">2 Devs Online</span>
+<span class="px-2 py-0.5 rounded-full bg-blue-50 text-[#0071e3] border border-blue-100 font-mono-status text-[11px] font-semibold">2 Agents Active</span>
+</div>
+</div>
+<!-- Quick Action / Pair Bridge CLI Ribbon -->
+<div class="flex items-center gap-space-sm bg-slate-50/90 border border-black/[0.06] border-t border-white/90 px-space-md py-1 rounded-xl shadow-xs max-w-full overflow-hidden">
+<span class="material-symbols-outlined text-[15px] text-[#0071e3]">terminal</span>
+<span class="font-mono-code text-[12px] text-[#3A3A3C] truncate tracking-[0.01em]">
+        npx @vibehub/bridge pair --token=<span class="text-[#0071e3] font-semibold">vh_live_9f8a20d4...</span>
+</span>
+<button class="apple-btn flex items-center gap-1 bg-white hover:bg-slate-50 text-[#1C1C1E] border border-black/[0.08] border-t border-white/90 px-2.5 py-1 rounded-lg font-mono-status text-[11px] font-semibold shadow-xs ml-space-xs" id="copy-btn" onclick="navigator.clipboard.writeText('npx @vibehub/bridge pair --token=vh_live_9f8a20d4c82e'); this.innerHTML='&lt;span class=\'material-symbols-outlined text-[14px] text-emerald-600\'&gt;check&lt;/span&gt;&lt;span class=\'font-mono-status text-emerald-600\'&gt;COPIED&lt;/span&gt;';">
+<span class="material-symbols-outlined text-[14px]">content_copy</span>
+<span>COPY</span>
+</button>
+</div>
+</div>
+<!-- Telemetry Barometer / Strip with Apple Physical Depth -->
+<div class="w-full px-gutter-desktop py-space-sm grid grid-cols-2 lg:grid-cols-4 gap-space-md">
+<div class="apple-card flex items-center gap-space-md bg-white/75 apple-glass border border-white/80 border-black/[0.05] p-3.5 rounded-2xl">
+<div class="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-[#0071e3] shadow-xs">
+<span class="material-symbols-outlined text-[20px]">dynamic_feed</span>
+</div>
+<div class="flex flex-col">
+<span class="font-mono-status text-[11px] text-[#8E8E93] uppercase tracking-wider font-semibold">Events Ingested (Today)</span>
+<div class="flex items-baseline gap-space-xs">
+<span class="font-mono-metric text-[18px] text-[#1C1C1E] font-semibold apple-display">1,482</span>
+<span class="font-mono-status text-[11px] text-[#34C759] font-bold">+12/sec</span>
+</div>
+</div>
+</div>
+<div class="apple-card flex items-center gap-space-md bg-white/75 apple-glass border border-white/80 border-black/[0.05] p-3.5 rounded-2xl">
+<div class="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-[#34C759] shadow-xs">
+<span class="material-symbols-outlined text-[20px]">router</span>
+</div>
+<div class="flex flex-col">
+<span class="font-mono-status text-[11px] text-[#8E8E93] uppercase tracking-wider font-semibold">Active Bridges</span>
+<div class="flex items-baseline gap-space-xs">
+<span class="font-mono-metric text-[18px] text-[#34C759] font-semibold apple-display">2 / 2</span>
+<span class="font-mono-status text-[10px] text-emerald-800 px-1.5 py-0.5 rounded-full bg-emerald-50 font-bold border border-emerald-200/60">100% HEALTHY</span>
+</div>
+</div>
+</div>
+<div class="apple-card flex items-center gap-space-md bg-white/75 apple-glass border border-white/80 border-black/[0.05] p-3.5 rounded-2xl">
+<div class="w-10 h-10 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-[#FF9500] shadow-xs">
+<span class="material-symbols-outlined text-[20px]">speed</span>
+</div>
+<div class="flex flex-col">
+<span class="font-mono-status text-[11px] text-[#8E8E93] uppercase tracking-wider font-semibold">Drop Rate &amp; Schema</span>
+<div class="flex items-baseline gap-space-xs">
+<span class="font-mono-metric text-[18px] text-[#1C1C1E] font-semibold apple-display">0.00%</span>
+<span class="font-mono-status text-[10px] text-amber-800 px-1.5 py-0.5 rounded-full bg-amber-50 border border-amber-200/60 font-bold">SCHEMA: v1.0.4</span>
+</div>
+</div>
+</div>
+<div class="apple-card flex items-center gap-space-md bg-white/75 apple-glass border border-white/80 border-black/[0.05] p-3.5 rounded-2xl">
+<div class="w-10 h-10 rounded-xl bg-sky-50 border border-sky-100 flex items-center justify-center text-sky-600 shadow-xs">
+<svg class="w-5 h-5 text-sky-600" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+</svg>
+</div>
+<div class="flex flex-col">
+<span class="font-mono-status text-[11px] text-[#8E8E93] uppercase tracking-wider font-semibold">Telemetry Latency</span>
+<div class="flex items-baseline gap-space-xs">
+<span class="font-mono-metric text-[18px] text-sky-700 font-semibold apple-display">14ms</span>
+<span class="font-mono-status text-[11px] text-[#8E8E93]">P99: 22ms</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Dual Split Observability Core: Developer 1 vs Developer 2 -->
+<div class="w-full px-gutter-desktop py-space-md flex flex-col gap-space-lg">
+<div class="grid grid-cols-1 xl:grid-cols-2 gap-space-lg items-start">
+<!-- DEVELOPER 1 COLUMN: Ty & Antigravity Agent -->
+<div class="apple-card flex flex-col gap-space-sm bg-white/80 apple-glass p-space-lg rounded-2xl border border-black/[0.06] border-t border-white/90 shadow-[0_8px_32px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] relative overflow-hidden">
+<!-- Dev Identity Header -->
+<div class="flex items-center justify-between gap-space-sm bg-slate-50/70 border border-black/[0.04] border-t border-white/90 p-3 rounded-xl">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="relative flex-shrink-0">
+<img class="w-11 h-11 rounded-full object-cover ring-2 ring-white shadow-sm transition-transform duration-300 hover:scale-105" data-alt="Cyberpunk stylized modern developer avatar photograph with subtle green holographic rim light, dark studio portrait, intense focused expression, high contrast studio lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8773YpK97KyUtsEgIpcFHWL4tE3leo59aFmWMdEazZynprwHNGMoZX2c-GSv0dxcpxzjMVi0NWTA0GPjFmnhKBrmuLiQRIyKSNbcc7XKxJ3cnyCC29nFGHJu9z9YI38ZB-ZrQ0S91cLjspbx3ERlwuf5PCarr2pab_30mQzMdvO9O3nGob45QczWNjG1huV482OLwswucklN2VRqWL-GSEZe73nXj8qw0G8MQP6ZbpeDjMVbLCKYy"/>
+<span class="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-[#34C759] ring-2 ring-white status-pulse-green"></span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-space-xs">
+<span class="font-title-sm text-[15px] text-[#1C1C1E] font-bold truncate apple-headline">Ty</span>
+<span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/60 font-mono-status text-[10px] font-bold">DEV_01</span>
+</div>
+<span class="font-body-dim text-[12px] text-[#636366] truncate font-medium apple-subtext">Staff Distributed Systems Architect</span>
+</div>
+</div>
+<!-- Machine & Bridge Telemetry -->
+<div class="flex flex-col items-end gap-0.5 font-mono-status text-[11px] text-[#8E8E93] flex-shrink-0">
+<div class="flex items-center gap-1 text-[#1C1C1E] font-medium">
+<span class="material-symbols-outlined text-[14px] text-[#0071e3]">laptop_mac</span>
+<span>MacBook Pro M3 Max</span>
+</div>
+<div class="flex items-center gap-1 text-[10px] tracking-[0.01em]">
+<span>Bridge v0.1.4</span>
+<span class="text-slate-300">•</span>
+<span class="text-emerald-700 font-semibold">Ping 14ms</span>
+<span class="text-slate-300">•</span>
+<span>Heartbeat &lt; 2s</span>
+</div>
+</div>
+</div>
+<!-- Active Agent Card: Google Antigravity CLI (Interactive with spring physics) -->
+<div class="apple-agent-card bg-slate-50/80 border border-black/[0.04] border-t border-white/90 p-space-md rounded-xl flex flex-col gap-space-sm cursor-pointer">
+<div class="flex items-center justify-between gap-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[18px] text-[#0071e3]">smart_toy</span>
+<span class="font-mono-code text-[13px] text-[#1C1C1E] font-semibold tracking-[0.01em]">Google Antigravity CLI</span>
+<span class="px-2 py-0.5 rounded-full bg-blue-50 text-[#0071e3] border border-blue-100 font-mono-status text-[10px] font-semibold">gemini-2.5-pro</span>
+</div>
+<!-- Status Badge: WORKING (Apple Green Soft Pulsing) -->
+<div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/60 shadow-xs">
+<span class="w-2 h-2 rounded-full bg-[#34C759] status-pulse-green"></span>
+<span class="font-mono-status text-[10px] font-bold uppercase tracking-wider">WORKING</span>
+</div>
+</div>
+<!-- Current Action Trace -->
+<div class="bg-white/95 border border-black/[0.05] border-t border-white p-3 rounded-xl flex flex-col gap-1 shadow-xs">
+<div class="flex items-center justify-between font-mono-status text-[10px] text-[#8E8E93] font-semibold tracking-wider uppercase">
+<span>ACTIVE INTENT / TASK</span>
+<span class="text-[#0071e3] font-semibold">EXECUTION STEP 4 / 7</span>
+</div>
+<p class="font-mono-code text-[12px] text-[#3A3A3C] font-medium leading-relaxed tracking-[0.01em]">
+              Refactoring Firestore Security Rules &amp; event batch validator across microservices
+            </p>
+</div>
+<!-- Observability Levels & Session Metrics -->
+<div class="flex flex-wrap items-center justify-between gap-space-xs pt-1">
+<div class="flex items-center gap-1.5">
+<span class="px-2 py-0.5 rounded-md bg-blue-50 text-[#0071e3] border border-blue-100 font-mono-status text-[10px] font-bold tracking-[0.01em]">[L2:AGENT &amp; TOOLS]</span>
+<span class="px-2 py-0.5 rounded-md bg-slate-100 text-[#636366] border border-slate-200/60 font-mono-status text-[10px] font-bold tracking-[0.01em]">[L1:GIT &amp; FILES]</span>
+</div>
+<div class="flex items-center gap-space-md font-mono-status text-[11px] tracking-[0.01em]">
+<span class="text-[#8E8E93]">Duration: <strong class="text-[#1C1C1E] font-mono-code">42m 18s</strong></span>
+<span class="text-[#8E8E93]">Confidence: <strong class="text-emerald-700 font-mono-code font-bold">98%</strong></span>
+</div>
+</div>
+<!-- Sub-Execution Micro Gauge -->
+<div class="w-full bg-slate-200/70 h-1.5 rounded-full overflow-hidden mt-1">
+<div class="bg-[#34C759] h-full w-[88%] rounded-full shadow-[0_0_6px_rgba(52,199,89,0.4)] transition-all duration-500 ease-out"></div>
+</div>
+</div>
+<!-- Dev 1 Local Active File & Terminal Tail -->
+<div class="bg-slate-50/80 border border-black/[0.04] border-t border-white/90 p-3 rounded-xl flex flex-col gap-space-xs">
+<div class="flex items-center justify-between font-mono-status text-[11px] text-[#8E8E93]">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px] text-[#0071e3]">code</span>
+<span class="text-[#1C1C1E] font-mono-code font-medium">firestore.rules</span>
+</div>
+<span class="text-emerald-700 font-bold">+48 -12 LOC</span>
+</div>
+<div class="bg-white/95 border border-black/[0.05] border-t border-white p-3 rounded-xl font-mono-code text-[11px] text-[#3A3A3C] overflow-x-auto space-y-0.5 shadow-xs">
+<div class="text-emerald-700 font-medium"><span class="text-[#8E8E93] select-none pr-2">104</span>+ match /databases/{database}/documents/events/{eventId} {</div>
+<div class="text-emerald-700 font-medium"><span class="text-[#8E8E93] select-none pr-2">105</span>+   allow create: if request.auth != null &amp;&amp; request.resource.data.version == "v1";</div>
+<div class="text-[#FF3B30] font-medium"><span class="text-[#8E8E93] select-none pr-2">106</span>-   allow write: if request.auth != null;</div>
+<div class="text-[#3A3A3C]"><span class="text-[#8E8E93] select-none pr-2">107</span>    allow read: if request.auth != null;</div>
+</div>
+</div>
+</div>
+<!-- DEVELOPER 2 COLUMN: Ziomek & Claude Code Agent -->
+<div class="apple-card flex flex-col gap-space-sm bg-white/80 apple-glass p-space-lg rounded-2xl border border-black/[0.06] border-t border-white/90 shadow-[0_8px_32px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] relative overflow-hidden">
+<!-- Dev Identity Header -->
+<div class="flex items-center justify-between gap-space-sm bg-slate-50/70 border border-black/[0.04] border-t border-white/90 p-3 rounded-xl">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="relative flex-shrink-0">
+<img class="w-11 h-11 rounded-full object-cover ring-2 ring-white shadow-sm transition-transform duration-300 hover:scale-105" data-alt="Portrait photo of a young modern programmer with headphones around neck, dark terminal ambient reflection on glasses, purple cyberpunk tone, minimalist tech workspace." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKYPqT4ZQwFKhH6SiBBJn9Pn3fPf0bmQFsvo8gn1aJY4zLEICzOqViDwlMLUgCbjtgSjoTHhbwqO4HyueLkOIvKEhNx4Vctv7g-m9eGHqt_gbRImP_dkWOmscKdPdZI-acw31ZVb2ix2NsVtIFaRB_aVrSit2_r_Aqv6FW0VsBWMzWKiMV9V6AsskRzl9U5RPHG-ILyfQwLSMrRau589mugxNhZg3oNR8u2gVKK8iEJkG38inxbfFG"/>
+<span class="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-[#FF9500] ring-2 ring-white status-pulse-orange"></span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-space-xs">
+<span class="font-title-sm text-[15px] text-[#1C1C1E] font-bold truncate apple-headline">Ziomek</span>
+<span class="px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200/60 font-mono-status text-[10px] font-bold">DEV_02</span>
+</div>
+<span class="font-body-dim text-[12px] text-[#636366] truncate font-medium apple-subtext">Senior Protocol Engineer</span>
+</div>
+</div>
+<!-- Machine & Bridge Telemetry -->
+<div class="flex flex-col items-end gap-0.5 font-mono-status text-[11px] text-[#8E8E93] flex-shrink-0">
+<div class="flex items-center gap-1 text-[#1C1C1E] font-medium">
+<span class="material-symbols-outlined text-[14px] text-amber-600">computer</span>
+<span>Linux x86_64 Arch Kernel</span>
+</div>
+<div class="flex items-center gap-1 text-[10px] tracking-[0.01em]">
+<span>Bridge v0.1.4</span>
+<span class="text-slate-300">•</span>
+<span class="text-amber-700 font-semibold">Ping 18ms</span>
+<span class="text-slate-300">•</span>
+<span>Heartbeat &lt; 1s</span>
+</div>
+</div>
+</div>
+<!-- Active Agent Card: Claude Code (Interactive with spring physics) -->
+<div class="apple-agent-card bg-slate-50/80 border border-black/[0.04] border-t border-white/90 p-space-md rounded-xl flex flex-col gap-space-sm cursor-pointer">
+<div class="flex items-center justify-between gap-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[18px] text-[#FF9500]">psychology</span>
+<span class="font-mono-code text-[13px] text-[#1C1C1E] font-semibold tracking-[0.01em]">Claude Code</span>
+<span class="px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200/60 font-mono-status text-[10px] font-semibold">claude-3-7-sonnet</span>
+</div>
+<!-- Status Badge: WAITING PROMPT APPROVAL (Apple Orange Soft Pulsing) -->
+<div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 text-amber-800 border border-amber-200/70 shadow-xs">
+<span class="w-2 h-2 rounded-full bg-[#FF9500] status-pulse-orange"></span>
+<span class="font-mono-status text-[10px] font-bold uppercase tracking-wider">WAITING PROMPT APPROVAL</span>
+</div>
+</div>
+<!-- Current Action Trace -->
+<div class="bg-white/95 border border-black/[0.05] border-t border-white p-3 rounded-xl flex flex-col gap-1 shadow-xs">
+<div class="flex items-center justify-between font-mono-status text-[10px] text-[#8E8E93] font-semibold tracking-wider uppercase">
+<span>ACTIVE INTENT / TASK</span>
+<span class="text-amber-700 font-semibold">HALTED • REQUIRE USER OK</span>
+</div>
+<p class="font-mono-code text-[12px] text-[#3A3A3C] font-medium leading-relaxed tracking-[0.01em]">
+              Awaiting permission to run <code class="px-1.5 py-0.5 rounded-md bg-slate-100 text-[#1C1C1E] border border-black/[0.05]">pnpm test:contracts</code> against local Hardhat node
+            </p>
+</div>
+<!-- Observability Levels & Capabilities -->
+<div class="flex flex-wrap items-center justify-between gap-space-xs pt-1">
+<div class="flex items-center gap-1.5">
+<span class="px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200/60 font-mono-status text-[10px] font-bold tracking-[0.01em]">[L2:HOOKS]</span>
+<span class="px-2 py-0.5 rounded-md bg-slate-100 text-[#636366] border border-slate-200/60 font-mono-status text-[10px] font-bold tracking-[0.01em]">[HOT_RELOAD]</span>
+</div>
+<div class="flex items-center gap-space-xs font-mono-status text-[10px] text-[#8E8E93]">
+<span>Capabilities:</span>
+<span class="text-[#3A3A3C] font-medium">status_changed</span>
+<span>•</span>
+<span class="text-[#3A3A3C] font-medium">tool.started</span>
+<span>•</span>
+<span class="text-[#3A3A3C] font-medium">tool.completed</span>
+</div>
+</div>
+<!-- Sub-Execution Micro Indicator -->
+<div class="w-full bg-slate-200/70 h-1.5 rounded-full overflow-hidden mt-1">
+<div class="bg-[#FF9500] h-full w-[64%] rounded-full shadow-[0_0_6px_rgba(255,149,0,0.4)] transition-all duration-500 ease-out"></div>
+</div>
+</div>
+<!-- Dev 2 CLI Tool Intent & Security Inspection Box -->
+<div class="bg-slate-50/80 border border-black/[0.04] border-t border-white/90 p-3 rounded-xl flex flex-col gap-space-xs">
+<div class="flex items-center justify-between font-mono-status text-[11px] text-[#8E8E93]">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px] text-amber-600">security</span>
+<span class="text-[#1C1C1E] font-mono-code font-semibold">Pending Tool Invocation: Bash</span>
+</div>
+<span class="text-amber-800 font-semibold px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200/50 font-mono-status text-[10px]">AWAITING STDIN</span>
+</div>
+<div class="bg-white/95 border border-black/[0.05] border-t border-white p-2.5 rounded-xl flex items-center justify-between gap-space-sm shadow-xs">
+<code class="font-mono-code text-[11px] text-[#3A3A3C] truncate font-medium tracking-[0.01em]">
+              $ cd packages/contracts &amp;&amp; pnpm test:contracts --network=localhost
+            </code>
+<div class="flex items-center gap-1.5 flex-shrink-0">
+<button class="apple-btn bg-[#34C759] text-white px-3 py-1 rounded-lg font-mono-status text-[11px] font-semibold hover:bg-emerald-600 shadow-sm border-t border-white/30">
+                APPROVE [Y]
+              </button>
+<button class="apple-btn bg-slate-100 hover:bg-rose-50 text-[#636366] hover:text-[#FF3B30] border border-black/[0.06] border-t border-white/80 px-3 py-1 rounded-lg font-mono-status text-[11px] font-semibold shadow-xs">
+                REJECT [N]
+              </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Real-time Stream of Canonical Events (Firestore feed) -->
+<div class="apple-card w-full bg-white/80 apple-glass rounded-2xl border border-black/[0.06] border-t border-white/90 shadow-[0_20px_50px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] overflow-hidden flex flex-col mb-10">
+<!-- Feed Header & Filter Bar -->
+<div class="p-space-lg bg-slate-50/70 border-b border-black/[0.05] border-t border-white/90 flex flex-wrap items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-[#34C759] status-pulse-green"></span>
+<span class="font-headline-md text-base text-[#1C1C1E] font-bold tracking-tight apple-headline">Canonical Event Stream</span>
+</div>
+<span class="px-2.5 py-0.5 rounded-full bg-white border border-black/[0.06] border-t border-white font-mono-status text-[10px] text-[#636366] font-semibold shadow-xs">LIVE FIRESTORE PIPE</span>
+</div>
+<!-- Filter Controls -->
+<div class="flex items-center gap-space-xs flex-wrap">
+<div class="apple-btn flex items-center bg-white border border-black/[0.08] border-t border-white px-3 py-1.5 rounded-xl shadow-xs">
+<span class="material-symbols-outlined text-[16px] text-[#8E8E93] mr-1.5">filter_alt</span>
+<select class="bg-transparent text-[#1C1C1E] font-mono-code text-[12px] font-medium focus:outline-none cursor-pointer" id="event-type-filter">
+<option value="all">All Events (Type: *)</option>
+<option value="agent.status_changed">agent.status_changed</option>
+<option value="tool.started">tool.started</option>
+<option value="file.changed">file.changed</option>
+<option value="git.commit_created">git.commit_created</option>
+</select>
+</div>
+<div class="apple-btn flex items-center bg-white border border-black/[0.08] border-t border-white px-3 py-1.5 rounded-xl shadow-xs">
+<span class="material-symbols-outlined text-[16px] text-[#8E8E93] mr-1.5">person</span>
+<select class="bg-transparent text-[#1C1C1E] font-mono-code text-[12px] font-medium focus:outline-none cursor-pointer" id="dev-filter">
+<option value="all">Dev: Ty &amp; Ziomek</option>
+<option value="ty">Dev: Ty (Antigravity)</option>
+<option value="ziomek">Dev: Ziomek (Claude)</option>
+</select>
+</div>
+<button class="apple-btn px-3 py-1.5 rounded-xl bg-white hover:bg-slate-50 border border-black/[0.08] border-t border-white text-[#636366] hover:text-[#1C1C1E] font-mono-status text-[11px] font-semibold shadow-xs" onclick="document.getElementById('event-table-body').innerHTML = '';">
+            CLEAR VIEW
+          </button>
+</div>
+</div>
+<!-- Feed Table -->
+<div class="w-full overflow-x-auto">
+<table class="w-full text-left font-mono-code text-[12px] border-collapse tracking-[0.01em]">
+<thead>
+<tr class="bg-slate-100/60 border-b border-black/[0.05] text-[#8E8E93] font-mono-status text-[10px] uppercase tracking-wider font-semibold">
+<th class="py-2.5 px-space-md">Timestamp</th>
+<th class="py-2.5 px-space-md">Source / Bridge</th>
+<th class="py-2.5 px-space-md">Event Type</th>
+<th class="py-2.5 px-space-md">Payload &amp; Redactions</th>
+<th class="py-2.5 px-space-md text-right">L-Level</th>
+</tr>
+</thead>
+<tbody class="text-[#3A3A3C] divide-y divide-black/[0.04]" id="event-table-body">
+<!-- Event Row 1 -->
+<tr class="hover:bg-slate-50/80 transition-colors">
+<td class="py-3 px-space-md text-[#8E8E93] font-mono-status text-[11px]">12:30:14.802Z</td>
+<td class="py-3 px-space-md">
+<span class="inline-flex items-center gap-1.5 text-emerald-800 font-semibold text-[11px]">
+<span class="w-2 h-2 rounded-full bg-[#34C759]"></span>
+                  Ty / Antigravity
+                </span>
+</td>
+<td class="py-3 px-space-md">
+<span class="px-2 py-0.5 rounded-md bg-blue-50 text-[#0071e3] border border-blue-100 font-mono-status text-[11px] font-bold">tool.started: bash</span>
+</td>
+<td class="py-3 px-space-md font-mono-code">
+<span class="text-[#1C1C1E] font-medium">npx firebase-tools deploy --only firestore:rules</span>
+<span class="px-1.5 py-0.5 rounded bg-slate-100 border border-slate-200 text-[#8E8E93] font-mono-status text-[10px] ml-1">[REDACTED .env ignored]</span>
+</td>
+<td class="py-3 px-space-md text-right font-mono-status text-[#0071e3] font-bold text-[11px]">L2:AGENT</td>
+</tr>
+<!-- Event Row 2 -->
+<tr class="hover:bg-slate-50/80 transition-colors">
+<td class="py-3 px-space-md text-[#8E8E93] font-mono-status text-[11px]">12:30:11.240Z</td>
+<td class="py-3 px-space-md">
+<span class="inline-flex items-center gap-1.5 text-amber-800 font-semibold text-[11px]">
+<span class="w-2 h-2 rounded-full bg-[#FF9500]"></span>
+                  Ziomek / Claude
+                </span>
+</td>
+<td class="py-3 px-space-md">
+<span class="px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200/60 font-mono-status text-[11px] font-bold">agent.status_changed</span>
+</td>
+<td class="py-3 px-space-md font-mono-code text-[#3A3A3C]">
+<span>Transitioned: <span class="text-[#8E8E93]">idle</span> → <span class="text-amber-700 font-semibold">waiting_user_confirmation</span></span>
+</td>
+<td class="py-3 px-space-md text-right font-mono-status text-amber-700 font-bold text-[11px]">L2:HOOKS</td>
+</tr>
+<!-- Event Row 3 -->
+<tr class="hover:bg-slate-50/80 transition-colors">
+<td class="py-3 px-space-md text-[#8E8E93] font-mono-status text-[11px]">12:29:58.119Z</td>
+<td class="py-3 px-space-md">
+<span class="inline-flex items-center gap-1.5 text-amber-800 font-semibold text-[11px]">
+<span class="w-2 h-2 rounded-full bg-[#FF9500]"></span>
+                  Ziomek / Claude
+                </span>
+</td>
+<td class="py-3 px-space-md">
+<span class="px-2 py-0.5 rounded-md bg-sky-50 text-sky-700 border border-sky-100 font-mono-status text-[11px] font-bold">file.changed</span>
+</td>
+<td class="py-3 px-space-md font-mono-code">
+<span class="text-sky-800 font-medium">packages/contracts/src/agent.ts</span>
+<span class="text-[#8E8E93] font-mono-status text-[11px] ml-2">(diff: +14, -3)</span>
+</td>
+<td class="py-3 px-space-md text-right font-mono-status text-sky-700 font-bold text-[11px]">L1:FILES</td>
+</tr>
+<!-- Event Row 4 -->
+<tr class="hover:bg-slate-50/80 transition-colors">
+<td class="py-3 px-space-md text-[#8E8E93] font-mono-status text-[11px]">12:29:34.905Z</td>
+<td class="py-3 px-space-md">
+<span class="inline-flex items-center gap-1.5 text-emerald-800 font-semibold text-[11px]">
+<span class="w-2 h-2 rounded-full bg-[#34C759]"></span>
+                  Ty / Antigravity
+                </span>
+</td>
+<td class="py-3 px-space-md">
+<span class="px-2 py-0.5 rounded-md bg-slate-100 text-[#1C1C1E] border border-black/[0.06] font-mono-status text-[11px] font-bold">git.commit_created</span>
+</td>
+<td class="py-3 px-space-md font-mono-code">
+<span class="text-[#1C1C1E]">hash: <span class="text-[#0071e3] font-semibold">8efc21a</span> • chore(rules): strengthen firestore event schema bounds</span>
+</td>
+<td class="py-3 px-space-md text-right font-mono-status text-[#636366] font-bold text-[11px]">L1:GIT</td>
+</tr>
+<!-- Event Row 5 -->
+<tr class="hover:bg-slate-50/80 transition-colors">
+<td class="py-3 px-space-md text-[#8E8E93] font-mono-status text-[11px]">12:28:50.012Z</td>
+<td class="py-3 px-space-md">
+<span class="inline-flex items-center gap-1.5 text-emerald-800 font-semibold text-[11px]">
+<span class="w-2 h-2 rounded-full bg-[#34C759]"></span>
+                  Ty / Antigravity
+                </span>
+</td>
+<td class="py-3 px-space-md">
+<span class="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200/60 font-mono-status text-[11px] font-bold">tool.completed: validate</span>
+</td>
+<td class="py-3 px-space-md font-mono-code text-[#3A3A3C]">
+<span>Schema verification passed: 18/18 checks executed in 312ms</span>
+</td>
+<td class="py-3 px-space-md text-right font-mono-status text-emerald-700 font-bold text-[11px]">L2:AGENT</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Feed Status Footer -->
+<div class="px-space-md py-space-sm bg-slate-50/70 border-t border-black/[0.05] border-t border-white/80 flex items-center justify-between font-mono-status text-[11px] text-[#8E8E93]">
+<div class="flex items-center gap-space-sm">
+<span class="inline-block w-2 h-2 rounded-full bg-[#34C759] status-pulse-green"></span>
+<span class="text-[#636366] font-medium">Firestore Realtime Pipe: Active (Buffered 0 frames)</span>
+</div>
+<div class="flex items-center gap-space-md tracking-[0.01em]">
+<span>Security Masking: Strict Active (SHA-256 tokens redacted)</span>
+<span class="text-[#1C1C1E] font-semibold">Showing latest 5 of 1,482 events</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+  // Simulated real-time live ingestion
+  (function initLiveStream() {
+    const tableBody = document.getElementById('event-table-body');
+    if (!tableBody) return;
+
+    const mockEvents = [
+      {
+        source: 'Ty / Antigravity',
+        sourceColor: 'text-emerald-800 font-semibold',
+        dotColor: 'bg-[#34C759]',
+        type: 'tool.completed: firestore_rules',
+        typeClass: 'bg-emerald-50 text-emerald-800 border border-emerald-200/60',
+        payload: 'Rules compiled successfully with 0 warnings.',
+        level: 'L2:AGENT',
+        levelClass: 'text-emerald-700 font-bold'
+      },
+      {
+        source: 'Ziomek / Claude',
+        sourceColor: 'text-amber-800 font-semibold',
+        dotColor: 'bg-[#FF9500]',
+        type: 'file.changed',
+        typeClass: 'bg-sky-50 text-sky-700 border border-sky-100',
+        payload: 'packages/contracts/test/VibeToken.t.sol <span class="text-[#8E8E93] text-[11px] ml-2 font-mono-status">(diff: +31, -0)</span>',
+        level: 'L1:FILES',
+        levelClass: 'text-sky-700 font-bold'
+      },
+      {
+        source: 'Ty / Antigravity',
+        sourceColor: 'text-emerald-800 font-semibold',
+        dotColor: 'bg-[#34C759]',
+        type: 'agent.status_changed',
+        typeClass: 'bg-slate-100 text-[#1C1C1E] border border-black/[0.06]',
+        payload: 'Completed step 4/7: validator sync. Starting step 5: integration ping.',
+        level: 'L2:AGENT',
+        levelClass: 'text-[#0071e3] font-bold'
+      }
+    ];
+
+    let eventIdx = 0;
+    setInterval(() => {
+      const now = new Date();
+      const timeStr = now.toISOString().substring(11, 23) + 'Z';
+      const eventData = mockEvents[eventIdx % mockEvents.length];
+      eventIdx++;
+
+      const tr = document.createElement('tr');
+      tr.className = 'hover:bg-slate-50/80 transition-colors';
+      tr.innerHTML = `
+        <td class="py-3 px-space-md text-[#8E8E93] font-mono-status text-[11px]">${timeStr}</td>
+        <td class="py-3 px-space-md">
+          <span class="inline-flex items-center gap-1.5 ${eventData.sourceColor} text-[11px]">
+            <span class="w-2 h-2 rounded-full ${eventData.dotColor}"></span>
+            ${eventData.source}
+          </span>
+        </td>
+        <td class="py-3 px-space-md">
+          <span class="px-2 py-0.5 rounded-md ${eventData.typeClass} font-mono-status text-[11px] font-bold">${eventData.type}</span>
+        </td>
+        <td class="py-3 px-space-md font-mono-code text-[#3A3A3C]">
+          ${eventData.payload}
+        </td>
+        <td class="py-3 px-space-md text-right font-mono-status ${eventData.levelClass} text-[11px]">${eventData.level}</td>
+      `;
+
+      if (tableBody.firstChild) {
+        tableBody.insertBefore(tr, tableBody.firstChild);
+      } else {
+        tableBody.appendChild(tr);
+      }
+
+      // Limit memory list count to 12
+      if (tableBody.children.length > 12) {
+        tableBody.removeChild(tableBody.lastChild);
+      }
+    }, 6000);
+  })();
+</script></main></div></body></html>
