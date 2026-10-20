@@ -247,32 +247,27 @@ async function main() {
   let deviceId = savedConfig?.deviceId;
   let apiUrl = savedConfig?.apiUrl || DEFAULT_API_URL;
 
-  // 1. SCENARIUSZ PIERWSZEGO URUCHOMIENIA — Pełny wywiad telemetryczny
+  // 1. SCENARIUSZ PIERWSZEGO URUCHOMIENIA — Szybkie parowanie (Tylko wybór AI)
   if (isFirstTime) {
     console.log('================================================================');
-    console.log(`[*] INFO :: VibeHub Bridge CLI v0.1.4 — Inicjalizacja Nowej Stacji`);
-    console.log(`[*] INFO :: Rozpoznano maszynę: ${telemetry.hostname} (${telemetry.platform} ${telemetry.arch})`);
-    console.log(`[*] INFO :: CPU: ${telemetry.cpuModel} (${telemetry.cpuCores} rdzeni) | RAM: ${telemetry.memoryUsageFormatted}`);
+    console.log(`[*] INFO :: VibeHub Bridge CLI v0.1.5 — Inicjalizacja Stacji Roboczej`);
+    console.log(`[*] INFO :: Maszyna: ${telemetry.hostname} (${telemetry.platform} ${telemetry.arch})`);
+    console.log(`[*] INFO :: CPU: ${telemetry.cpuModel} (${telemetry.cpuCores} cores) | RAM: ${telemetry.memoryUsageFormatted}`);
     const toolsDetected: string[] = [];
     if (telemetry.installedTools.hasAntigravity) toolsDetected.push('Antigravity');
     if (telemetry.installedTools.hasClaudeCode) toolsDetected.push('Claude Code');
     if (telemetry.installedTools.hasCursor) toolsDetected.push('Cursor');
     if (telemetry.installedTools.hasGit) toolsDetected.push('Git');
-    console.log(`[*] INFO :: Wykryte narzędzia deweloperskie: ${toolsDetected.join(', ') || 'Brak'}`);
+    console.log(`[*] INFO :: Wykryte narzędzia w systemie: ${toolsDetected.join(', ') || 'Brak'}`);
     console.log('================================================================\n');
 
-    operatorName = await ask(rl, '[1/4] Twoje Imię / Pseudonim Operatora', operatorName);
-    operatorRole = await ask(rl, '[2/4] Twoja Rola Inżynierska', operatorRole);
-
-    console.log('\n[3/4] Jakich narzędzi Coding AI używasz w tym środowisku?');
+    console.log('[?] Którego narzędzia Coding AI głównie używasz?');
     console.log('  1) Google Antigravity CLI (agy)');
     console.log('  2) Claude Code (Anthropic)');
-    console.log('  3) Cursor AI / Codex Agent');
-    console.log('  4) Wszystkie 3 jednocześnie (Multi-Agent Mesh) [Rekomendowane]');
+    console.log('  3) Cursor AI Agent');
+    console.log('  4) Wszystkie aktywne / Auto-detect [Domyślnie - Wciśnij ENTER]');
     const aiChoice = await ask(rl, 'Wybór (1-4)', '4');
     chosenAgents = parseAiSelection(aiChoice);
-
-    projectRoot = await ask(rl, '[4/4] Katalog projektu do bezpiecznej obserwacji', safeRoot);
 
     let pairingCode = args[1];
     if (!pairingCode) {
@@ -296,18 +291,18 @@ async function main() {
       process.exit(1);
     }
   } else {
-    // 2. SCENARIUSZ KOLEJNEGO URUCHOMIENIA — Pamięta dane, pyta tylko o Coding AI
+    // 2. SCENARIUSZ KOLEJNEGO URUCHOMIENIA — Pamięta stację, pyta tylko o Coding AI
     console.log('================================================================');
-    console.log(`[*] INFO :: Witaj ponownie, ${operatorName} [${operatorRole}]!`);
+    console.log(`[*] INFO :: Witaj ponownie, ${operatorName}!`);
     console.log(`[*] INFO :: Stacja: ${savedConfig.hostname} (Device ID: ${savedConfig.deviceId})`);
-    console.log(`[*] INFO :: Projekt: ${projectRoot}`);
+    console.log(`[*] INFO :: Monitorowany projekt: ${projectRoot}`);
     console.log('================================================================\n');
 
     console.log('[?] Które narzędzie Coding AI aktywować w tej sesji?');
     console.log('  1) Google Antigravity CLI (agy)');
     console.log('  2) Claude Code');
     console.log('  3) Cursor AI Agent');
-    console.log('  4) Wszystkie 3 jednocześnie (Multi-Agent Mesh) [Ostatnio używane]');
+    console.log('  4) Wszystkie aktywne / Auto-detect [Domyślnie - Wciśnij ENTER]');
     const aiChoice = await ask(rl, 'Wybór (1-4)', '4');
     chosenAgents = parseAiSelection(aiChoice);
 

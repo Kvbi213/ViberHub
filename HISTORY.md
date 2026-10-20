@@ -75,6 +75,28 @@
 
 ---
 
+## v 0.1.6 — 2026-10-20
+- `[+]` **Silnik nasłuchu aktywnych konwersacji CLI w czasie rzeczywistym (`apps/bridge/src/observers/`)**:
+  - `antigravity-observer.ts`: Skanowanie i śledzenie plików `~/.gemini/antigravity/brain/*/.system_generated/logs/transcript.jsonl` przy użyciu wskaźnika bajtowego `byteOffset` (zerowe obciążenie I/O). Ekstrakcja w locie promptów użytkownika, narzędzi (`run_command`, `write_file`, `edit_file`, `read_file`), tokenów wejścia/wyjścia, statusów (`working`/`waiting`) oraz diffów kodu.
+  - `claude-observer.ts`: Nasłuch aktywnych sesji Claude Code CLI z `~/.claude/history.jsonl`.
+  - `conversation-manager.ts`: Orkiestracja wielu równoległych konwersacji i automatyczny push do Cloud Firestore (`rooms/{roomId}/agents/{conversationId}`).
+- `[+]` **Całkowita eliminacja fałszywych botów z Dashboardu (`dashboard/page.tsx`)**:
+  - Usunięto statyczne mocki (współpracownik na Arch Linux, fałszywy Cursor ze sztywnym diffem).
+  - Usunięto nadpisywanie maszyny użytkownika przez IP kontenera Vercela (`169.254.26.133`) w `store.ts`.
+  - Dynamiczny render kart agentów: 1 rzeczywista rozmowa = 1 karta, 3 rozmowy = 3 karty.
+  - W przypadku braku aktywnych sesji: elegancki widok oczekiwania na telemetrię z prawdziwymi parametrami stacji.
+- `[+]` **Radykalne uproszczenie CLI `vibehub pair` (`cli.ts`)**:
+  - Usunięto pytania o nick, rolę inżynierską oraz ścieżkę projektu.
+  - Pozostawiono wyłącznie jedno szybkie pytanie o wybór Coding AI (1–4, domyślnie ENTER).
+- `[+]` **Backend API**:
+  - Dodano endpoint `/api/v1/agents/active` (Vercel Serverless Function & Next.js API route) z zapisem do Cloud Firestore.
+- `[+]` **Wdrożenie produkcyjne**:
+  - Zbudowano i wdrożono zaktualizowany frontend na Firebase Hosting (`https://viberhub-8842f.web.app`).
+  - Przebudowano i zlinkowano globalny pakiet CLI `@vibehub/bridge` (`vibehub`, `vibehub-bridge`).
+- `[*]` Zsynchronizowano dokumentację projektową w Obsidian Vault (`C:\Users\Jakub Lis\Documents\OBSIDIAN\PROJEKTY\VibeHub\`).
+
+---
+
 ## v 0.1.5 — 2026-10-20
 - `[+]` **Eliminacja błędu EPERM w Bridge Daemon**:
   - Wyeliminowano krytyczny błąd blokowania operacji (`EPERM: operation not permitted, watch 'C:\Users\Jakub Lis\Cookies'`) w `apps/bridge/src/collectors/file-watcher.ts`.
@@ -99,4 +121,26 @@
 - `[+]` **Wdrożenie produkcyjne**:
   - Zbudowano i wdrożono frontend statyczny na Firebase Hosting (`https://viberhub-8842f.web.app`).
   - Wdrożono i zlinkowano globalny pakiet CLI `@vibehub/bridge` (`vibehub`, `vibehub-bridge`).
+- `[*]` Zsynchronizowano dokumentację projektową w Obsidian Vault (`C:\Users\Jakub Lis\Documents\OBSIDIAN\PROJEKTY\VibeHub\`).
+
+---
+
+## v 0.1.6 — 2026-10-20
+- `[+]` **Silnik nasłuchu aktywnych konwersacji CLI w czasie rzeczywistym (`apps/bridge/src/observers/`)**:
+  - `antigravity-observer.ts`: Skanowanie i śledzenie plików `~/.gemini/antigravity/brain/*/.system_generated/logs/transcript.jsonl` przy użyciu wskaźnika bajtowego `byteOffset` (zerowe obciążenie I/O). Ekstrakcja w locie promptów użytkownika, narzędzi (`run_command`, `write_file`, `edit_file`, `read_file`), tokenów wejścia/wyjścia, statusów (`working`/`waiting`) oraz diffów kodu.
+  - `claude-observer.ts`: Nasłuch aktywnych sesji Claude Code CLI z `~/.claude/history.jsonl`.
+  - `conversation-manager.ts`: Orkiestracja wielu równoległych konwersacji i automatyczny push do Cloud Firestore (`rooms/{roomId}/agents/{conversationId}`).
+- `[+]` **Całkowita eliminacja fałszywych botów z Dashboardu (`dashboard/page.tsx`)**:
+  - Usunięto statyczne mocki (współpracownik na Arch Linux, fałszywy Cursor ze sztywnym diffem).
+  - Usunięto nadpisywanie maszyny użytkownika przez IP kontenera Vercela (`169.254.26.133`) w `store.ts`.
+  - Dynamiczny render kart agentów: 1 rzeczywista rozmowa = 1 karta, 3 rozmowy = 3 karty.
+  - W przypadku braku aktywnych sesji: elegancki widok oczekiwania na telemetrię z prawdziwymi parametrami stacji.
+- `[+]` **Radykalne uproszczenie CLI `vibehub pair` (`cli.ts`)**:
+  - Usunięto pytania o nick, rolę inżynierską oraz ścieżkę projektu.
+  - Pozostawiono wyłącznie jedno szybkie pytanie o wybór Coding AI (1–4, domyślnie ENTER).
+- `[+]` **Backend API**:
+  - Dodano endpoint `/api/v1/agents/active` (Vercel Serverless Function & Next.js API route) z zapisem do Cloud Firestore.
+- `[+]` **Wdrożenie produkcyjne**:
+  - Zbudowano i wdrożono zaktualizowany frontend na Firebase Hosting (`https://viberhub-8842f.web.app`).
+  - Przebudowano i zlinkowano globalny pakiet CLI `@vibehub/bridge` (`vibehub`, `vibehub-bridge`).
 - `[*]` Zsynchronizowano dokumentację projektową w Obsidian Vault (`C:\Users\Jakub Lis\Documents\OBSIDIAN\PROJEKTY\VibeHub\`).

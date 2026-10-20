@@ -1,6 +1,6 @@
 # 🏛️ VIBEHUB // SYSTEM ARCHITECTURE & COMPONENT BOUNDARIES
 > Dokument nadrzędny architektury systemu VibeHub MVP v0.1.
-> Wersja: v0.1.5 | Data: 2026-10-20 | Status: PRODUKCYJNA (STABLE) | Autorzy: Antigravity & Operator
+> Wersja: v0.1.6 | Data: 2026-10-20 | Status: PRODUKCYJNA (STABLE) | Autorzy: Antigravity & Operator
 
 ---
 

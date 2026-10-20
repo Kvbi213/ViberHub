@@ -10,9 +10,10 @@ export default function DashboardPage() {
     eventsIngestedToday,
     activeBridgesCount,
     bridgeLatency,
+    activeAgents,
+    connectedDevice,
+    isBridgeConnected,
     devA,
-    devB,
-    devC,
     events,
     simulateNextStep,
     syncWithSystemTelemetry,
@@ -63,10 +64,18 @@ export default function DashboardPage() {
               Pokój #{roomId}
             </span>
             <span className="px-2 py-0.5 rounded-full bg-slate-100 border border-black/[0.05] font-mono-status text-[11px] text-[#636366] font-medium">
-              {activeBridgesCount} Stacji Online
+              {activeBridgesCount} {activeBridgesCount === 1 ? 'Stacja Online' : 'Stacji Online'}
             </span>
-            <span className="px-2 py-0.5 rounded-full bg-blue-50 text-[#0071E3] border border-blue-100 font-mono-status text-[11px] font-semibold">
-              3 Agenci W Klastrze
+            <span
+              className={`px-2 py-0.5 rounded-full font-mono-status text-[11px] font-semibold border ${
+                activeAgents.length > 0
+                  ? 'bg-blue-50 text-[#0071E3] border-blue-100'
+                  : 'bg-slate-100 text-[#8E8E93] border-slate-200'
+              }`}
+            >
+              {activeAgents.length > 0
+                ? `${activeAgents.length} ${activeAgents.length === 1 ? 'Aktywna Sesja' : 'Aktywne Sesje'}`
+                : 'Oczekiwanie na agenta'}
             </span>
           </div>
         </div>
@@ -170,405 +179,201 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Dual Split Observability Core */}
+      {/* Dynamic Multi-Conversation Observability Core (ZERO BOTS!) */}
       <div className="w-full px-6 py-2 flex flex-col gap-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-          {/* DEVELOPER 1: Ty & Antigravity Agent */}
-          <div className="apple-card flex flex-col gap-3 bg-white/80 apple-glass p-5 rounded-2xl border border-black/[0.06] border-t border-white/90 shadow-[0_8px_32px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] relative overflow-hidden">
-            {/* Dev Identity Header */}
-            <div className="flex items-center justify-between gap-3 bg-slate-50/70 border border-black/[0.04] border-t border-white/90 p-3 rounded-xl">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="relative flex-shrink-0">
-                  <img
-                    className="w-11 h-11 rounded-full object-cover ring-2 ring-white shadow-sm transition-transform duration-300 hover:scale-105"
-                    src={devA.avatarUrl}
-                    alt={devA.ownerName}
-                  />
-                  <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-[#34C759] ring-2 ring-white status-pulse-green" />
-                </div>
-                <div className="flex flex-col min-w-0">
-                  <div className="flex items-center gap-1.5">
-                    <span className="font-title-sm text-[15px] text-[#1C1C1E] font-bold truncate apple-headline">
-                      {devA.ownerName}
-                    </span>
-                    <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/60 font-mono-status text-[10px] font-bold">
-                      DEV_01
-                    </span>
-                  </div>
-                  <span className="font-body-dim text-[12px] text-[#636366] truncate font-medium apple-subtext">
-                    {devA.ownerRole}
-                  </span>
-                </div>
-              </div>
+        {activeAgents.length > 0 ? (
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 items-start">
+            {activeAgents.map((agent) => {
+              const isAgy = agent.provider === 'antigravity';
+              const isClaude = agent.provider === 'claude-code';
+              const isCursor = agent.provider === 'cursor';
 
-              {/* Machine Telemetry */}
-              <div className="flex flex-col items-end gap-0.5 font-mono-status text-[11px] text-[#8E8E93] flex-shrink-0">
-                <div className="flex items-center gap-1 text-[#1C1C1E] font-medium">
-                  <span className="material-symbols-outlined text-[14px] text-[#0071E3]">laptop_mac</span>
-                  <span>{devA.machine}</span>
+              const icon = isAgy
+                ? 'smart_toy'
+                : isClaude
+                ? 'psychology'
+                : isCursor
+                ? 'auto_fix_high'
+                : 'terminal';
+
+              return (
+                <div
+                  key={agent.id}
+                  className="apple-card flex flex-col gap-3 bg-white/80 apple-glass p-5 rounded-2xl border border-black/[0.06] border-t border-white/90 shadow-[0_8px_32px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] relative overflow-hidden"
+                >
+                  {/* Dev Identity Header */}
+                  <div className="flex items-center justify-between gap-3 bg-slate-50/70 border border-black/[0.04] border-t border-white/90 p-3 rounded-xl">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-10 h-10 rounded-xl bg-white border border-black/[0.06] flex items-center justify-center text-slate-700 shadow-xs shrink-0">
+                        <span className="material-symbols-outlined text-[22px]">{icon}</span>
+                      </div>
+                      <div className="flex flex-col min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-title-sm text-[14px] text-[#1C1C1E] font-bold truncate apple-headline">
+                            {agent.name}
+                          </span>
+                          <span
+                            className={`px-1.5 py-0.5 rounded-full text-[10px] font-mono-status font-bold border ${
+                              isAgy
+                                ? 'bg-emerald-50 text-emerald-800 border-emerald-200/60'
+                                : isClaude
+                                ? 'bg-amber-50 text-amber-800 border-amber-200/60'
+                                : isCursor
+                                ? 'bg-purple-50 text-purple-800 border-purple-200/60'
+                                : 'bg-blue-50 text-blue-800 border-blue-200/60'
+                            }`}
+                          >
+                            LIVE
+                          </span>
+                        </div>
+                        <span className="font-body-dim text-[11px] text-[#636366] truncate font-medium apple-subtext">
+                          {agent.operatorName || connectedDevice?.operator?.name || 'Operator'} • {agent.machine || connectedDevice?.hostname || 'Stacja robocza'}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Machine Telemetry */}
+                    <div className="flex flex-col items-end gap-0.5 font-mono-status text-[11px] text-[#8E8E93] flex-shrink-0">
+                      <div className="flex items-center gap-1 text-[#1C1C1E] font-medium text-[10px]">
+                        <span>{agent.model}</span>
+                      </div>
+                      <div className="flex items-center gap-1 text-[10px] tracking-[0.01em]">
+                        <span className="text-emerald-700 font-semibold">
+                          {agent.lastActiveAt ? new Date(agent.lastActiveAt).toLocaleTimeString() : 'Teraz'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Active Agent Card */}
+                  <div className="apple-agent-card bg-slate-50/80 border border-black/[0.04] border-t border-white/90 p-4 rounded-xl flex flex-col gap-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono-code text-[12px] text-[#1C1C1E] font-semibold tracking-[0.01em]">
+                          {agent.provider.toUpperCase()}
+                        </span>
+                        {agent.currentTool && (
+                          <span className="px-2 py-0.5 rounded-full bg-blue-50 text-[#0071E3] border border-blue-100 font-mono-status text-[10px] font-semibold">
+                            tool: {agent.currentTool}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Status Badge */}
+                      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/60 shadow-xs">
+                        <span className="w-2 h-2 rounded-full bg-[#34C759] status-pulse-green" />
+                        <span className="font-mono-status text-[10px] font-bold uppercase tracking-wider">
+                          {agent.status.toUpperCase()}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Active Intent / Task */}
+                    <div className="bg-white/95 border border-black/[0.05] border-t border-white p-3 rounded-xl flex flex-col gap-1 shadow-xs">
+                      <div className="flex items-center justify-between font-mono-status text-[10px] text-[#8E8E93] font-semibold tracking-wider uppercase">
+                        <span>OSTATNIA AKTYWNOŚĆ / PROMPT</span>
+                        <span className="text-[#0071E3] font-semibold">
+                          {agent.status === 'working' ? 'EXECUTING' : 'IDLE'}
+                        </span>
+                      </div>
+                      <p className="font-mono-code text-[12px] text-[#3A3A3C] font-medium leading-relaxed tracking-[0.01em] line-clamp-3">
+                        {agent.activity}
+                      </p>
+                    </div>
+
+                    {/* Tokens / Stats */}
+                    {agent.tokens && (
+                      <div className="flex items-center justify-between text-[11px] font-mono-code text-[#636366] bg-white/60 p-2 rounded-lg border border-black/[0.04]">
+                        <span>
+                          Tokens: In {agent.tokens.input || 0} / Out {agent.tokens.output || 0}
+                        </span>
+                        {agent.tokens.cacheRead ? (
+                          <span className="text-emerald-700 font-semibold">Cache: {agent.tokens.cacheRead}</span>
+                        ) : null}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Active File & Diff Snippet */}
+                  {agent.activeFile && (
+                    <div className="bg-slate-50/80 border border-black/[0.04] border-t border-white/90 p-3 rounded-xl flex flex-col gap-2">
+                      <div className="flex items-center justify-between font-mono-status text-[11px] text-[#8E8E93]">
+                        <div className="flex items-center gap-1.5">
+                          <span className="material-symbols-outlined text-[14px] text-[#0071E3]">code</span>
+                          <span className="text-[#1C1C1E] font-mono-code font-medium">{agent.activeFile}</span>
+                        </div>
+                        {agent.fileStats && <span className="text-emerald-700 font-bold">{agent.fileStats}</span>}
+                      </div>
+                      {agent.diffSnippet && agent.diffSnippet.length > 0 && (
+                        <div className="bg-white/95 border border-black/[0.05] border-t border-white p-3 rounded-xl font-mono-code text-[11px] text-[#3A3A3C] overflow-x-auto space-y-0.5 shadow-xs">
+                          {agent.diffSnippet.map((line, idx) => (
+                            <div
+                              key={idx}
+                              className={
+                                line.type === '+'
+                                  ? 'text-emerald-700 font-medium'
+                                  : line.type === '-'
+                                  ? 'text-[#FF3B30] font-medium'
+                                  : 'text-[#3A3A3C]'
+                              }
+                            >
+                              <span className="text-[#8E8E93] select-none pr-2">{line.line}</span>
+                              {line.type} {line.text}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
-                <div className="flex items-center gap-1 text-[10px] tracking-[0.01em]">
-                  <span>Bridge v0.1.4</span>
-                  <span className="text-slate-300">•</span>
-                  <span className="text-emerald-700 font-semibold">Ping {devA.ping}ms</span>
-                  <span className="text-slate-300">•</span>
-                  <span>Mem: {devA.memory}</span>
-                </div>
-              </div>
+              );
+            })}
+          </div>
+        ) : (
+          /* Prawdziwy, czysty stan oczekiwania (ZERO FAŁSZYWYCH BOTÓW!) */
+          <div className="apple-card bg-white/80 apple-glass p-8 rounded-2xl border border-black/[0.06] border-t border-white/90 shadow-[0_8px_32px_rgba(0,0,0,0.04)] flex flex-col items-center text-center gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center text-[#0071E3] shadow-xs">
+              <span className="material-symbols-outlined text-[32px]">sensors</span>
             </div>
 
-            {/* Active Agent Card */}
-            <div className="apple-agent-card bg-slate-50/80 border border-black/[0.04] border-t border-white/90 p-4 rounded-xl flex flex-col gap-3">
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-[18px] text-[#0071E3]">smart_toy</span>
-                  <span className="font-mono-code text-[13px] text-[#1C1C1E] font-semibold tracking-[0.01em]">
-                    {devA.name}
-                  </span>
-                  <span className="px-2 py-0.5 rounded-full bg-blue-50 text-[#0071E3] border border-blue-100 font-mono-status text-[10px] font-semibold">
-                    {devA.model}
-                  </span>
-                </div>
-
-                {/* Status Badge */}
-                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/60 shadow-xs">
-                  <span className="w-2 h-2 rounded-full bg-[#34C759] status-pulse-green" />
-                  <span className="font-mono-status text-[10px] font-bold uppercase tracking-wider">
-                    {devA.status.toUpperCase()}
-                  </span>
-                </div>
-              </div>
-
-              {/* Active Intent / Task */}
-              <div className="bg-white/95 border border-black/[0.05] border-t border-white p-3 rounded-xl flex flex-col gap-1 shadow-xs">
-                <div className="flex items-center justify-between font-mono-status text-[10px] text-[#8E8E93] font-semibold tracking-wider uppercase">
-                  <span>ACTIVE INTENT / TASK</span>
-                  <span className="text-[#0071E3] font-semibold">{devA.currentStep}</span>
-                </div>
-                <p className="font-mono-code text-[12px] text-[#3A3A3C] font-medium leading-relaxed tracking-[0.01em]">
-                  {devA.activity}
-                </p>
-              </div>
-
-              {/* Observability Chips & Session */}
-              <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
-                <div className="flex items-center gap-1.5">
-                  <span className="px-2 py-0.5 rounded-md bg-blue-50 text-[#0071E3] border border-blue-100 font-mono-status text-[10px] font-bold tracking-[0.01em]">
-                    [L2:AGENT & TOOLS]
-                  </span>
-                  <span className="px-2 py-0.5 rounded-md bg-slate-100 text-[#636366] border border-slate-200/60 font-mono-status text-[10px] font-bold tracking-[0.01em]">
-                    [L1:GIT & FILES]
-                  </span>
-                </div>
-                <div className="flex items-center gap-3 font-mono-status text-[11px] tracking-[0.01em]">
-                  <span className="text-[#8E8E93]">
-                    Duration: <strong className="text-[#1C1C1E] font-mono-code">{devA.duration}</strong>
-                  </span>
-                  <span className="text-[#8E8E93]">
-                    Confidence: <strong className="text-emerald-700 font-mono-code font-bold">{devA.confidence}%</strong>
-                  </span>
-                </div>
-              </div>
-
-              {/* Progress Bar */}
-              <div className="w-full bg-slate-200/70 h-1.5 rounded-full overflow-hidden mt-1">
-                <div className="bg-[#34C759] h-full w-[88%] rounded-full shadow-[0_0_6px_rgba(52,199,89,0.4)] transition-all duration-500 ease-out" />
-              </div>
+            <div className="flex flex-col gap-1 max-w-lg">
+              <h3 className="font-title-sm text-lg font-bold text-[#1C1C1E]">
+                {isBridgeConnected
+                  ? 'Oczekiwanie na aktywną sesję Coding AI'
+                  : 'Brak podłączonej stacji roboczej Bridge'}
+              </h3>
+              <p className="text-xs text-[#636366] leading-relaxed">
+                {isBridgeConnected
+                  ? `Stacja robocza (${connectedDevice?.hostname || 'Lokalny komputer'}) jest połączona i nasłuchuje w tle. Gdy tylko rozpoczniesz pracę w Google Antigravity, Claude Code lub Cursor, karta z promptami, wywoływanymi narzędziami i diffem pojawi się tutaj na żywo.`
+                  : 'Uruchom w swoim terminalu poniższe polecenie, aby sparować ten komputer i włączyć automatyczne strumieniowanie aktywności w parze.'}
+              </p>
             </div>
 
-            {/* Dev 1 Local Active File & Terminal Tail */}
-            <div className="bg-slate-50/80 border border-black/[0.04] border-t border-white/90 p-3 rounded-xl flex flex-col gap-2">
-              <div className="flex items-center justify-between font-mono-status text-[11px] text-[#8E8E93]">
-                <div className="flex items-center gap-1.5">
-                  <span className="material-symbols-outlined text-[14px] text-[#0071E3]">code</span>
-                  <span className="text-[#1C1C1E] font-mono-code font-medium">{devA.activeFile}</span>
-                </div>
-                <span className="text-emerald-700 font-bold">{devA.fileStats}</span>
-              </div>
-              <div className="bg-white/95 border border-black/[0.05] border-t border-white p-3 rounded-xl font-mono-code text-[11px] text-[#3A3A3C] overflow-x-auto space-y-0.5 shadow-xs">
-                {devA.diffSnippet.map((line, idx) => (
-                  <div
-                    key={idx}
-                    className={
-                      line.type === '+'
-                        ? 'text-emerald-700 font-medium'
-                        : line.type === '-'
-                        ? 'text-[#FF3B30] font-medium'
-                        : 'text-[#3A3A3C]'
-                    }
-                  >
-                    <span className="text-[#8E8E93] select-none pr-2">{line.line}</span>
-                    {line.type} {line.text}
-                  </div>
-                ))}
-              </div>
+            {/* Terminal snippet box */}
+            <div className="flex items-center gap-2 bg-slate-900 text-slate-100 px-4 py-2.5 rounded-xl font-mono text-xs shadow-sm mt-1">
+              <span className="text-emerald-400">$</span>
+              <span>vibehub start</span>
+              <span className="text-slate-400">lub</span>
+              <span className="text-sky-300">vibehub pair VH-9428-XK</span>
+            </div>
+
+            <div className="flex items-center gap-3 mt-2">
+              <Link
+                href="/settings"
+                className="apple-btn px-4 py-2 rounded-xl bg-white border border-black/[0.08] hover:bg-slate-50 text-[#1C1C1E] text-xs font-semibold shadow-xs"
+              >
+                Zarządzaj stacjami Bridge
+              </Link>
+              <button
+                onClick={simulateNextStep}
+                className="apple-btn px-4 py-2 rounded-xl bg-[#0071E3] hover:bg-blue-600 text-white text-xs font-semibold shadow-xs flex items-center gap-1.5"
+              >
+                <span className="material-symbols-outlined text-[15px]">play_arrow</span>
+                Wyślij zdarzenie testowe
+              </button>
             </div>
           </div>
-
-          {/* DEVELOPER 2: Ziomek & Claude Code Agent */}
-          <div className="apple-card flex flex-col gap-3 bg-white/80 apple-glass p-5 rounded-2xl border border-black/[0.06] border-t border-white/90 shadow-[0_8px_32px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] relative overflow-hidden">
-            {/* Dev Identity Header */}
-            <div className="flex items-center justify-between gap-3 bg-slate-50/70 border border-black/[0.04] border-t border-white/90 p-3 rounded-xl">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="relative flex-shrink-0">
-                  <img
-                    className="w-11 h-11 rounded-full object-cover ring-2 ring-white shadow-sm transition-transform duration-300 hover:scale-105"
-                    src={devB.avatarUrl}
-                    alt={devB.ownerName}
-                  />
-                  <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-[#FF9500] ring-2 ring-white status-pulse-orange" />
-                </div>
-                <div className="flex flex-col min-w-0">
-                  <div className="flex items-center gap-1.5">
-                    <span className="font-title-sm text-[15px] text-[#1C1C1E] font-bold truncate apple-headline">
-                      {devB.ownerName}
-                    </span>
-                    <span className="px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200/60 font-mono-status text-[10px] font-bold">
-                      DEV_02
-                    </span>
-                  </div>
-                  <span className="font-body-dim text-[12px] text-[#636366] truncate font-medium apple-subtext">
-                    {devB.ownerRole}
-                  </span>
-                </div>
-              </div>
-
-              {/* Machine Telemetry */}
-              <div className="flex flex-col items-end gap-0.5 font-mono-status text-[11px] text-[#8E8E93] flex-shrink-0">
-                <div className="flex items-center gap-1 text-[#1C1C1E] font-medium">
-                  <span className="material-symbols-outlined text-[14px] text-amber-600">terminal</span>
-                  <span>{devB.machine}</span>
-                </div>
-                <div className="flex items-center gap-1 text-[10px] tracking-[0.01em]">
-                  <span>Bridge v0.1.4</span>
-                  <span className="text-slate-300">•</span>
-                  <span className="text-emerald-700 font-semibold">Ping {devB.ping}ms</span>
-                  <span className="text-slate-300">•</span>
-                  <span>Mem: {devB.memory}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Active Agent Card */}
-            <div className="apple-agent-card bg-slate-50/80 border border-black/[0.04] border-t border-white/90 p-4 rounded-xl flex flex-col gap-3">
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-[18px] text-amber-600">psychology</span>
-                  <span className="font-mono-code text-[13px] text-[#1C1C1E] font-semibold tracking-[0.01em]">
-                    {devB.name}
-                  </span>
-                  <span className="px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200/60 font-mono-status text-[10px] font-semibold">
-                    {devB.model}
-                  </span>
-                </div>
-
-                {/* Status Badge */}
-                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 text-amber-800 border border-amber-200/60 shadow-xs">
-                  <span className="w-2 h-2 rounded-full bg-[#FF9500] status-pulse-orange" />
-                  <span className="font-mono-status text-[10px] font-bold uppercase tracking-wider">
-                    {devB.status.toUpperCase()}
-                  </span>
-                </div>
-              </div>
-
-              {/* Active Intent / Task */}
-              <div className="bg-white/95 border border-black/[0.05] border-t border-white p-3 rounded-xl flex flex-col gap-1 shadow-xs">
-                <div className="flex items-center justify-between font-mono-status text-[10px] text-[#8E8E93] font-semibold tracking-wider uppercase">
-                  <span>ACTIVE INTENT / TASK</span>
-                  <span className="text-amber-700 font-semibold">{devB.currentStep}</span>
-                </div>
-                <p className="font-mono-code text-[12px] text-[#3A3A3C] font-medium leading-relaxed tracking-[0.01em]">
-                  {devB.activity}
-                </p>
-              </div>
-
-              {/* Observability Chips & Session */}
-              <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
-                <div className="flex items-center gap-1.5">
-                  <span className="px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200 font-mono-status text-[10px] font-bold tracking-[0.01em]">
-                    [L2:HOOK GATED]
-                  </span>
-                  <span className="px-2 py-0.5 rounded-md bg-slate-100 text-[#636366] border border-slate-200/60 font-mono-status text-[10px] font-bold tracking-[0.01em]">
-                    [L3:CONTEXT SANITIZED]
-                  </span>
-                </div>
-                <div className="flex items-center gap-3 font-mono-status text-[11px] tracking-[0.01em]">
-                  <span className="text-[#8E8E93]">
-                    Duration: <strong className="text-[#1C1C1E] font-mono-code">{devB.duration}</strong>
-                  </span>
-                  <span className="text-[#8E8E93]">
-                    Confidence: <strong className="text-amber-700 font-mono-code font-bold">{devB.confidence}%</strong>
-                  </span>
-                </div>
-              </div>
-
-              {/* Progress Bar */}
-              <div className="w-full bg-slate-200/70 h-1.5 rounded-full overflow-hidden mt-1">
-                <div className="bg-[#FF9500] h-full w-[45%] rounded-full shadow-[0_0_6px_rgba(255,149,0,0.4)] transition-all duration-500 ease-out" />
-              </div>
-            </div>
-
-            {/* Dev 2 Local Active File & Terminal Tail */}
-            <div className="bg-slate-50/80 border border-black/[0.04] border-t border-white/90 p-3 rounded-xl flex flex-col gap-2">
-              <div className="flex items-center justify-between font-mono-status text-[11px] text-[#8E8E93]">
-                <div className="flex items-center gap-1.5">
-                  <span className="material-symbols-outlined text-[14px] text-amber-600">code</span>
-                  <span className="text-[#1C1C1E] font-mono-code font-medium">{devB.activeFile}</span>
-                </div>
-                <span className="text-amber-700 font-bold">{devB.fileStats}</span>
-              </div>
-              <div className="bg-white/95 border border-black/[0.05] border-t border-white p-3 rounded-xl font-mono-code text-[11px] text-[#3A3A3C] overflow-x-auto space-y-0.5 shadow-xs">
-                {devB.diffSnippet.map((line, idx) => (
-                  <div
-                    key={idx}
-                    className={
-                      line.type === '+'
-                        ? 'text-emerald-700 font-medium'
-                        : line.type === '-'
-                        ? 'text-[#FF3B30] font-medium'
-                        : 'text-[#3A3A3C]'
-                    }
-                  >
-                    <span className="text-[#8E8E93] select-none pr-2">{line.line}</span>
-                    {line.type} {line.text}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* DEVELOPER 3: Cursor AI Composer / Agent */}
-          <div className="apple-card flex flex-col gap-3 bg-white/80 apple-glass p-5 rounded-2xl border border-black/[0.06] border-t border-white/90 shadow-[0_8px_32px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] relative overflow-hidden">
-            {/* Dev Identity Header */}
-            <div className="flex items-center justify-between gap-3 bg-slate-50/70 border border-black/[0.04] border-t border-white/90 p-3 rounded-xl">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="relative flex-shrink-0">
-                  <img
-                    className="w-11 h-11 rounded-full object-cover ring-2 ring-white shadow-sm transition-transform duration-300 hover:scale-105"
-                    src={devC.avatarUrl}
-                    alt={devC.ownerName}
-                  />
-                  <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-purple-500 ring-2 ring-white status-pulse-green" />
-                </div>
-                <div className="flex flex-col min-w-0">
-                  <div className="flex items-center gap-1.5">
-                    <span className="font-title-sm text-[15px] text-[#1C1C1E] font-bold truncate apple-headline">
-                      {devC.ownerName}
-                    </span>
-                    <span className="px-2 py-0.5 rounded-full bg-purple-50 text-purple-800 border border-purple-200/60 font-mono-status text-[10px] font-bold">
-                      DEV_03
-                    </span>
-                  </div>
-                  <span className="font-body-dim text-[12px] text-[#636366] truncate font-medium apple-subtext">
-                    {devC.ownerRole}
-                  </span>
-                </div>
-              </div>
-
-              {/* Machine Telemetry */}
-              <div className="flex flex-col items-end gap-0.5 font-mono-status text-[11px] text-[#8E8E93] flex-shrink-0">
-                <div className="flex items-center gap-1 text-[#1C1C1E] font-medium">
-                  <span className="material-symbols-outlined text-[14px] text-purple-600">terminal</span>
-                  <span>{devC.machine}</span>
-                </div>
-                <div className="flex items-center gap-1 text-[10px] tracking-[0.01em]">
-                  <span>Bridge v0.1.4</span>
-                  <span className="text-slate-300">•</span>
-                  <span className="text-purple-700 font-semibold">Ping {devC.ping}ms</span>
-                  <span className="text-slate-300">•</span>
-                  <span>Mem: {devC.memory}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Active Agent Card */}
-            <div className="apple-agent-card bg-slate-50/80 border border-black/[0.04] border-t border-white/90 p-4 rounded-xl flex flex-col gap-3">
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-[18px] text-purple-600">auto_fix_high</span>
-                  <span className="font-mono-code text-[13px] text-[#1C1C1E] font-semibold tracking-[0.01em]">
-                    {devC.name}
-                  </span>
-                  <span className="px-2 py-0.5 rounded-full bg-purple-50 text-purple-800 border border-purple-200/60 font-mono-status text-[10px] font-semibold">
-                    {devC.model}
-                  </span>
-                </div>
-
-                {/* Status Badge */}
-                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-purple-50 text-purple-800 border border-purple-200/60 shadow-xs">
-                  <span className="w-2 h-2 rounded-full bg-purple-500 status-pulse-green" />
-                  <span className="font-mono-status text-[10px] font-bold uppercase tracking-wider">
-                    {devC.status.toUpperCase()}
-                  </span>
-                </div>
-              </div>
-
-              {/* Active Intent / Task */}
-              <div className="bg-white/95 border border-black/[0.05] border-t border-white p-3 rounded-xl flex flex-col gap-1 shadow-xs">
-                <div className="flex items-center justify-between font-mono-status text-[10px] text-[#8E8E93] font-semibold tracking-wider uppercase">
-                  <span>ACTIVE INTENT / TASK</span>
-                  <span className="text-purple-700 font-semibold">{devC.currentStep}</span>
-                </div>
-                <p className="font-mono-code text-[12px] text-[#3A3A3C] font-medium leading-relaxed tracking-[0.01em]">
-                  {devC.activity}
-                </p>
-              </div>
-
-              {/* Observability Chips & Session */}
-              <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
-                <div className="flex items-center gap-1.5">
-                  <span className="px-2 py-0.5 rounded-md bg-purple-50 text-purple-800 border border-purple-200 font-mono-status text-[10px] font-bold tracking-[0.01em]">
-                    [L2:CURSOR HOOK]
-                  </span>
-                  <span className="px-2 py-0.5 rounded-md bg-slate-100 text-[#636366] border border-slate-200/60 font-mono-status text-[10px] font-bold tracking-[0.01em]">
-                    [L3:PARALLEL SESSION]
-                  </span>
-                </div>
-                <div className="flex items-center gap-3 font-mono-status text-[11px] tracking-[0.01em]">
-                  <span className="text-[#8E8E93]">
-                    Duration: <strong className="text-[#1C1C1E] font-mono-code">{devC.duration}</strong>
-                  </span>
-                  <span className="text-[#8E8E93]">
-                    Confidence: <strong className="text-purple-700 font-mono-code font-bold">{devC.confidence}%</strong>
-                  </span>
-                </div>
-              </div>
-
-              {/* Progress Bar */}
-              <div className="w-full bg-slate-200/70 h-1.5 rounded-full overflow-hidden mt-1">
-                <div className="bg-purple-600 h-full w-[65%] rounded-full shadow-[0_0_6px_rgba(147,51,234,0.4)] transition-all duration-500 ease-out" />
-              </div>
-            </div>
-
-            {/* Dev 3 Local Active File & Terminal Tail */}
-            <div className="bg-slate-50/80 border border-black/[0.04] border-t border-white/90 p-3 rounded-xl flex flex-col gap-2">
-              <div className="flex items-center justify-between font-mono-status text-[11px] text-[#8E8E93]">
-                <div className="flex items-center gap-1.5">
-                  <span className="material-symbols-outlined text-[14px] text-purple-600">code</span>
-                  <span className="text-[#1C1C1E] font-mono-code font-medium">{devC.activeFile}</span>
-                </div>
-                <span className="text-purple-700 font-bold">{devC.fileStats}</span>
-              </div>
-              <div className="bg-white/95 border border-black/[0.05] border-t border-white p-3 rounded-xl font-mono-code text-[11px] text-[#3A3A3C] overflow-x-auto space-y-0.5 shadow-xs">
-                {devC.diffSnippet.map((line, idx) => (
-                  <div
-                    key={idx}
-                    className={
-                      line.type === '+'
-                        ? 'text-emerald-700 font-medium'
-                        : line.type === '-'
-                        ? 'text-[#FF3B30] font-medium'
-                        : 'text-[#3A3A3C]'
-                    }
-                  >
-                    <span className="text-[#8E8E93] select-none pr-2">{line.line}</span>
-                    {line.type} {line.text}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
+        )}
 
         {/* Live Telemetry Event Stream & Inspector */}
         <div className="apple-card bg-white/80 apple-glass p-5 rounded-2xl border border-black/[0.06] border-t border-white/90 shadow-[0_8px_32px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] flex flex-col gap-4">

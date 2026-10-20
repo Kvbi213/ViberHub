@@ -3,7 +3,7 @@ import os from 'os';
 import { execSync } from 'child_process';
 import { HeartbeatRequestSchema, PairDeviceRequestSchema } from '@vibehub/contracts';
 import { EventBatchRequestSchema } from '@vibehub/event-protocol';
-import { persistEvent, registerDeviceInFirestore, getDevicesFromFirestore } from './lib/firestore';
+import { persistEvent, registerDeviceInFirestore, getDevicesFromFirestore, syncActiveAgentsInFirestore, getActiveAgentsFromFirestore } from './lib/firestore';
 
 interface VercelRequest extends IncomingMessage {
   query?: Record<string, string | string[]>;
@@ -333,6 +333,25 @@ export default async function handler(rawReq: IncomingMessage, rawRes: ServerRes
         totalEventsIngested: 1420,
       },
     });
+  }
+
+  // 8. /api/v1/agents/active
+  if (pathname === '/api/v1/agents/active') {
+    const roomId = 'viberhub-8842f';
+    if (req.method === 'GET') {
+      const agents = await getActiveAgentsFromFirestore(roomId);
+      return res.status(200).json({ success: true, count: agents.length, agents });
+    }
+    if (req.method === 'POST') {
+      try {
+        const body = await getRequestBody(req);
+        const agents = Array.isArray(body?.agents) ? body.agents : [];
+        await syncActiveAgentsInFirestore(body?.roomId || roomId, agents);
+        return res.status(200).json({ success: true, syncedCount: agents.length });
+      } catch (err: any) {
+        return res.status(500).json({ success: false, error: err.message });
+      }
+    }
   }
 
   // Default: 404

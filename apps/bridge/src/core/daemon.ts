@@ -11,6 +11,7 @@ import { FileWatcherCollector } from '../collectors/file-watcher';
 import { AntigravityAdapter } from '../adapters/antigravity/antigravity-adapter';
 import { ClaudeCodeAdapter } from '../adapters/claude-code/claude-code-adapter';
 import { CursorAdapter } from '../adapters/cursor/cursor-adapter';
+import { MultiConversationManager } from '../observers/conversation-manager';
 
 export interface DaemonOptions {
   apiUrl?: string;
@@ -23,7 +24,7 @@ export interface DaemonOptions {
 }
 
 export class VibeHubBridgeDaemon {
-  public readonly version = '0.1.4';
+  public readonly version = '0.1.5';
   private apiUrl: string;
   private deviceId: string;
   private projectId: string;
@@ -39,6 +40,7 @@ export class VibeHubBridgeDaemon {
   private antigravityAdapter: AntigravityAdapter;
   private claudeCodeAdapter: ClaudeCodeAdapter;
   private cursorAdapter: CursorAdapter;
+  private conversationManager: MultiConversationManager;
 
   private gitPollTimer: NodeJS.Timeout | null = null;
   private isRunning = false;
@@ -66,6 +68,17 @@ export class VibeHubBridgeDaemon {
     this.antigravityAdapter = new AntigravityAdapter(this.redactor);
     this.claudeCodeAdapter = new ClaudeCodeAdapter(this.redactor);
     this.cursorAdapter = new CursorAdapter(this.redactor);
+
+    this.conversationManager = new MultiConversationManager({
+      apiUrl: this.apiUrl,
+      deviceId: this.deviceId,
+      projectId: this.projectId,
+      operatorName: this.operatorName,
+      enabledProviders: this.activeAgentsList,
+      onEmitEvent: (event) => {
+        this.emitEvent(event);
+      },
+    });
   }
 
   public async start(): Promise<void> {
@@ -131,7 +144,10 @@ export class VibeHubBridgeDaemon {
       this.emitEvent(event);
     });
 
-    console.log('[+] SUCCESS :: VibeHub Bridge Daemon running and listening (Multi-Agent Active).');
+    // 5. Uruchom silnik nasłuchu aktywnych konwersacji w tle
+    this.conversationManager.start();
+
+    console.log('[+] SUCCESS :: VibeHub Bridge Daemon running and listening (Multi-Agent & Real-Time Observer Active).');
   }
 
   public emitEvent(event: CanonicalEventEnvelope): void {
@@ -153,6 +169,7 @@ export class VibeHubBridgeDaemon {
       this.gitPollTimer = null;
     }
 
+    this.conversationManager.stop();
     await this.fileWatcher.stop();
     await this.antigravityAdapter.stop();
     await this.claudeCodeAdapter.stop();

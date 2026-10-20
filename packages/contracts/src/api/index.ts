@@ -49,3 +49,45 @@ export const RegisterProjectRequestSchema = z.object({
   sharedLevels: z.array(z.enum(['L1', 'L2', 'L3', 'L4'])),
 });
 export type RegisterProjectRequest = z.infer<typeof RegisterProjectRequestSchema>;
+
+export const ActiveAgentSessionSchema = z.object({
+  id: z.string(),
+  conversationId: z.string().optional(),
+  provider: z.enum(['antigravity', 'claude-code', 'cursor', 'custom']),
+  name: z.string(),
+  model: z.string(),
+  status: z.enum(['working', 'waiting', 'idle', 'error']),
+  activity: z.string(),
+  currentTool: z.string().optional(),
+  activeFile: z.string().optional(),
+  fileStats: z.string().optional(),
+  diffSnippet: z
+    .array(
+      z.object({
+        line: z.number(),
+        type: z.enum(['+', '-', ' ']),
+        text: z.string(),
+      })
+    )
+    .optional(),
+  tokens: z
+    .object({
+      input: z.number().optional(),
+      output: z.number().optional(),
+      cacheRead: z.number().optional(),
+    })
+    .optional(),
+  duration: z.string().optional(),
+  confidence: z.number().optional(),
+  lastActiveAt: z.string(),
+  machine: z.string().optional(),
+  operatorName: z.string().optional(),
+});
+export type ActiveAgentSession = z.infer<typeof ActiveAgentSessionSchema>;
+
+export const SyncActiveAgentsRequestSchema = z.object({
+  roomId: z.string(),
+  deviceId: z.string(),
+  agents: z.array(ActiveAgentSessionSchema),
+});
+export type SyncActiveAgentsRequest = z.infer<typeof SyncActiveAgentsRequestSchema>;

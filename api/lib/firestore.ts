@@ -82,3 +82,37 @@ export async function getDevicesFromFirestore(roomId: string) {
     return [];
   }
 }
+
+export async function syncActiveAgentsInFirestore(roomId: string, agents: any[]) {
+  if (!db) return false;
+  try {
+    const promises = agents.map(async (agent) => {
+      const agentRef = doc(db!, 'rooms', roomId, 'agents', agent.id);
+      await setDoc(
+        agentRef,
+        {
+          ...agent,
+          updatedAt: serverTimestamp(),
+        },
+        { merge: true }
+      );
+    });
+    await Promise.all(promises);
+    return true;
+  } catch (err) {
+    console.warn('[!] ALERT :: Failed to sync active agents in Firestore:', err);
+    return false;
+  }
+}
+
+export async function getActiveAgentsFromFirestore(roomId: string) {
+  if (!db) return [];
+  try {
+    const agentsRef = collection(db, 'rooms', roomId, 'agents');
+    const snap = await getDocs(agentsRef);
+    return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  } catch (err) {
+    console.warn('[!] ALERT :: Failed to get agents from Firestore:', err);
+    return [];
+  }
+}

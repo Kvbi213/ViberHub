@@ -32,6 +32,26 @@ export interface AgentInfo {
   memory: string;
 }
 
+export interface LiveAgentSession {
+  id: string;
+  conversationId?: string;
+  provider: 'antigravity' | 'claude-code' | 'cursor' | 'custom';
+  name: string;
+  model: string;
+  status: 'working' | 'waiting' | 'idle' | 'error';
+  activity: string;
+  currentTool?: string;
+  activeFile?: string;
+  fileStats?: string;
+  diffSnippet?: Array<{ line: number; type: '+' | '-' | ' '; text: string }>;
+  tokens?: { input?: number; output?: number; cacheRead?: number };
+  duration?: string;
+  confidence?: number;
+  lastActiveAt: string;
+  machine?: string;
+  operatorName?: string;
+}
+
 export interface TelemetryEvent {
   id: string;
   time: string;
@@ -52,6 +72,8 @@ interface VibeHubState {
   tunnelUrl: string;
   eventsIngestedToday: number;
   activeBridgesCount: number;
+  activeAgents: LiveAgentSession[];
+  connectedDevice: any | null;
   devA: AgentInfo;
   devB: AgentInfo;
   devC: AgentInfo;
@@ -96,7 +118,9 @@ export const useVibeHubStore = create<VibeHubState>((set, get) => ({
   activeProject: 'apps/web',
   tunnelUrl: 'viber-hub.vercel.app',
   eventsIngestedToday: 48,
-  activeBridgesCount: 2,
+  activeBridgesCount: 1,
+  activeAgents: [],
+  connectedDevice: null,
   gitBranch: 'main',
   recentGitCommits: [],
 
@@ -394,12 +418,6 @@ export const useVibeHubStore = create<VibeHubState>((set, get) => ({
         set((state) => ({
           gitBranch: data.git.branch || state.gitBranch,
           recentGitCommits: data.git.recentCommits || state.recentGitCommits,
-          devA: {
-            ...state.devA,
-            machine: `${data.system.hostname} (${data.system.platform} ${data.system.arch})`,
-            memory: data.system.memory,
-            activity: data.agent.activeTask,
-          },
         }));
       }
     } catch {
@@ -411,10 +429,11 @@ export const useVibeHubStore = create<VibeHubState>((set, get) => ({
     if (!db) return () => {};
 
     try {
+      // 1. Nasłuch zdarzeń telemetrii
       const eventsRef = collection(db, 'rooms', roomId, 'events');
       const q = query(eventsRef, orderBy('createdAt', 'desc'), limit(50));
 
-      const unsubscribe = onSnapshot(q, (snapshot) => {
+      const unsubscribeEvents = onSnapshot(q, (snapshot) => {
         snapshot.docChanges().forEach((change) => {
           if (change.type === 'added') {
             const data = change.doc.data();
@@ -443,51 +462,29 @@ export const useVibeHubStore = create<VibeHubState>((set, get) => ({
               metadata: `id: ${change.doc.id.substring(0, 8)}`,
             };
 
-            // Dynamic updates of agents based on live incoming event
-            if (data.source === 'antigravity' && data.data) {
-              set((s) => ({
-                devA: {
-                  ...s.devA,
-                  activity: (data.data.activity as string) || s.devA.activity,
-                  status: (data.data.status as any) || s.devA.status,
-                  currentStep: (data.data.currentStep as string) || (data.type ? data.type.toUpperCase() : s.devA.currentStep),
-                  activeFile: (data.data.activeFile as string) || s.devA.activeFile,
-                },
-              }));
-            } else if (data.source === 'claude-code' && data.data) {
-              set((s) => ({
-                devB: {
-                  ...s.devB,
-                  activity: (data.data.activity as string) || s.devB.activity,
-                  status: (data.data.status as any) || s.devB.status,
-                  currentStep: (data.data.currentStep as string) || (data.type ? data.type.toUpperCase() : s.devB.currentStep),
-                  activeFile: (data.data.activeFile as string) || s.devB.activeFile,
-                },
-              }));
-            } else if (data.source === 'cursor' && data.data) {
-              set((s) => ({
-                devC: {
-                  ...s.devC,
-                  activity: (data.data.activity as string) || s.devC.activity,
-                  status: (data.data.status as any) || s.devC.status,
-                  currentStep: (data.data.currentStep as string) || (data.type ? data.type.toUpperCase() : s.devC.currentStep),
-                  activeFile: (data.data.activeFile as string) || s.devC.activeFile,
-                },
-              }));
-            }
-
             get().addEvent(newEvent);
           }
         });
       });
 
-      // Synchronizacja liczby urządzeń w czasie rzeczywistym
+      // 2. Nasłuch aktywnych sesji agentów AI w czasie rzeczywistym (ZERO BOTÓW!)
+      const agentsRef = collection(db, 'rooms', roomId, 'agents');
+      const unsubscribeAgents = onSnapshot(agentsRef, (snap) => {
+        const liveAgents = snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) })) as LiveAgentSession[];
+        set({ activeAgents: liveAgents });
+      });
+
+      // 3. Nasłuch podłączonych maszyn roboczych Bridge
       const devsRef = collection(db, 'rooms', roomId, 'devices');
-      const unsubDevs = onSnapshot(devsRef, (snap) => {
+      const unsubscribeDevs = onSnapshot(devsRef, (snap) => {
         const count = snap.docs.length;
         if (count > 0) {
-          set({ activeBridgesCount: count });
           const firstDev = snap.docs[0].data();
+          set({
+            activeBridgesCount: count,
+            connectedDevice: firstDev,
+            isBridgeConnected: true,
+          });
           if (firstDev.operator?.name) {
             set((s) => ({
               devA: {
@@ -498,12 +495,19 @@ export const useVibeHubStore = create<VibeHubState>((set, get) => ({
               },
             }));
           }
+        } else {
+          set({
+            activeBridgesCount: 0,
+            connectedDevice: null,
+            isBridgeConnected: false,
+          });
         }
       });
 
       return () => {
-        unsubscribe();
-        unsubDevs();
+        unsubscribeEvents();
+        unsubscribeAgents();
+        unsubscribeDevs();
       };
     } catch (error) {
       console.warn('[!] ALERT :: Firestore listener error:', error);
