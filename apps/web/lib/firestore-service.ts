@@ -1,5 +1,5 @@
 import { db } from './firebase';
-import { collection, addDoc, getDocs, query, orderBy, limit, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, getDocs, doc, setDoc, query, orderBy, limit, serverTimestamp } from 'firebase/firestore';
 
 export interface PersistedEvent {
   id?: string;
@@ -11,6 +11,56 @@ export interface PersistedEvent {
   type: string;
   data: Record<string, unknown>;
   createdAt?: unknown;
+}
+
+export interface DeviceRecord {
+  deviceId: string;
+  deviceToken?: string;
+  hostname: string;
+  platform: string;
+  bridgeVersion: string;
+  pairedAt: string;
+  lastHeartbeat: string;
+  status: 'online' | 'offline';
+  operator?: {
+    name?: string;
+    role?: string;
+  };
+  activeAgents?: string[];
+  systemInfo?: Record<string, any>;
+  workspaceRoot?: string;
+}
+
+export async function registerOrUpdateDevice(roomId: string, device: DeviceRecord) {
+  if (!db) return null;
+  try {
+    const devRef = doc(db, 'rooms', roomId, 'devices', device.deviceId);
+    await setDoc(
+      devRef,
+      {
+        ...device,
+        lastHeartbeat: new Date().toISOString(),
+        updatedAt: serverTimestamp(),
+      },
+      { merge: true }
+    );
+    return device.deviceId;
+  } catch (error) {
+    console.error('[!] ALERT :: Error registering device to Firestore:', error);
+    return null;
+  }
+}
+
+export async function fetchDevices(roomId: string): Promise<DeviceRecord[]> {
+  if (!db) return [];
+  try {
+    const devsRef = collection(db, 'rooms', roomId, 'devices');
+    const snap = await getDocs(devsRef);
+    return snap.docs.map((d) => ({ deviceId: d.id, ...(d.data() as any) }));
+  } catch (error) {
+    console.error('[!] ALERT :: Error fetching devices from Firestore:', error);
+    return [];
+  }
 }
 
 export async function persistEvent(roomId: string, event: PersistedEvent) {

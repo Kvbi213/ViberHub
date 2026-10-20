@@ -3,7 +3,7 @@ import os from 'os';
 import { execSync } from 'child_process';
 import { HeartbeatRequestSchema, PairDeviceRequestSchema } from '@vibehub/contracts';
 import { EventBatchRequestSchema } from '@vibehub/event-protocol';
-import { persistEvent } from './lib/firestore';
+import { persistEvent, registerDeviceInFirestore, getDevicesFromFirestore } from './lib/firestore';
 
 interface VercelRequest extends IncomingMessage {
   query?: Record<string, string | string[]>;
@@ -240,9 +240,27 @@ export default async function handler(rawReq: IncomingMessage, rawRes: ServerRes
         });
       }
 
-      const { hostname, platform, bridgeVersion } = parseResult.data;
+      const { hostname, platform, bridgeVersion, operator, activeAgents, workspaceRoot, systemInfo } = parseResult.data;
       const deviceId = `dev_${platform}_${Math.random().toString(36).substring(2, 9)}`;
       const deviceToken = `vh_live_${Math.random().toString(36).substring(2, 12)}_${Date.now()}`;
+      const roomId = 'viberhub-8842f';
+
+      const deviceData = {
+        deviceId,
+        deviceToken,
+        hostname,
+        platform,
+        bridgeVersion,
+        pairedAt: new Date().toISOString(),
+        lastHeartbeat: new Date().toISOString(),
+        status: 'online',
+        operator: operator || { name: 'Jakub (Operator)', role: 'Systems & Observability Architect' },
+        activeAgents: activeAgents || ['antigravity', 'claude-code', 'cursor'],
+        workspaceRoot: workspaceRoot || '/workspace',
+        systemInfo: systemInfo || {},
+      };
+
+      await registerDeviceInFirestore(roomId, deviceData);
 
       return res.status(200).json({
         success: true,
@@ -251,7 +269,10 @@ export default async function handler(rawReq: IncomingMessage, rawRes: ServerRes
         ownerId: 'user_operator_local',
         hostname,
         bridgeVersion,
-        pairedAt: new Date().toISOString(),
+        pairedAt: deviceData.pairedAt,
+        operator: deviceData.operator,
+        activeAgents: deviceData.activeAgents,
+        systemInfo: deviceData.systemInfo,
       });
     } catch (error) {
       console.error('[!] ALERT :: /api/v1/bridge/pair error:', error);

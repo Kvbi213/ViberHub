@@ -1,32 +1,39 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useVibeHubStore } from '@/lib/store';
+import { fetchDevices, DeviceRecord } from '@/lib/firestore-service';
+import { db } from '@/lib/firebase';
+import { collection, onSnapshot } from 'firebase/firestore';
 
 export default function SettingsBridgePage() {
+  const { roomId } = useVibeHubStore();
   const [pairingCode, setPairingCode] = useState('VH-9428-XK');
   const [copied, setCopied] = useState(false);
-  const [devices, setDevices] = useState([
-    {
-      id: 'dev_m3_macbook',
-      name: 'MacBook Pro M3 Max',
-      platform: 'macOS Sonoma (Darwin 23.4)',
-      version: 'Bridge v0.1.4',
-      status: 'online',
-      latency: '14ms',
-      lastHeartbeat: 'Teraz (< 2s)',
-      token: 'vh_live_9f8a20d4c82e...',
-    },
-    {
-      id: 'dev_arch_linux',
-      name: 'Arch Linux Devbox (Threadripper)',
-      platform: 'Linux 6.9.3-arch',
-      version: 'Bridge v0.1.4',
-      status: 'online',
-      latency: '18ms',
-      lastHeartbeat: '4s temu',
-      token: 'vh_live_a1b2c3d4e5f6...',
-    },
-  ]);
+  const [devices, setDevices] = useState<DeviceRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // 1. Początkowe pobranie urządzeń
+    fetchDevices(roomId).then((devs) => {
+      setDevices(devs);
+      setLoading(false);
+    });
+
+    // 2. Nasłuchiwanie na żywo w Firestore
+    if (db) {
+      try {
+        const devsRef = collection(db, 'rooms', roomId, 'devices');
+        const unsub = onSnapshot(devsRef, (snap) => {
+          const liveList = snap.docs.map((d) => ({ deviceId: d.id, ...(d.data() as any) }));
+          setDevices(liveList);
+        });
+        return () => unsub();
+      } catch (err) {
+        console.warn('devices listener warning', err);
+      }
+    }
+  }, [roomId]);
 
   const handleGenerateCode = () => {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -37,9 +44,9 @@ export default function SettingsBridgePage() {
     setPairingCode(code);
   };
 
-  const handleRevokeDevice = (id: string) => {
+  const handleRevokeDevice = (deviceId: string) => {
     if (confirm('Czy na pewno chcesz unieważnić poświadczenia dla tego urządzenia?')) {
-      setDevices(devices.filter((d) => d.id !== id));
+      setDevices(devices.filter((d) => d.deviceId !== deviceId));
     }
   };
 
@@ -116,39 +123,80 @@ export default function SettingsBridgePage() {
           </div>
 
           <div className="flex flex-col gap-3">
-            {devices.map((device) => (
-              <div
-                key={device.id}
-                className="flex items-center justify-between p-4 rounded-xl bg-slate-50/70 border border-black/[0.05] hover:bg-white transition"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-[#0071E3]">
-                    <span className="material-symbols-outlined text-[20px]">laptop_mac</span>
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-sm text-[#1C1C1E]">{device.name}</span>
-                      <span className="w-2 h-2 rounded-full bg-[#34C759] status-pulse-green" />
-                    </div>
-                    <div className="text-xs text-[#8E8E93] font-mono mt-0.5">
-                      {device.platform} • {device.version} • Ping: {device.latency}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <span className="text-xs text-[#8E8E93] font-mono hidden md:inline">
-                    Heartbeat: {device.lastHeartbeat}
-                  </span>
-                  <button
-                    onClick={() => handleRevokeDevice(device.id)}
-                    className="apple-btn px-3 py-1.5 rounded-lg border border-[#FF3B30]/30 text-[#FF3B30] hover:bg-[#FF3B30]/10 text-xs font-semibold"
-                  >
-                    Odłącz urządzenie
-                  </button>
-                </div>
+            {loading ? (
+              <div className="py-8 text-center text-xs font-mono text-[#8E8E93]">
+                Ładowanie stanu podłączonych urządzeń...
               </div>
-            ))}
+            ) : devices.length === 0 ? (
+              <div className="p-8 text-center rounded-xl bg-slate-50 border border-dashed border-black/[0.08] flex flex-col items-center gap-2">
+                <span className="material-symbols-outlined text-[32px] text-[#8E8E93]">sensors_off</span>
+                <span className="text-sm font-semibold text-[#1C1C1E]">Brak aktywnych stacji roboczych</span>
+                <p className="text-xs text-[#8E8E93] max-w-sm">
+                  Uruchom polecenie <code className="bg-white px-1.5 py-0.5 rounded border border-black/[0.06] font-mono text-[#0071E3]">vibehub pair {pairingCode}</code> w swoim terminalu, aby podłączyć pierwszą maszynę.
+                </p>
+              </div>
+            ) : (
+              devices.map((device) => (
+                <div
+                  key={device.deviceId}
+                  className="flex flex-col md:flex-row md:items-center justify-between p-4 rounded-xl bg-slate-50/70 border border-black/[0.05] hover:bg-white transition gap-4"
+                >
+                  <div className="flex items-start md:items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-[#0071E3] shrink-0">
+                      <span className="material-symbols-outlined text-[20px]">laptop_mac</span>
+                    </div>
+                    <div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-bold text-sm text-[#1C1C1E]">
+                          {device.hostname || device.deviceId}
+                        </span>
+                        {device.operator?.name && (
+                          <span className="px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 text-[10px] font-semibold">
+                            {device.operator.name} {device.operator.role ? `(${device.operator.role})` : ''}
+                          </span>
+                        )}
+                        <span className="w-2 h-2 rounded-full bg-[#34C759] status-pulse-green" />
+                      </div>
+                      <div className="text-xs text-[#8E8E93] font-mono mt-0.5 flex flex-wrap items-center gap-2">
+                        <span>{device.platform}</span>
+                        <span>•</span>
+                        <span>v{device.bridgeVersion || '0.1.4'}</span>
+                        {device.systemInfo?.cpu?.model && (
+                          <>
+                            <span>•</span>
+                            <span className="text-[#636366]">{device.systemInfo.cpu.model.slice(0, 30)}</span>
+                          </>
+                        )}
+                      </div>
+                      {device.activeAgents && device.activeAgents.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-1.5">
+                          {device.activeAgents.map((agent) => (
+                            <span
+                              key={agent}
+                              className="px-2 py-0.5 rounded-md bg-purple-50 text-purple-700 border border-purple-200/50 text-[10px] font-mono font-medium"
+                            >
+                              AI: {agent}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between md:justify-end gap-3 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-black/[0.04]">
+                    <span className="text-[11px] text-[#8E8E93] font-mono">
+                      {device.lastHeartbeat ? `Aktywność: ${new Date(device.lastHeartbeat).toLocaleTimeString()}` : 'Połączono'}
+                    </span>
+                    <button
+                      onClick={() => handleRevokeDevice(device.deviceId)}
+                      className="apple-btn px-3 py-1.5 rounded-lg border border-[#FF3B30]/30 text-[#FF3B30] hover:bg-[#FF3B30]/10 text-xs font-semibold"
+                    >
+                      Odłącz stację
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>

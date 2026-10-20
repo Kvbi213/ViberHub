@@ -72,3 +72,31 @@
   - Ukończenie konfiguracji trwale utrwala preferencje w Cloud Firestore (`users/{uid}`) i odblokowuje pełny Dashboard.
   - Dodano możliwość ponownego uruchomienia kreatora bezpośrednio z modalu profilu (`UserProfileModal.tsx`).
 - `[*]` Zsynchronizowano dokumentację projektową w Obsidian Vault (`C:\Users\Jakub Lis\Documents\OBSIDIAN\PROJEKTY\VibeHub\`).
+
+---
+
+## v 0.1.5 — 2026-10-20
+- `[+]` **Eliminacja błędu EPERM w Bridge Daemon**:
+  - Wyeliminowano krytyczny błąd blokowania operacji (`EPERM: operation not permitted, watch 'C:\Users\Jakub Lis\Cookies'`) w `apps/bridge/src/collectors/file-watcher.ts`.
+  - Wdrożono bezpieczną predykatową filtrację chronionych punktów połączeń (NTFS Junctions: `Cookies`, `AppData`, `NTUSER.DAT`, etc.).
+  - Skonfigurowano `ignorePermissionErrors: true` w `chokidar` oraz bezpieczną detekcję katalogu bazowego w przypadku wywołania z folderu domowego użytkownika (`~`).
+  - Zarejestrowano kartę błędu w `docs/errors/ERROR_DIFF_2026-10-20_eperm_chokidar_cookies.md`.
+- `[+]` **Głęboki skaner telemetrii systemowej i środowiskowej (`scanner.ts`)**:
+  - Zaimplementowano moduł `apps/bridge/src/core/scanner.ts` odpytujący specyfikację procesora (model, rdzenie), pamięć RAM, interfejsy sieciowe IPv4 oraz status repozytorium Git.
+  - Wbudowano automatyczną detekcję dostępnych binarek CLI narzędzi AI w ścieżce PATH (`agy`, `claude`, `cursor`, `code`, `git`, `pnpm`).
+- `[+]` **Dwuetapowy interaktywny kwestionariusz CLI Bridge (`cli.ts`)**:
+  - Pierwsze uruchomienie (`vibehub pair`): przeprowadza 4-krokowy wywiad (Operator Nick, Engineering Role, Zestaw narzędzi AI, Ścieżka projektu, Kod parowania) i zbiera pełną telemetrię systemową; zapisuje stan do `~/.vibehub/bridge.json`.
+  - Kolejne uruchomienia: natychmiastowo ładuje utrwalony profil maszyny i pyta wyłącznie o wybór narzędzia Coding AI do aktywacji w bieżącej sesji.
+- `[+]` **Pełne wsparcie dla 3 równoległych agentów AI (`daemon.ts` & `cursor-adapter.ts`)**:
+  - Utworzono adapter dla Cursora / IDE Agent (`apps/bridge/src/adapters/cursor/cursor-adapter.ts`).
+  - Rozbudowano demona `apps/bridge/src/core/daemon.ts` o jednoczesną orkiestrację i rejestrację zdarzeń z trzech agentów: Agent 1 (Google Antigravity), Agent 2 (Claude Code), Agent 3 (Cursor AI Composer).
+- `[+]` **Całkowita eliminacja placeholderów w UI**:
+  - Moduł `/settings` łączy się na żywo z Cloud Firestore (`rooms/{roomId}/devices`) i renderuje rzeczywiste maszyny, platformę, wersje, model procesora i aktywne narzędzia AI.
+  - Moduł `/dashboard` zyskał 3-kolumnowy widok dla 3 aktywnych agentów (Google Antigravity, Claude Code, Cursor) oraz wskaźniki podpięte pod realny rejestr maszyn i zdarzeń.
+  - Wprowadzono filtrowanie zdarzeń według kanałów: `ALL`, `ANTIGRAVITY`, `CLAUDE`, `CURSOR`, `GIT`.
+- `[+]` **Ujednolicenie nawigacji i naprawa GUI w `Shell.tsx`**:
+  - Wyeliminowano kolizje stanów aktywności menu i niepożądane podwójne podświetlanie pozycji.
+- `[+]` **Wdrożenie produkcyjne**:
+  - Zbudowano i wdrożono frontend statyczny na Firebase Hosting (`https://viberhub-8842f.web.app`).
+  - Wdrożono i zlinkowano globalny pakiet CLI `@vibehub/bridge` (`vibehub`, `vibehub-bridge`).
+- `[*]` Zsynchronizowano dokumentację projektową w Obsidian Vault (`C:\Users\Jakub Lis\Documents\OBSIDIAN\PROJEKTY\VibeHub\`).

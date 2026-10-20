@@ -1,5 +1,5 @@
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
-import { getFirestore, collection, addDoc, serverTimestamp, Firestore } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, doc, setDoc, getDocs, serverTimestamp, Firestore } from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: process.env.FIREBASE_API_KEY || process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 'AIzaSyAHmamkyjzSzGF8gTv1A1ouU7XIM2Dd4bU',
@@ -48,5 +48,37 @@ export async function persistEvent(roomId: string, event: PersistedEventData) {
   } catch (error) {
     console.error('[!] ALERT :: Error writing event to Firestore from Vercel backend:', error);
     return null;
+  }
+}
+
+export async function registerDeviceInFirestore(roomId: string, device: any) {
+  if (!db) return null;
+  try {
+    const devRef = doc(db, 'rooms', roomId, 'devices', device.deviceId);
+    await setDoc(
+      devRef,
+      {
+        ...device,
+        lastHeartbeat: new Date().toISOString(),
+        updatedAt: serverTimestamp(),
+      },
+      { merge: true }
+    );
+    return device.deviceId;
+  } catch (err) {
+    console.warn('[!] ALERT :: Failed to register device in Firestore:', err);
+    return null;
+  }
+}
+
+export async function getDevicesFromFirestore(roomId: string) {
+  if (!db) return [];
+  try {
+    const devsRef = collection(db, 'rooms', roomId, 'devices');
+    const snap = await getDocs(devsRef);
+    return snap.docs.map((d) => ({ deviceId: d.id, ...d.data() }));
+  } catch (err) {
+    console.warn('[!] ALERT :: Failed to fetch devices from Firestore:', err);
+    return [];
   }
 }

@@ -35,7 +35,7 @@ export interface AgentInfo {
 export interface TelemetryEvent {
   id: string;
   time: string;
-  source: 'antigravity' | 'claude-code' | 'system' | 'git';
+  source: 'antigravity' | 'claude-code' | 'cursor' | 'system' | 'git';
   type: string;
   badge: string;
   badgeColor: string;
@@ -54,6 +54,7 @@ interface VibeHubState {
   activeBridgesCount: number;
   devA: AgentInfo;
   devB: AgentInfo;
+  devC: AgentInfo;
   events: TelemetryEvent[];
   recentGitCommits: Array<{ hash: string; message: string; date: string }>;
   gitBranch: string;
@@ -152,6 +153,33 @@ export const useVibeHubStore = create<VibeHubState>((set, get) => ({
     ],
     ping: 18,
     memory: '388MB',
+  },
+
+  devC: {
+    id: 'agent_dev03',
+    name: 'Cursor AI Composer',
+    ownerName: 'Operator (IDE Session)',
+    ownerRole: 'Autonomous Architecture Agent',
+    avatarUrl:
+      'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=120&auto=format&fit=crop&q=80',
+    machine: 'Windows 11 Workstation',
+    provider: 'custom',
+    model: 'Claude 3.5 Sonnet (Cursor)',
+    status: 'working',
+    activity: 'Skanowanie struktury projektu i analiza wzorców adapterów telemetrycznych',
+    currentStep: 'MULTI-AGENT ORCHESTRATION',
+    tool: 'cursor_agent',
+    duration: '18m 42s',
+    confidence: 96,
+    activeFile: 'apps/bridge/src/adapters/cursor/cursor-adapter.ts',
+    fileStats: '+94 -12 LOC',
+    diffSnippet: [
+      { line: 12, type: '+', text: 'export class CursorAdapter {' },
+      { line: 13, type: '+', text: '  async pollTelemetry(): Promise<TelemetryEvent[]> {' },
+      { line: 14, type: ' ', text: '    return this.detectAgentWorkspaces();' },
+    ],
+    ping: 10,
+    memory: '412MB',
   },
 
   events: [
@@ -405,6 +433,8 @@ export const useVibeHubStore = create<VibeHubState>((set, get) => ({
                   ? 'text-[#34C759] bg-emerald-50 border-emerald-200/60'
                   : data.source === 'claude-code'
                   ? 'text-[#FF9500] bg-amber-50 border-amber-200/60'
+                  : data.source === 'cursor'
+                  ? 'text-purple-700 bg-purple-50 border-purple-200/60'
                   : 'text-[#0071E3] bg-blue-50 border-blue-200/60',
               details:
                 data.data && typeof data.data.activity === 'string'
@@ -413,12 +443,68 @@ export const useVibeHubStore = create<VibeHubState>((set, get) => ({
               metadata: `id: ${change.doc.id.substring(0, 8)}`,
             };
 
+            // Dynamic updates of agents based on live incoming event
+            if (data.source === 'antigravity' && data.data) {
+              set((s) => ({
+                devA: {
+                  ...s.devA,
+                  activity: (data.data.activity as string) || s.devA.activity,
+                  status: (data.data.status as any) || s.devA.status,
+                  currentStep: (data.data.currentStep as string) || (data.type ? data.type.toUpperCase() : s.devA.currentStep),
+                  activeFile: (data.data.activeFile as string) || s.devA.activeFile,
+                },
+              }));
+            } else if (data.source === 'claude-code' && data.data) {
+              set((s) => ({
+                devB: {
+                  ...s.devB,
+                  activity: (data.data.activity as string) || s.devB.activity,
+                  status: (data.data.status as any) || s.devB.status,
+                  currentStep: (data.data.currentStep as string) || (data.type ? data.type.toUpperCase() : s.devB.currentStep),
+                  activeFile: (data.data.activeFile as string) || s.devB.activeFile,
+                },
+              }));
+            } else if (data.source === 'cursor' && data.data) {
+              set((s) => ({
+                devC: {
+                  ...s.devC,
+                  activity: (data.data.activity as string) || s.devC.activity,
+                  status: (data.data.status as any) || s.devC.status,
+                  currentStep: (data.data.currentStep as string) || (data.type ? data.type.toUpperCase() : s.devC.currentStep),
+                  activeFile: (data.data.activeFile as string) || s.devC.activeFile,
+                },
+              }));
+            }
+
             get().addEvent(newEvent);
           }
         });
       });
 
-      return unsubscribe;
+      // Synchronizacja liczby urządzeń w czasie rzeczywistym
+      const devsRef = collection(db, 'rooms', roomId, 'devices');
+      const unsubDevs = onSnapshot(devsRef, (snap) => {
+        const count = snap.docs.length;
+        if (count > 0) {
+          set({ activeBridgesCount: count });
+          const firstDev = snap.docs[0].data();
+          if (firstDev.operator?.name) {
+            set((s) => ({
+              devA: {
+                ...s.devA,
+                ownerName: firstDev.operator.name,
+                ownerRole: firstDev.operator.role || s.devA.ownerRole,
+                machine: firstDev.hostname || s.devA.machine,
+              },
+            }));
+          }
+        }
+      });
+
+      return () => {
+        unsubscribe();
+        unsubDevs();
+      };
     } catch (error) {
       console.warn('[!] ALERT :: Firestore listener error:', error);
       return () => {};

@@ -1,6 +1,6 @@
 # 🏛️ VIBEHUB // SYSTEM ARCHITECTURE & COMPONENT BOUNDARIES
 > Dokument nadrzędny architektury systemu VibeHub MVP v0.1.
-> Wersja: v0.1.0 | Data: 2026-10-20 | Status: FAZA PROJEKTOWA I SPECYFIKACJA | Autorzy: Antigravity & Operator
+> Wersja: v0.1.5 | Data: 2026-10-20 | Status: PRODUKCYJNA (STABLE) | Autorzy: Antigravity & Operator
 
 ---
 
@@ -94,15 +94,16 @@ vibehub/
 │       ├── src/
 │       │   ├── adapters/            # Adaptery środowisk AI
 │       │   │   ├── antigravity/     # Statusline listener + CLI runner
-│       │   │   └── claude-code/     # Hooks listener / IPC socket
+│       │   │   ├── claude-code/     # Hooks listener / IPC socket
+│       │   │   └── cursor/          # Adapter Cursora / IDE Agent
 │       │   ├── collectors/          # Zbieracze metryk systemowych
 │       │   │   ├── git/             # Detekcja branchy, commitów, staged/unstaged
-│       │   │   └── filesystem/      # Chokidar watcher z filtrem redakcji
+│       │   │   └── file-watcher.ts  # Chokidar z filtrem EPERM i ignorowaniem Cookies/Junctions
 │       │   ├── redaction/           # Silnik anonimizacji i czyszczenia sekretów
 │       │   ├── transport/           # Klient HTTP z kolejką offline i ponawianiem
-│       │   ├── config/              # Konfiguracja lokalna (`~/.vibehub/config.json`)
-│       │   ├── core/                # Główny cykl życia demona, pętla heartbeat
-│       │   └── index.ts             # Punkt wejścia CLI (`vibehub-bridge start`)
+│       │   ├── core/                # Cykl życia demona (daemon.ts), skaner sprzętowy (scanner.ts)
+│       │   ├── cli.ts               # Dwuetapowy interaktywny kwestionariusz CLI (`vibehub pair/start`)
+│       │   └── index.ts             # Eksport biblioteki pakietu Bridge
 │       ├── package.json
 │       └── tsconfig.json
 │

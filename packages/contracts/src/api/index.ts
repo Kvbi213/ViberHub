@@ -5,6 +5,15 @@ export const PairDeviceRequestSchema = z.object({
   hostname: z.string(),
   platform: z.enum(['win32', 'darwin', 'linux']),
   bridgeVersion: z.string(),
+  operator: z
+    .object({
+      name: z.string().optional(),
+      role: z.string().optional(),
+    })
+    .optional(),
+  activeAgents: z.array(z.string()).optional(),
+  workspaceRoot: z.string().optional(),
+  systemInfo: z.record(z.any()).optional(),
 });
 export type PairDeviceRequest = z.infer<typeof PairDeviceRequestSchema>;
 
