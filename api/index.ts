@@ -354,6 +354,78 @@ export default async function handler(rawReq: IncomingMessage, rawRes: ServerRes
     }
   }
 
+  // 9. POST /api/v1/telemetry/push — Direct 1-Call Telemetry for ANY Coding AI (Curl / HTTP / Script)
+  if (pathname === '/api/v1/telemetry/push' && req.method === 'POST') {
+    try {
+      const body = await getRequestBody(req);
+      const roomId = body?.roomId || 'viberhub-8842f';
+      const provider = body?.provider || 'custom';
+      const agentId = body?.agentId || `ai_${provider}_${Math.random().toString(36).substring(2, 8)}`;
+      const name = body?.name || `AI Agent (${provider})`;
+      const status = body?.status || 'working';
+      const activity = body?.activity || 'Zadanie programistyczne w toku';
+      const tool = body?.tool || 'code_generation';
+      const file = body?.file || '';
+      const diff = body?.diff || '';
+
+      const agentData = {
+        id: agentId,
+        provider,
+        name,
+        model: body?.model || 'Coding AI Model',
+        status,
+        activity,
+        currentTool: tool,
+        activeFile: file,
+        fileStats: file ? '+ modified' : undefined,
+        diffSnippet: diff
+          ? String(diff)
+              .split('\n')
+              .slice(0, 10)
+              .map((l: string, idx: number) => ({
+                line: idx + 1,
+                type: l.startsWith('+') ? '+' : l.startsWith('-') ? '-' : ' ',
+                text: l.slice(0, 80),
+              }))
+          : undefined,
+        tokens: body?.tokens || { input: 0, output: 0 },
+        lastActiveAt: new Date().toISOString(),
+        machine: body?.machine || 'AI Workstation',
+        operatorName: body?.operatorName || 'Operator',
+      };
+
+      await syncActiveAgentsInFirestore(roomId, [agentData]);
+
+      await persistEvent(roomId, {
+        schemaVersion: 1,
+        deviceId: body?.deviceId || 'dev_ai_direct',
+        projectId: roomId,
+        occurredAt: new Date().toISOString(),
+        source: provider,
+        type: 'agent.telemetry_pushed',
+        data: {
+          agentId,
+          name,
+          status,
+          activity,
+          tool,
+          file,
+        },
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: 'Telemetry successfully pushed to VibeHub cluster',
+        agentId,
+        roomId,
+        timestamp: new Date().toISOString(),
+      });
+    } catch (err: any) {
+      console.error('[!] ALERT :: /api/v1/telemetry/push error:', err);
+      return res.status(500).json({ success: false, error: err.message });
+    }
+  }
+
   // Default: 404
   return res.status(404).json({
     success: false,

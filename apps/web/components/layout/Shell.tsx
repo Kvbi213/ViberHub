@@ -28,6 +28,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
     activeCoopSessionSeconds,
     tickCoopTimer,
     initAuthListener,
+    initFirestoreLiveListener,
     setAuthModalOpen,
     setProfileModalOpen,
   } = useVibeHubStore();
@@ -43,14 +44,16 @@ export function Shell({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const unsubAuth = initAuthListener();
+    const unsubFirestore = initFirestoreLiveListener(roomId);
     const interval = setInterval(() => {
       tickCoopTimer();
     }, 1000);
     return () => {
       clearInterval(interval);
       unsubAuth();
+      unsubFirestore();
     };
-  }, [tickCoopTimer, initAuthListener]);
+  }, [roomId, tickCoopTimer, initAuthListener, initFirestoreLiveListener]);
 
   const navItems = [
     {
