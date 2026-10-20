@@ -9,6 +9,7 @@ import os from 'os';
 import readline from 'readline';
 import { VibeHubBridgeDaemon } from './core/daemon';
 import { scanSystemEnvironment, SystemTelemetryData } from './core/scanner';
+import { VibeHubMcpServer } from './mcp/server';
 
 const DEFAULT_API_URL = process.env.VIBEHUB_API_URL || 'https://viber-hub.vercel.app/api/v1';
 const GLOBAL_CONFIG_DIR = path.join(os.homedir(), '.vibehub');
@@ -194,6 +195,8 @@ UŻYCIE:
   vibehub pair [KOD]            Sparuj tę stację roboczą za pomocą kodu (np. VH-9428-XK)
   vibehub start                 Uruchom demona telemetrycznego w tle
   vibehub status                Sprawdź status połączenia z backendem
+  vibehub mcp                   Uruchom serwer MCP (Model Context Protocol) na stdio
+  vibehub setup-mcp             Zarejestruj serwer VibeHub MCP w konfiguracji Antigravity
   vibehub reset                 Zresetuj zapisane poświadczenia stacji
   vibehub --help                Wyświetl pomoc
 
@@ -215,6 +218,39 @@ async function main() {
 
   if (command === 'status') {
     await checkStatus();
+    process.exit(0);
+  }
+
+  if (command === 'mcp') {
+    const savedConfig = loadConfig();
+    const server = new VibeHubMcpServer({
+      apiUrl: savedConfig?.apiUrl || DEFAULT_API_URL,
+      roomId: savedConfig?.roomId || 'viberhub-8842f',
+      deviceId: savedConfig?.deviceId,
+    });
+    server.start();
+    return;
+  }
+
+  if (command === 'setup-mcp') {
+    const home = os.homedir();
+    const mcpConfigPath = path.join(home, '.gemini', 'antigravity', 'mcp.json');
+    let configObj: any = { mcpServers: {} };
+    try {
+      if (fs.existsSync(mcpConfigPath)) {
+        configObj = JSON.parse(fs.readFileSync(mcpConfigPath, 'utf-8'));
+      }
+      if (!configObj.mcpServers) configObj.mcpServers = {};
+      configObj.mcpServers['vibehub'] = {
+        command: 'vibehub',
+        args: ['mcp'],
+      };
+      fs.writeFileSync(mcpConfigPath, JSON.stringify(configObj, null, 2), 'utf-8');
+      console.log(`[+] SUCCESS :: Zarejestrowano VibeHub MCP Server w: ${mcpConfigPath}`);
+      console.log(`[*] INFO :: Agenty w Antigravity mają teraz bezpośredni dostęp do narzędzi VibeHub.`);
+    } catch (err: any) {
+      console.error(`[!] ALERT :: Błąd rejestracji MCP: ${err.message}`);
+    }
     process.exit(0);
   }
 

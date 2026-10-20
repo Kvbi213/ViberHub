@@ -3,6 +3,7 @@
  * Integruje kolektory, adaptery agentów, silnik redakcji i transport HTTP
  */
 import path from 'path';
+import os from 'os';
 import { CanonicalEventEnvelope } from '@vibehub/event-protocol';
 import { RedactionEngine } from '../redaction/redactor';
 import { HttpTransport } from '../transport/http-transport';
@@ -147,7 +148,45 @@ export class VibeHubBridgeDaemon {
     // 5. Uruchom silnik nasłuchu aktywnych konwersacji w tle
     this.conversationManager.start();
 
+    // 6. Zarejestruj tę stację roboczą w klastrze VibeHub
+    await this.registerDevice();
+
     console.log('[+] SUCCESS :: VibeHub Bridge Daemon running and listening (Multi-Agent & Real-Time Observer Active).');
+  }
+
+  private async registerDevice(): Promise<void> {
+    const cleanBase = this.apiUrl.replace(/\/$/, '');
+    const endpoint = cleanBase.endsWith('/api/v1') ? `${cleanBase}/bridge/pair` : `${cleanBase}/api/v1/bridge/pair`;
+    const cpus = os.cpus();
+    const payload = {
+      pairingCode: 'VH-DIRECT-SYNC',
+      hostname: os.hostname(),
+      platform: process.platform === 'win32' || process.platform === 'darwin' || process.platform === 'linux'
+        ? process.platform
+        : 'linux',
+      bridgeVersion: this.version,
+      operator: {
+        name: this.operatorName,
+        role: this.operatorRole,
+      },
+      activeAgents: this.activeAgentsList,
+      workspaceRoot: this.projectRoot,
+      systemInfo: {
+        cpu: `${cpus[0]?.model || 'Processor'} (${cpus.length} rdzeni)`,
+        memory: `${Math.round(os.totalmem() / 1024 / 1024 / 1024)}GB`,
+        os: `${os.type()} ${os.release()}`,
+      },
+    };
+    try {
+      await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      console.log(`[+] SUCCESS :: Stacja robocza ${os.hostname()} pomyślnie powiązana z klastrem.`);
+    } catch (err: any) {
+      console.warn('[!] ALERT :: Device registration warning:', err.message);
+    }
   }
 
   public emitEvent(event: CanonicalEventEnvelope): void {

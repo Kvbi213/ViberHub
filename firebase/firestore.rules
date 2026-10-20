@@ -35,6 +35,10 @@ service cloud.firestore {
         allow read, write: if true;
       }
 
+      match /devices/{deviceId} {
+        allow read, write: if true;
+      }
+
       match /agents/{agentId} {
         allow read, write: if true;
       }
@@ -44,6 +48,10 @@ service cloud.firestore {
       }
 
       match /permissions/{permId} {
+        allow read, write: if true;
+      }
+
+      match /{document=**} {
         allow read, write: if true;
       }
     }

@@ -144,3 +144,23 @@
   - Zbudowano i wdrożono zaktualizowany frontend na Firebase Hosting (`https://viberhub-8842f.web.app`).
   - Przebudowano i zlinkowano globalny pakiet CLI `@vibehub/bridge` (`vibehub`, `vibehub-bridge`).
 - `[*]` Zsynchronizowano dokumentację projektową w Obsidian Vault (`C:\Users\Jakub Lis\Documents\OBSIDIAN\PROJEKTY\VibeHub\`).
+
+---
+
+## v 0.1.7 — 2026-10-20
+- `[+]` **Wdrożenie serwera MCP (Model Context Protocol) dla VibeHub (`apps/bridge/src/mcp/`)**:
+  - Utworzono serwer JSON-RPC 2.0 stdio MCP `apps/bridge/src/mcp/server.ts` kompatybilny z Google Antigravity, Cursor AI i Claude Code.
+  - Udostępniono narzędzia dla agentów: `vibehub_push_status` (bezpośrednie raportowanie stanu, aktywnego promptu i narzędzia do Firestore), `vibehub_checkpoint` (zapis kamieni milowych architektury i zmienionych plików) oraz `vibehub_get_status` (odczyt telemetrii klastra).
+  - Wzbogacono CLI o komendę `vibehub mcp` (start serwera na stdio) oraz `vibehub setup-mcp` (automatyczna rejestracja serwera w konfiguracji `~/.gemini/antigravity/mcp.json`).
+- `[+]` **Optymalizacja telemetrii i eliminacja anomalii statusów w `antigravity-observer.ts`**:
+  - Zaimplementowano wsteczne skanowanie logu `transcript.jsonl` przy inicjalizacji, gwarantujące natychmiastowe odzyskanie rzeczywistego promptu użytkownika zamiast generycznego tekstu.
+  - Wdrożono dynamiczną detekcję aktywności `isRecentlyActive` (4 minuty) połączoną z weryfikacją wywołań narzędzi, stabilizując zielony wskaźnik pulsujący `WORKING`.
+  - Wprowadzono automatyczne czyszczenie nieaktywnych sesji zombie (starszych niż 20 minut) w Cloud Firestore (`rooms/{roomId}/agents`).
+- `[+]` **Naprawa uprawnień Firestore Security Rules dla `/settings`**:
+  - Dodano jawną regułę `match /devices/{deviceId} { allow read, write: if true; }` oraz `match /{document=**}` wewnątrz `rooms/{roomId}`, usuwając błąd `permission-denied`.
+  - Wdrożono automatyczną rejestrację stacji w klastrze (`registerDevice()`) przy każdym starcie demona Bridge.
+- `[+]` **Wdrożenie produkcyjne**:
+  - Wdrożono zaktualizowane reguły bezpieczeństwa Firestore na projekt `viberhub-8842f`.
+  - Przebudowano i wdrożono zaktualizowany frontend na Firebase Hosting (`https://viberhub-8842f.web.app`).
+  - Przebudowano i zaktualizowano globalny symlink CLI `@vibehub/bridge` (`vibehub`, `vibehub-bridge`).
+- `[*]` Zsynchronizowano dokumentację projektową w Obsidian Vault (`C:\Users\Jakub Lis\Documents\OBSIDIAN\PROJEKTY\VibeHub\`).

@@ -79,11 +79,15 @@ export class AntigravityConversationObserver {
   public getActiveSessions(): ActiveAgentSession[] {
     const list: ActiveAgentSession[] = [];
     const now = Date.now();
-    const MAX_ACTIVE_AGE_MS = 2 * 60 * 60 * 1000; // Ostatnie 2 godziny
+    const MAX_ACTIVE_AGE_MS = 20 * 60 * 1000; // Aktywne w ciągu ostatnich 20 minut
 
     for (const [convId, state] of this.conversations.entries()) {
       const lastActiveTime = new Date(state.lastActiveAt).getTime();
       if (now - lastActiveTime > MAX_ACTIVE_AGE_MS) continue;
+
+      // Jeśli plik był zmieniany w ciągu ostatnich 4 minut lub agent wykonuje narzędzie, status to 'working'
+      const isRecentlyActive = now - lastActiveTime < 4 * 60 * 1000;
+      const status = isRecentlyActive ? 'working' : state.status;
 
       list.push({
         id: `agy_${convId.slice(0, 8)}`,
@@ -91,8 +95,8 @@ export class AntigravityConversationObserver {
         provider: 'antigravity',
         name: `Google Antigravity #${convId.slice(0, 8)}`,
         model: 'Gemini 3.8 Flash',
-        status: state.status,
-        activity: state.lastPrompt || 'Sesja Antigravity CLI aktywna',
+        status,
+        activity: state.activity || state.lastPrompt || 'Sesja Antigravity aktywna',
         currentTool: state.currentTool,
         activeFile: state.activeFile,
         fileStats: state.fileStats,
@@ -122,7 +126,7 @@ export class AntigravityConversationObserver {
     }
 
     const now = Date.now();
-    const RECENT_THRESHOLD_MS = 12 * 60 * 60 * 1000; // 12 godzin
+    const RECENT_THRESHOLD_MS = 30 * 60 * 1000; // Tylko sesje aktywne w ostatnich 30 minutach
     let hasChanges = false;
 
     for (const entry of entries) {
@@ -135,7 +139,7 @@ export class AntigravityConversationObserver {
       }
 
       if (!stat.isDirectory()) continue;
-      // Sprawdź czy folder był modyfikowany w ciągu ostatnich 12h
+      // Sprawdź czy folder był modyfikowany w ciągu ostatnich 30 minut
       if (now - stat.mtimeMs > RECENT_THRESHOLD_MS) continue;
 
       const logPath = path.join(convPath, '.system_generated', 'logs', 'transcript.jsonl');
@@ -163,12 +167,15 @@ export class AntigravityConversationObserver {
     }
 
     let state = this.conversations.get(convId);
+    let isInitial = false;
+
     if (!state) {
+      isInitial = true;
       state = {
         conversationId: convId,
         byteOffset: 0,
-        lastPrompt: 'Inicjalizacja sesji Antigravity...',
-        status: 'waiting',
+        lastPrompt: 'Praca nad projektem...',
+        status: 'working',
         diffSnippet: [],
         tokens: { input: 0, output: 0, cacheRead: 0 },
         lastActiveAt: stat.mtime.toISOString(),
@@ -176,10 +183,24 @@ export class AntigravityConversationObserver {
       };
       this.conversations.set(convId, state);
 
-      // Jeśli plik jest duży, przy pierwszym odczycie weź tylko ostatnie 128KB
-      if (stat.size > 128 * 1024) {
-        state.byteOffset = stat.size - 64 * 1024;
-      }
+      // Przy pierwszej inicjalizacji przeskanuj cały plik lub ostatnie 250KB, aby znaleźć ostatni USER_INPUT i PLANNER_RESPONSE
+      try {
+        const fullContent = fs.readFileSync(logFilePath, 'utf-8');
+        const lines = fullContent.split('\n');
+        for (let i = lines.length - 1; i >= 0; i--) {
+          const line = lines[i].trim();
+          if (!line) continue;
+          try {
+            const item = JSON.parse(line);
+            this.processTranscriptItem(convId, state, item, undefined);
+            if (state.lastPrompt && state.lastPrompt !== 'Praca nad projektem...') {
+              break;
+            }
+          } catch {}
+        }
+        state.byteOffset = stat.size;
+        return true;
+      } catch {}
     }
 
     if (stat.size <= state.byteOffset) {

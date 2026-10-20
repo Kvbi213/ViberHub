@@ -1,5 +1,5 @@
 import { db } from './firebase';
-import { collection, addDoc, getDocs, doc, setDoc, query, orderBy, limit, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, getDocs, doc, setDoc, deleteDoc, query, orderBy, limit, serverTimestamp } from 'firebase/firestore';
 
 export interface PersistedEvent {
   id?: string;
@@ -115,6 +115,19 @@ export async function syncActiveAgentsInFirestore(roomId: string, agents: any[])
       );
     });
     await Promise.all(promises);
+
+    // Czyszczenie nieaktywnych zombie-sesji (starszych niż 25 minut)
+    const allSnap = await getDocs(collection(db!, 'rooms', roomId, 'agents'));
+    const now = Date.now();
+    const cleanups = allSnap.docs.map(async (d) => {
+      const data = d.data();
+      const lastActive = data.lastActiveAt ? new Date(data.lastActiveAt).getTime() : 0;
+      if (now - lastActive > 25 * 60 * 1000) {
+        await deleteDoc(d.ref);
+      }
+    });
+    await Promise.all(cleanups);
+
     return true;
   } catch (err) {
     console.warn('[!] ALERT :: Failed to sync active agents in Firestore:', err);
