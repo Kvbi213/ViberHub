@@ -38,7 +38,7 @@ export class VibeHubBridgeDaemon {
   constructor(options: DaemonOptions = {}) {
     this.apiUrl = options.apiUrl || process.env.VIBEHUB_API_URL || 'http://localhost:3000/api/v1';
     this.deviceId = options.deviceId || process.env.VIBEHUB_DEVICE_ID || 'dev_win32_local';
-    this.projectId = options.projectId || process.env.VIBEHUB_PROJECT_ID || 'vibehub-mesh';
+    this.projectId = options.projectId || process.env.VIBEHUB_PROJECT_ID || 'viberhub-8842f';
     this.projectRoot = options.projectRoot || process.cwd();
 
     this.redactor = new RedactionEngine(this.projectRoot);

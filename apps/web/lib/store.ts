@@ -66,15 +66,15 @@ interface VibeHubState {
 }
 
 export const useVibeHubStore = create<VibeHubState>((set, get) => ({
-  roomId: 'vibehub-mesh',
+  roomId: 'viberhub-8842f',
   roomName: 'VibeHub Observability Mesh',
   isBridgeConnected: true,
   bridgeLatency: 14,
   activeProject: 'apps/web',
-  tunnelUrl: 'vibehub-mesh.firebaseapp.com/dashboard',
+  tunnelUrl: 'viber-hub-git-main-kvbi.vercel.app/dashboard',
   eventsIngestedToday: 48,
   activeBridgesCount: 2,
-  gitBranch: 'master',
+  gitBranch: 'main',
   recentGitCommits: [],
 
   devA: {
@@ -88,7 +88,7 @@ export const useVibeHubStore = create<VibeHubState>((set, get) => ({
     provider: 'antigravity',
     model: 'Gemini 3.8 Flash (High)',
     status: 'working',
-    activity: 'Zarządzanie projektem Firebase vibehub-mesh i wdrożenie reguł Firestore',
+    activity: 'Zarządzanie projektem Firebase viberhub-8842f i wdrożenie reguł Firestore',
     currentStep: 'LIVE FIREBASE SYNC ACTIVE',
     tool: 'run_command',
     duration: '54m 20s',
@@ -140,8 +140,8 @@ export const useVibeHubStore = create<VibeHubState>((set, get) => ({
       type: 'firebase.deploy_complete',
       badge: 'FIREBASE_DEPLOY',
       badgeColor: 'text-[#34C759] bg-emerald-50 border-emerald-200/60',
-      details: 'Reguły firestore.rules i indeksy wdrożone pomyślnie do projektu vibehub-mesh',
-      metadata: 'project: vibehub-mesh, region: europe-central2',
+      details: 'Reguły firestore.rules i indeksy wdrożone pomyślnie do projektu viberhub-8842f',
+      metadata: 'project: viberhub-8842f, region: europe-central2',
     },
     {
       id: 'evt_init_02',
@@ -160,8 +160,8 @@ export const useVibeHubStore = create<VibeHubState>((set, get) => ({
       type: 'firebase.app_registered',
       badge: 'WEB_APP_READY',
       badgeColor: 'text-amber-700 bg-amber-50 border-amber-200/60',
-      details: 'Zarejestrowano aplikację vibehub-web (App ID: 1:951110449404:web:e1c8ec...)',
-      metadata: 'apiKey: AIzaSyA4FBH8...',
+      details: 'Zarejestrowano aplikację viberhub (App ID: 1:221916880520:web:c9f077...)',
+      metadata: 'apiKey: AIzaSyAHmam...',
     },
     {
       id: 'evt_init_04',
@@ -204,7 +204,7 @@ export const useVibeHubStore = create<VibeHubState>((set, get) => ({
     })),
 
   simulateNextStep: async () => {
-    const currentRoom = get().roomId || 'vibehub-mesh';
+    const currentRoom = get().roomId || 'viberhub-8842f';
     const sampleTasks = [
       'Weryfikacja integralności tokenów Milky Glass w Tailwind CSS',
       'Testowanie handoffu zdarzeń z Bridge do Firestore',

@@ -57,7 +57,7 @@ export async function GET() {
         provider: 'antigravity',
         model: 'Gemini 3.8 Flash (High)',
         state: 'WORKING',
-        activeTask: 'Integracja z produkcyjnym Firebase (vibehub-mesh) i eliminacja placeholderów',
+        activeTask: 'Integracja z produkcyjnym Firebase (viberhub-8842f) i eliminacja placeholderów',
         confidence: 1.0,
       },
     });

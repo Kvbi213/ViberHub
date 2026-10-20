@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     }
 
     console.log(
-      `[+] SUCCESS :: Persisted ${events.length} authentic events to Firestore (vibehub-mesh) from device=${deviceId} project=${projectId}`
+      `[+] SUCCESS :: Persisted ${events.length} authentic events to Firestore (${projectId}) from device=${deviceId}`
     );
 
     return NextResponse.json({
