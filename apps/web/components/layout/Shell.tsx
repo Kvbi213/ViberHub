@@ -1,20 +1,91 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useVibeHubStore } from '@/lib/store';
+import { AuthModal } from '@/components/auth/AuthModal';
+import { UserProfileModal } from '@/components/auth/UserProfileModal';
+
+function formatTimer(sec: number): string {
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return `${m}m ${s < 10 ? '0' : ''}${s}s`;
+}
 
 export function Shell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { roomId, roomName, isBridgeConnected, bridgeLatency } = useVibeHubStore();
+  const [hash, setHash] = useState('');
+
+  const {
+    roomId,
+    roomName,
+    isBridgeConnected,
+    bridgeLatency,
+    currentUser,
+    activeCoopSessionSeconds,
+    tickCoopTimer,
+    initAuthListener,
+    setAuthModalOpen,
+    setProfileModalOpen,
+  } = useVibeHubStore();
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setHash(window.location.hash);
+      const handleHashChange = () => setHash(window.location.hash);
+      window.addEventListener('hashchange', handleHashChange);
+      return () => window.removeEventListener('hashchange', handleHashChange);
+    }
+  }, []);
+
+  useEffect(() => {
+    const unsubAuth = initAuthListener();
+    const interval = setInterval(() => {
+      tickCoopTimer();
+    }, 1000);
+    return () => {
+      clearInterval(interval);
+      unsubAuth();
+    };
+  }, [tickCoopTimer, initAuthListener]);
 
   const navItems = [
-    { label: 'Dashboard', path: '/dashboard', icon: 'monitoring' },
-    { label: 'Room Collab & Preview', path: `/rooms/${roomId}`, icon: 'group_work' },
-    { label: 'Code & Git Diffs', path: `/rooms/${roomId}#diffs`, icon: 'difference' },
-    { label: 'Bridge & Devices', path: '/settings', icon: 'developer_board' },
-    { label: 'Privacy & Permissions', path: '/privacy', icon: 'admin_panel_settings' },
+    {
+      id: 'dashboard',
+      label: 'Dashboard',
+      path: '/dashboard',
+      icon: 'monitoring',
+      isActive: (pathname === '/dashboard' || pathname === '/') && hash === '',
+    },
+    {
+      id: 'collab',
+      label: 'Room Collab & Preview',
+      path: `/rooms/${roomId}`,
+      icon: 'group_work',
+      isActive: pathname.startsWith('/rooms') && hash !== '#diffs',
+    },
+    {
+      id: 'diffs',
+      label: 'Code & Git Diffs',
+      path: `/rooms/${roomId}#diffs`,
+      icon: 'difference',
+      isActive: pathname.startsWith('/rooms') && hash === '#diffs',
+    },
+    {
+      id: 'settings',
+      label: 'Bridge & Devices',
+      path: '/settings',
+      icon: 'developer_board',
+      isActive: pathname.startsWith('/settings'),
+    },
+    {
+      id: 'privacy',
+      label: 'Privacy & Permissions',
+      path: '/privacy',
+      icon: 'admin_panel_settings',
+      isActive: pathname.startsWith('/privacy'),
+    },
   ];
 
   return (
@@ -44,23 +115,20 @@ export function Shell({ children }: { children: React.ReactNode }) {
               Navigation Engine
             </div>
             <nav className="flex flex-col gap-1.5">
-              {navItems.map((item) => {
-                const isActive = pathname === item.path || (item.path !== '/dashboard' && pathname.startsWith(item.path.split('#')[0]));
-                return (
-                  <Link
-                    key={item.label}
-                    href={item.path}
-                    className={`apple-btn flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium transition ${
-                      isActive
-                        ? 'bg-[#0071E3] text-white shadow-[0_4px_16px_rgba(0,113,227,0.28)] border-t border-white/20'
-                        : 'text-[#636366] hover:bg-black/[0.04] hover:text-[#1C1C1E]'
-                    }`}
-                  >
-                    <span className="material-symbols-outlined text-[18px]">{item.icon}</span>
-                    <span className="font-title-sm apple-subtext">{item.label}</span>
-                  </Link>
-                );
-              })}
+              {navItems.map((item) => (
+                <Link
+                  key={item.id}
+                  href={item.path}
+                  className={`apple-btn flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium transition ${
+                    item.isActive
+                      ? 'bg-[#0071E3] text-white shadow-[0_4px_16px_rgba(0,113,227,0.28)] border-t border-white/20'
+                      : 'text-[#636366] hover:bg-black/[0.04] hover:text-[#1C1C1E]'
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-[18px]">{item.icon}</span>
+                  <span className="font-title-sm apple-subtext">{item.label}</span>
+                </Link>
+              ))}
             </nav>
           </div>
         </div>
@@ -112,28 +180,26 @@ export function Shell({ children }: { children: React.ReactNode }) {
             </div>
 
             {/* Right Controls & Status */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
+              {/* Live Co-op Timer Chip */}
+              <div
+                onClick={() => {
+                  if (currentUser) setProfileModalOpen(true);
+                  else setAuthModalOpen(true);
+                }}
+                className="cursor-pointer flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50/80 hover:bg-blue-100/80 border border-blue-200/60 shadow-sm transition"
+              >
+                <span className="w-2 h-2 rounded-full bg-[#0071E3] animate-pulse" />
+                <span className="font-mono-status text-[11px] text-[#0071E3] font-semibold tracking-wide">
+                  Co-op: {formatTimer(activeCoopSessionSeconds)}
+                </span>
+              </div>
+
               {/* Bridge Connected Capsule */}
               <div className="hidden md:flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50/80 border border-emerald-200/60 shadow-sm">
                 <span className="w-2 h-2 rounded-full bg-[#34C759] status-pulse-green" />
                 <span className="font-mono-status text-[11px] text-emerald-800 font-semibold tracking-wide">
-                  Bridge: {isBridgeConnected ? `Connected (${bridgeLatency}ms)` : 'Offline'}
-                </span>
-              </div>
-
-              {/* Observability Chips */}
-              <div className="hidden lg:flex items-center gap-1 font-mono-status text-[11px] tracking-[0.01em]">
-                <span className="px-2 py-0.5 rounded-md bg-blue-50 text-[#0071E3] border border-blue-100 font-bold">
-                  [L1:SOCK]
-                </span>
-                <span className="px-2 py-0.5 rounded-md bg-sky-50 text-sky-700 border border-sky-100 font-bold">
-                  [L2:DIFF]
-                </span>
-                <span className="px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 border border-amber-100 font-bold">
-                  [L3:PROC]
-                </span>
-                <span className="px-2 py-0.5 rounded-md bg-slate-100 text-[#8E8E93] border border-slate-200/60 font-bold">
-                  [L4:HOOK]
+                  Bridge: {isBridgeConnected ? `Online (${bridgeLatency}ms)` : 'Offline'}
                 </span>
               </div>
 
@@ -155,19 +221,36 @@ export function Shell({ children }: { children: React.ReactNode }) {
                   Invite Peer
                 </button>
 
-                <button
-                  aria-label="Notifications"
-                  className="apple-btn p-1.5 rounded-xl text-[#636366] hover:text-[#1C1C1E] hover:bg-black/[0.04] relative"
-                >
-                  <span className="material-symbols-outlined text-[20px]">notifications</span>
-                  <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#34C759] ring-2 ring-white" />
-                </button>
-
-                <div className="pl-1 flex items-center">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-slate-200 to-slate-400 ring-2 ring-white shadow-sm flex items-center justify-center font-bold text-xs text-slate-700">
-                    TY
-                  </div>
-                </div>
+                {/* User Auth Profile Button */}
+                {currentUser ? (
+                  <button
+                    onClick={() => setProfileModalOpen(true)}
+                    className="flex items-center gap-2 pl-1 group cursor-pointer focus:outline-none"
+                    title="Otwórz profil i statystyki Co-op"
+                  >
+                    <img
+                      src={currentUser.avatarUrl}
+                      alt={currentUser.displayName}
+                      className="w-8 h-8 rounded-full ring-2 ring-[#0071E3]/40 shadow-sm object-cover group-hover:ring-[#0071E3] transition"
+                    />
+                    <div className="hidden xl:flex flex-col text-left">
+                      <span className="text-[12px] font-semibold text-[#1C1C1E] leading-tight truncate max-w-[100px]">
+                        {currentUser.displayName}
+                      </span>
+                      <span className="text-[10px] font-mono-status text-[#8E8E93]">
+                        {currentUser.isAnonymous ? 'Gość' : 'Operator'}
+                      </span>
+                    </div>
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => setAuthModalOpen(true)}
+                    className="apple-btn inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#0071E3] to-blue-600 text-white font-medium text-[12px] shadow-sm"
+                  >
+                    <span className="material-symbols-outlined text-[15px]">account_circle</span>
+                    Konto / Zaloguj
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -176,6 +259,10 @@ export function Shell({ children }: { children: React.ReactNode }) {
         {/* Dynamic Page Outlet */}
         <main className="relative pt-14 w-full">{children}</main>
       </div>
+
+      {/* Global Modals */}
+      <AuthModal />
+      <UserProfileModal />
     </div>
   );
 }

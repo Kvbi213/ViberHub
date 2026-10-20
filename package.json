@@ -7,6 +7,8 @@
     "dev": "pnpm --filter web dev",
     "dev:bridge": "pnpm --filter bridge dev",
     "build": "pnpm -r build",
+    "build:firebase": "node scripts/build-firebase.mjs",
+    "deploy:firebase": "node scripts/build-firebase.mjs && firebase deploy --only hosting --project viberhub-8842f",
     "lint": "pnpm -r lint",
     "test": "pnpm -r test",
     "clean": "pnpm -r exec rimraf dist .next node_modules"

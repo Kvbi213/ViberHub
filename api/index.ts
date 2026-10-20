@@ -284,6 +284,36 @@ export default async function handler(rawReq: IncomingMessage, rawRes: ServerRes
     }
   }
 
+  // 6. /api/v1/users/stats
+  if (pathname === '/api/v1/users/stats') {
+    if (req.method === 'GET') {
+      const uid = url.searchParams.get('uid');
+      if (!uid) return res.status(400).json({ success: false, error: 'Missing uid query parameter' });
+      return res.status(200).json({ success: true, uid, status: 'online' });
+    }
+    if (req.method === 'POST') {
+      const body = await getRequestBody(req);
+      return res.status(200).json({ success: true, recordedSeconds: body?.secondsDelta || 0 });
+    }
+  }
+
+  // 7. /api/v1/rooms/stats
+  if (pathname === '/api/v1/rooms/stats' && req.method === 'GET') {
+    return res.status(200).json({
+      success: true,
+      timestamp: new Date().toISOString(),
+      rooms: [
+        { id: 'viberhub-8842f', name: 'Observability Mesh (Production)', activeMembers: 2, status: 'live' },
+        { id: '409', name: 'Collaborative Pair Hub #409', activeMembers: 1, status: 'live' },
+      ],
+      globalStats: {
+        activeBridges: 2,
+        totalCoopHours: 18.5,
+        totalEventsIngested: 1420,
+      },
+    });
+  }
+
   // Default: 404
   return res.status(404).json({
     success: false,

@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { Shell } from '@/components/layout/Shell';
 import { useVibeHubStore } from '@/lib/store';
 
 export default function PrivacyMatrixPage() {
@@ -47,8 +46,7 @@ export default function PrivacyMatrixPage() {
   ];
 
   return (
-    <Shell>
-      <div className="flex flex-col w-full max-w-5xl mx-auto p-8 gap-8">
+    <div className="flex flex-col w-full max-w-5xl mx-auto p-8 gap-8">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-[#1C1C1E] apple-headline">
             Kontrola Prywatności i Matryca Uprawnień (L1 – L4)
@@ -123,6 +121,5 @@ export default function PrivacyMatrixPage() {
           </div>
         </div>
       </div>
-    </Shell>
   );
 }

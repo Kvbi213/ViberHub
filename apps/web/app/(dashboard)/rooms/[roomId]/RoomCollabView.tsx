@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { Shell } from '@/components/layout/Shell';
 import { useVibeHubStore } from '@/lib/store';
 
 export default function RoomCollabView({ initialRoomId }: { initialRoomId?: string }) {
@@ -51,8 +50,7 @@ export default function RoomCollabView({ initialRoomId }: { initialRoomId?: stri
   };
 
   return (
-    <Shell>
-      <div className="flex flex-col w-full pb-16">
+    <div className="flex flex-col w-full pb-16">
         {/* Workspace Control Matrix */}
         <section className="w-full bg-white/70 backdrop-blur-2xl border-b border-black/[0.06] px-6 py-2.5 flex flex-col xl:flex-row xl:items-center justify-between gap-3 shadow-[0_2px_8px_rgba(0,0,0,0.02)] relative z-30">
           <div className="flex flex-wrap items-center gap-3">
@@ -410,6 +408,5 @@ export default function RoomCollabView({ initialRoomId }: { initialRoomId?: stri
           </div>
         </div>
       </div>
-    </Shell>
   );
 }

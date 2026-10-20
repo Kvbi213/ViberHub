@@ -1,6 +1,14 @@
 import { create } from 'zustand';
 import { db } from './firebase';
 import { collection, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
+import {
+  UserProfileData,
+  subscribeToAuth,
+  createOrUpdateUserDoc,
+  recordCoopTime,
+  recordEventEmitted,
+  logoutUser,
+} from './auth-service';
 
 export interface AgentInfo {
   id: string;
@@ -55,6 +63,17 @@ interface VibeHubState {
     L3_context: boolean;
     L4_preview: boolean;
   };
+  currentUser: UserProfileData | null;
+  activeCoopSessionSeconds: number;
+  isAuthModalOpen: boolean;
+  isProfileModalOpen: boolean;
+  setAuthModalOpen: (open: boolean) => void;
+  setProfileModalOpen: (open: boolean) => void;
+  setCurrentUser: (user: UserProfileData | null) => void;
+  tickCoopTimer: () => void;
+  persistCoopTime: () => Promise<void>;
+  handleLogout: () => Promise<void>;
+  initAuthListener: () => () => void;
   setRoomId: (id: string) => void;
   setActiveProject: (proj: 'apps/web' | 'apps/bridge') => void;
   setTunnelUrl: (url: string) => void;
@@ -182,6 +201,62 @@ export const useVibeHubStore = create<VibeHubState>((set, get) => ({
     L4_preview: true,
   },
 
+  currentUser: null,
+  activeCoopSessionSeconds: 0,
+  isAuthModalOpen: false,
+  isProfileModalOpen: false,
+  setAuthModalOpen: (open) => set({ isAuthModalOpen: open }),
+  setProfileModalOpen: (open) => set({ isProfileModalOpen: open }),
+  setCurrentUser: (user) => set({ currentUser: user }),
+
+  tickCoopTimer: () =>
+    set((state) => {
+      const nextSec = state.activeCoopSessionSeconds + 1;
+      // Auto-save every 30 seconds
+      if (nextSec > 0 && nextSec % 30 === 0) {
+        state.persistCoopTime();
+      }
+      return { activeCoopSessionSeconds: nextSec };
+    }),
+
+  persistCoopTime: async () => {
+    const { currentUser, activeCoopSessionSeconds, roomId } = get();
+    if (!currentUser || activeCoopSessionSeconds <= 0) return;
+    try {
+      await recordCoopTime(currentUser.uid, 30, roomId);
+      set((state) => ({
+        currentUser: state.currentUser
+          ? {
+              ...state.currentUser,
+              stats: {
+                ...state.currentUser.stats,
+                totalCoopSeconds: (state.currentUser.stats?.totalCoopSeconds || 0) + 30,
+              },
+            }
+          : null,
+      }));
+    } catch {
+      // offline fallback
+    }
+  },
+
+  handleLogout: async () => {
+    await logoutUser();
+    set({ currentUser: null, isProfileModalOpen: false });
+  },
+
+  initAuthListener: () => {
+    const unsub = subscribeToAuth(async (user) => {
+      if (user) {
+        const profile = await createOrUpdateUserDoc(user);
+        set({ currentUser: profile });
+      } else {
+        set({ currentUser: null });
+      }
+    });
+    return unsub;
+  },
+
   setRoomId: (id) => set({ roomId: id }),
   setActiveProject: (proj) => set({ activeProject: proj }),
   setTunnelUrl: (url) => set({ tunnelUrl: url }),
@@ -247,6 +322,12 @@ export const useVibeHubStore = create<VibeHubState>((set, get) => ({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(eventPayload),
       });
+
+      const { currentUser } = get();
+      if (currentUser) {
+        await recordEventEmitted(currentUser.uid);
+      }
+
       await get().syncWithSystemTelemetry();
     } catch (err) {
       console.warn('[!] ALERT :: Error emitting live event:', err);

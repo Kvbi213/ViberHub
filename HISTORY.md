@@ -48,3 +48,19 @@
 - `[*]` Zsynchronizowano `vercel.json` pod lekki build pakietów monorepo bez zbędnego budowania frontendu na Vercel.
 - `[*]` Utworzono katalog `public` z informacyjną stroną statusową i skonfigurowano `outputDirectory: public` w `vercel.json` dla kompilatora Vercel Serverless.
 - `[*]` Zsynchronizowano dokumentację projektową z Obsidian Vault (`C:\Users\Jakub Lis\Documents\OBSIDIAN\PROJEKTY\VibeHub\`).
+
+---
+
+## v 0.1.4 — 2026-10-20
+- `[+]` Usunięto defekty nawigacji i podświetlania menu w `Shell.tsx`:
+  - Utworzono persistent layout `apps/web/app/(dashboard)/layout.tsx`, eliminując znikanie menu bocznego przy przejściu na `/dashboard`.
+  - Wprowadzono precyzyjną detekcję hashy URL (`#diffs`), eliminując podwójne zaznaczanie pozycji "Room Collab & Preview" oraz "Code & Git Diffs".
+- `[+]` Zaimplementowano moduł **Firebase Authentication & User Stats**:
+  - Rejestracja i logowanie: Email/Hasło, Google Auth oraz szybki 1-klikowy "Tryb Gościa".
+  - Śledzenie czasu programowania w parze w czasie rzeczywistym (`activeCoopSessionSeconds`, auto-sync co 30s do Firestore `users/{uid}`).
+  - Pasek postępu, rangi kooperacyjne ("Co-op Novice", "Pair Pilot Pro", "Architect Elite") oraz szczegółowy modal profilu `UserProfileModal.tsx`.
+- `[+]` Rozbudowano mikroserwer backendowy na Vercelu:
+  - Wdrożono endpointy `/api/v1/users/stats` (odczyt/zapis statystyk użytkownika) oraz `/api/v1/rooms/stats` (statystyki mesh).
+  - Skonfigurowano uniwersalny CORS oraz preflight OPTIONS dla wszystkich tras API.
+- `[+]` Wprowadzono zautomatyzowany skrypt eksportu i wdrożenia na Firebase Hosting (`scripts/build-firebase.ps1`).
+- `[*]` Zsynchronizowano dokumentację projektową w Obsidian Vault (`C:\Users\Jakub Lis\Documents\OBSIDIAN\PROJEKTY\VibeHub\`).
