@@ -25,6 +25,12 @@ export const HeartbeatRequestSchema = z.object({
 });
 export type HeartbeatRequest = z.infer<typeof HeartbeatRequestSchema>;
 
+export const HeartbeatResponseSchema = z.object({
+  acknowledged: z.boolean(),
+  serverTime: z.string(),
+});
+export type HeartbeatResponse = z.infer<typeof HeartbeatResponseSchema>;
+
 export const RegisterProjectRequestSchema = z.object({
   roomId: z.string(),
   name: z.string(),

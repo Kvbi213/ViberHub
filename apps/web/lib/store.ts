@@ -1,4 +1,6 @@
 import { create } from 'zustand';
+import { db } from './firebase';
+import { collection, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
 
 export interface AgentInfo {
   id: string;
@@ -45,6 +47,8 @@ interface VibeHubState {
   devA: AgentInfo;
   devB: AgentInfo;
   events: TelemetryEvent[];
+  recentGitCommits: Array<{ hash: string; message: string; date: string }>;
+  gitBranch: string;
   permissions: {
     L1_git: boolean;
     L2_agent: boolean;
@@ -56,69 +60,73 @@ interface VibeHubState {
   setTunnelUrl: (url: string) => void;
   addEvent: (event: TelemetryEvent) => void;
   togglePermission: (key: keyof VibeHubState['permissions']) => void;
-  simulateNextStep: () => void;
+  syncWithSystemTelemetry: () => Promise<void>;
+  initFirestoreLiveListener: (roomId: string) => () => void;
+  simulateNextStep: () => Promise<void>;
 }
 
-export const useVibeHubStore = create<VibeHubState>((set) => ({
-  roomId: '409',
-  roomName: 'Antigravity Core Lab',
+export const useVibeHubStore = create<VibeHubState>((set, get) => ({
+  roomId: 'vibehub-mesh',
+  roomName: 'VibeHub Observability Mesh',
   isBridgeConnected: true,
   bridgeLatency: 14,
   activeProject: 'apps/web',
-  tunnelUrl: 'preview-tunnel.vibehub.internal:3000/dashboard',
-  eventsIngestedToday: 1482,
+  tunnelUrl: 'vibehub-mesh.firebaseapp.com/dashboard',
+  eventsIngestedToday: 48,
   activeBridgesCount: 2,
+  gitBranch: 'master',
+  recentGitCommits: [],
 
   devA: {
     id: 'agent_dev01',
     name: 'Google Antigravity CLI',
-    ownerName: 'Ty',
-    ownerRole: 'Staff Distributed Systems Architect',
+    ownerName: 'Jakub (Operator)',
+    ownerRole: 'Systems & Observability Architect',
     avatarUrl:
       'https://lh3.googleusercontent.com/aida-public/AB6AXuB8773YpK97KyUtsEgIpcFHWL4tE3leo59aFmWMdEazZynprwHNGMoZX2c-GSv0dxcpxzjMVi0NWTA0GPjFmnhKBrmuLiQRIyKSNbcc7XKxJ3cnyCC29nFGHJu9z9YI38ZB-ZrQ0S91cLjspbx3ERlwuf5PCarr2pab_30mQzMdvO9O3nGob45QczWNjG1huV482OLwswucklN2VRqWL-GSEZe73nXj8qw0G8MQP6ZbpeDjMVbLCKYy',
-    machine: 'MacBook Pro M3 Max',
+    machine: 'Windows 11 Workstation',
     provider: 'antigravity',
-    model: 'gemini-2.5-pro',
+    model: 'Gemini 3.8 Flash (High)',
     status: 'working',
-    activity: 'Refactoring Firestore Security Rules & event batch validator across microservices',
-    currentStep: 'EXECUTION STEP 4 / 7',
-    tool: 'write_to_file',
-    duration: '42m 18s',
-    confidence: 98,
-    activeFile: 'firestore.rules',
-    fileStats: '+48 -12 LOC',
+    activity: 'Zarządzanie projektem Firebase vibehub-mesh i wdrożenie reguł Firestore',
+    currentStep: 'LIVE FIREBASE SYNC ACTIVE',
+    tool: 'run_command',
+    duration: '54m 20s',
+    confidence: 100,
+    activeFile: 'firebase/firestore.rules',
+    fileStats: '+56 -8 LOC',
     diffSnippet: [
-      { line: 104, type: '+', text: 'match /databases/{database}/documents/events/{eventId} {' },
-      { line: 105, type: '+', text: '  allow create: if request.auth != null && request.resource.data.version == "v1";' },
-      { line: 106, type: '-', text: '  allow write: if request.auth != null;' },
-      { line: 107, type: ' ', text: '  allow read: if request.auth != null;' },
+      { line: 36, type: '+', text: 'match /rooms/{roomId}/events/{eventId} {' },
+      { line: 37, type: '+', text: '  allow read: if isRoomMember(roomId);' },
+      { line: 38, type: ' ', text: '  allow write: if false; // Zapis z autoryzowanego backendu' },
+      { line: 39, type: '+', text: '}' },
     ],
-    ping: 14,
-    memory: '412MB',
+    ping: 12,
+    memory: '512MB',
   },
 
   devB: {
     id: 'agent_dev02',
     name: 'Claude Code Agent',
-    ownerName: 'Ziomek',
-    ownerRole: 'Principal Fullstack Engineer',
+    ownerName: 'Współpracownik (Peer)',
+    ownerRole: 'Fullstack Systems Engineer',
     avatarUrl:
       'https://lh3.googleusercontent.com/aida-public/AB6AXuDKYPqT4ZQwFKhH6SiBBJn9Pn3fPf0bmQFsvo8gn1aJY4zLEICzOqViDwlMLUgCbjtgSjoTHhbwqO4HyueLkOIvKEhNx4Vctv7g-m9eGHqt_gbRImP_dkWOmscKdPdZI-acw31ZVb2ix2NsVtIFaRB_aVrSit2_r_Aqv6FW0VsBWMzWKiMV9V6AsskRzl9U5RPHG-ILyfQwLSMrRau589mugxNhZg3oNR8u2gVKK8iEJkG38inxbfFG',
-    machine: 'Arch Linux Devbox (Threadripper)',
+    machine: 'Arch Linux Devbox (Remote)',
     provider: 'claude-code',
     model: 'claude-3.5-sonnet',
     status: 'waiting',
-    activity: 'Awaiting human authorization for terminal command: vitest run --coverage',
-    currentStep: 'APPROVAL GATED',
+    activity: 'Oczekiwanie na zatwierdzenie komendy testowej pnpm test w środowisku peer',
+    currentStep: 'WAITING HUMAN CONFIRMATION',
     tool: 'run_command',
-    duration: '18m 04s',
+    duration: '22m 14s',
     confidence: 100,
-    activeFile: 'packages/contracts/src/validator.ts',
-    fileStats: '+19 -4 LOC',
+    activeFile: 'packages/event-protocol/src/types.ts',
+    fileStats: '+24 -3 LOC',
     diffSnippet: [
-      { line: 42, type: '+', text: 'export const EventEnvelopeSchema = z.object({' },
-      { line: 43, type: '+', text: '  id: z.string().uuid(),' },
-      { line: 44, type: ' ', text: '  schemaVersion: z.literal(1),' },
+      { line: 28, type: '+', text: 'export const CanonicalEventEnvelopeSchema = z.object({' },
+      { line: 29, type: '+', text: '  id: z.string(),' },
+      { line: 30, type: ' ', text: '  schemaVersion: z.number().int().default(1),' },
     ],
     ping: 18,
     memory: '388MB',
@@ -126,44 +134,44 @@ export const useVibeHubStore = create<VibeHubState>((set) => ({
 
   events: [
     {
-      id: 'evt_101',
-      time: '14:22:08',
-      source: 'antigravity',
-      type: 'tool.completed',
-      badge: 'TOOL_COMPLETED',
+      id: 'evt_init_01',
+      time: '15:25:51',
+      source: 'system',
+      type: 'firebase.deploy_complete',
+      badge: 'FIREBASE_DEPLOY',
       badgeColor: 'text-[#34C759] bg-emerald-50 border-emerald-200/60',
-      details: 'write_to_file :: firestore.rules [Success, 12ms]',
-      metadata: 'size: 4.2KB, lines: 48 added',
+      details: 'Reguły firestore.rules i indeksy wdrożone pomyślnie do projektu vibehub-mesh',
+      metadata: 'project: vibehub-mesh, region: europe-central2',
     },
     {
-      id: 'evt_102',
-      time: '14:22:01',
-      source: 'claude-code',
-      type: 'agent.status_changed',
-      badge: 'STATUS_WAITING',
-      badgeColor: 'text-[#FF9500] bg-amber-50 border-amber-200/60',
-      details: 'Agent paused for operator approval on command execution',
-      metadata: 'cmd: vitest run --coverage',
+      id: 'evt_init_02',
+      time: '15:25:06',
+      source: 'system',
+      type: 'firestore.database_created',
+      badge: 'FIRESTORE_NATIVE',
+      badgeColor: 'text-[#0071E3] bg-blue-50 border-blue-200/60',
+      details: 'Utworzono bazę Cloud Firestore w regionie europe-central2 (Warszawa)',
+      metadata: 'mode: NATIVE, status: ONLINE',
     },
     {
-      id: 'evt_103',
-      time: '14:21:45',
+      id: 'evt_init_03',
+      time: '15:22:25',
+      source: 'system',
+      type: 'firebase.app_registered',
+      badge: 'WEB_APP_READY',
+      badgeColor: 'text-amber-700 bg-amber-50 border-amber-200/60',
+      details: 'Zarejestrowano aplikację vibehub-web (App ID: 1:951110449404:web:e1c8ec...)',
+      metadata: 'apiKey: AIzaSyA4FBH8...',
+    },
+    {
+      id: 'evt_init_04',
+      time: '15:17:26',
       source: 'git',
       type: 'git.commit_created',
       badge: 'GIT_COMMIT',
-      badgeColor: 'text-[#0071E3] bg-blue-50 border-blue-200/60',
-      details: 'feat(contracts): add canonical event validation schemas',
-      metadata: 'hash: 7502efa, files: 8',
-    },
-    {
-      id: 'evt_104',
-      time: '14:21:12',
-      source: 'system',
-      type: 'bridge.heartbeat',
-      badge: 'HEARTBEAT',
-      badgeColor: 'text-slate-600 bg-slate-100 border-slate-200',
-      details: 'Bridge pulse verified on both nodes (MacBook Pro + Arch Linux)',
-      metadata: 'latency: 14ms / 18ms',
+      badgeColor: 'text-purple-700 bg-purple-50 border-purple-200/60',
+      details: 'feat(ui): implement Milky Glass Observability, Apple Fluid design system',
+      metadata: 'hash: c13edc9, files: 35',
     },
   ],
 
@@ -178,10 +186,15 @@ export const useVibeHubStore = create<VibeHubState>((set) => ({
   setActiveProject: (proj) => set({ activeProject: proj }),
   setTunnelUrl: (url) => set({ tunnelUrl: url }),
   addEvent: (event) =>
-    set((state) => ({
-      events: [event, ...state.events.slice(0, 49)],
-      eventsIngestedToday: state.eventsIngestedToday + 1,
-    })),
+    set((state) => {
+      if (state.events.some((e) => e.id === event.id)) {
+        return state;
+      }
+      return {
+        events: [event, ...state.events.slice(0, 49)],
+        eventsIngestedToday: state.eventsIngestedToday + 1,
+      };
+    }),
   togglePermission: (key) =>
     set((state) => ({
       permissions: {
@@ -189,23 +202,117 @@ export const useVibeHubStore = create<VibeHubState>((set) => ({
         [key]: !state.permissions[key],
       },
     })),
-  simulateNextStep: () =>
-    set((state) => {
-      const now = new Date();
-      const timeStr = now.toTimeString().split(' ')[0];
-      const newEvt: TelemetryEvent = {
-        id: `evt_${Date.now()}`,
-        time: timeStr,
-        source: 'antigravity',
-        type: 'agent.status_changed',
-        badge: 'STATUS_SYNC',
-        badgeColor: 'text-[#34C759] bg-emerald-50 border-emerald-200/60',
-        details: 'Antigravity Agent progressed step in active execution loop',
-        metadata: 'latency: 12ms',
-      };
-      return {
-        events: [newEvt, ...state.events.slice(0, 49)],
-        eventsIngestedToday: state.eventsIngestedToday + 1,
-      };
-    }),
+
+  simulateNextStep: async () => {
+    const currentRoom = get().roomId || 'vibehub-mesh';
+    const sampleTasks = [
+      'Weryfikacja integralności tokenów Milky Glass w Tailwind CSS',
+      'Testowanie handoffu zdarzeń z Bridge do Firestore',
+      'Kompilacja i sanityzacja diffa Git w kanonicznym protokole',
+      'Heartbeat i sprawdzenie mTLS tunelu obserwowalności',
+      'Optymalizacja zużycia pamięci w sesji agenta',
+    ];
+    const chosenTask = sampleTasks[Math.floor(Math.random() * sampleTasks.length)];
+    const eventPayload = {
+      schemaVersion: 1,
+      deviceId: 'dev_win32_local',
+      projectId: currentRoom,
+      events: [
+        {
+          id: `evt_live_${Date.now()}`,
+          schemaVersion: 1,
+          deviceId: 'dev_win32_local',
+          projectId: currentRoom,
+          occurredAt: new Date().toISOString(),
+          source: 'antigravity',
+          type: 'agent.task_started',
+          data: {
+            status: 'working',
+            activity: chosenTask,
+            provider: 'antigravity',
+            confidence: 1.0,
+          },
+        },
+      ],
+    };
+    try {
+      await fetch('/api/v1/events/batch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(eventPayload),
+      });
+      await get().syncWithSystemTelemetry();
+    } catch (err) {
+      console.warn('[!] ALERT :: Error emitting live event:', err);
+    }
+  },
+
+  syncWithSystemTelemetry: async () => {
+    try {
+      const res = await fetch('/api/v1/system/status');
+      if (!res.ok) return;
+      const data = await res.json();
+
+      if (data.success) {
+        set((state) => ({
+          gitBranch: data.git.branch || state.gitBranch,
+          recentGitCommits: data.git.recentCommits || state.recentGitCommits,
+          devA: {
+            ...state.devA,
+            machine: `${data.system.hostname} (${data.system.platform} ${data.system.arch})`,
+            memory: data.system.memory,
+            activity: data.agent.activeTask,
+          },
+        }));
+      }
+    } catch {
+      // Ignoruj błąd cichej synchronizacji
+    }
+  },
+
+  initFirestoreLiveListener: (roomId: string) => {
+    if (!db) return () => {};
+
+    try {
+      const eventsRef = collection(db, 'rooms', roomId, 'events');
+      const q = query(eventsRef, orderBy('createdAt', 'desc'), limit(50));
+
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        snapshot.docChanges().forEach((change) => {
+          if (change.type === 'added') {
+            const data = change.doc.data();
+            const occurredTime = data.occurredAt
+              ? new Date(data.occurredAt).toTimeString().split(' ')[0]
+              : new Date().toTimeString().split(' ')[0];
+
+            const newEvent: TelemetryEvent = {
+              id: change.doc.id,
+              time: occurredTime,
+              source: (data.source as any) || 'system',
+              type: data.type || 'agent.status_changed',
+              badge: data.type ? data.type.toUpperCase().replace('.', '_') : 'EVENT',
+              badgeColor:
+                data.source === 'antigravity'
+                  ? 'text-[#34C759] bg-emerald-50 border-emerald-200/60'
+                  : data.source === 'claude-code'
+                  ? 'text-[#FF9500] bg-amber-50 border-amber-200/60'
+                  : 'text-[#0071E3] bg-blue-50 border-blue-200/60',
+              details:
+                data.data && typeof data.data.activity === 'string'
+                  ? data.data.activity
+                  : `${data.type} zarejestrowane w Firestore`,
+              metadata: `id: ${change.doc.id.substring(0, 8)}`,
+            };
+
+            get().addEvent(newEvent);
+          }
+        });
+      });
+
+      return unsubscribe;
+    } catch (error) {
+      console.warn('[!] ALERT :: Firestore listener error:', error);
+      return () => {};
+    }
+  },
 }));

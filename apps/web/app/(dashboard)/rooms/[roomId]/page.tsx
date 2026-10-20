@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { Shell } from '@/components/layout/Shell';
 import { useVibeHubStore } from '@/lib/store';
@@ -9,7 +9,29 @@ export default function RoomCollabPage() {
   const params = useParams();
   const roomId = (params?.roomId as string) || '409';
 
-  const { activeProject, setActiveProject, tunnelUrl, setTunnelUrl } = useVibeHubStore();
+  const {
+    activeProject,
+    setActiveProject,
+    tunnelUrl,
+    setTunnelUrl,
+    gitBranch,
+    recentGitCommits,
+    devA,
+    syncWithSystemTelemetry,
+    initFirestoreLiveListener,
+  } = useVibeHubStore();
+
+  useEffect(() => {
+    syncWithSystemTelemetry();
+    const unsub = initFirestoreLiveListener(roomId);
+    const interval = setInterval(() => {
+      syncWithSystemTelemetry();
+    }, 10000);
+    return () => {
+      unsub();
+      clearInterval(interval);
+    };
+  }, [roomId, syncWithSystemTelemetry, initFirestoreLiveListener]);
 
   const [viewportMode, setViewportMode] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
   const [activeTab, setActiveTab] = useState<'diff' | 'files' | 'commits' | 'console'>('diff');
@@ -287,33 +309,31 @@ export default function RoomCollabPage() {
               {activeTab === 'diff' && (
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center justify-between text-xs sf-mono text-outline">
-                    <span>apps/web/app/rooms/[roomId]/page.tsx</span>
-                    <span className="text-apple-blue font-semibold">branch: feat/apple-fluid</span>
+                    <span>{devA.activeFile || 'apps/web/app/rooms/[roomId]/page.tsx'}</span>
+                    <span className="text-apple-blue font-semibold">branch: {gitBranch}</span>
                   </div>
 
                   <div className="bg-white/95 border border-black/[0.06] rounded-xl p-3 font-mono-code text-[11px] text-[#3A3A3C] overflow-x-auto space-y-1 shadow-xs max-h-[460px]">
-                    <div className="text-slate-400">@@ -102,9 +102,15 @@ export default function RoomPage()</div>
-                    <div className="text-emerald-700 font-medium">
-                      + import &#123; Shell &#125; from &apos;@/components/layout/Shell&apos;;
-                    </div>
-                    <div className="text-emerald-700 font-medium">
-                      + import &#123; useVibeHubStore &#125; from &apos;@/lib/store&apos;;
-                    </div>
-                    <div className="text-slate-400">  export default function RoomCollabPage() &#123;</div>
-                    <div className="text-emerald-700 font-medium">
-                      +   const &#123; activeProject, tunnelUrl &#125; = useVibeHubStore();
-                    </div>
-                    <div className="text-[#FF3B30] font-medium">
-                      -   const oldState = useOldDeprecatedStore();
-                    </div>
-                    <div className="text-emerald-700 font-medium">
-                      +   // Milky Glass &amp; Apple Fluid Viewport Mounted
-                    </div>
-                    <div className="text-[#3A3A3C]">    return (</div>
-                    <div className="text-[#3A3A3C]">      &lt;Shell&gt;</div>
-                    <div className="text-emerald-700 font-medium">
-                      +       &lt;div className=&quot;glass-window rounded-2xl&quot;&gt;
-                    </div>
+                    <div className="text-slate-400">@@ -102,9 +102,15 @@ active working diff @@</div>
+                    {devA.diffSnippet && devA.diffSnippet.length > 0 ? (
+                      devA.diffSnippet.map((line, idx) => (
+                        <div
+                          key={idx}
+                          className={
+                            line.type === '+'
+                              ? 'text-emerald-700 font-medium'
+                              : line.type === '-'
+                              ? 'text-[#FF3B30] font-medium'
+                              : 'text-[#3A3A3C]'
+                          }
+                        >
+                          <span className="text-[#8E8E93] select-none pr-2">{line.line}</span>
+                          {line.type} {line.text}
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-slate-500">Working tree clean. No uncommitted diffs.</div>
+                    )}
                   </div>
                 </div>
               )}
@@ -348,24 +368,19 @@ export default function RoomCollabPage() {
               {/* Tab Content 3: Commits */}
               {activeTab === 'commits' && (
                 <div className="flex flex-col gap-2 sf-mono text-xs">
-                  <div className="p-2.5 rounded-lg bg-slate-50 border border-black/[0.04]">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-apple-blue font-bold">7502efa</span>
-                      <span className="text-outline">14m ago</span>
-                    </div>
-                    <div className="font-medium text-on-surface">
-                      feat(init): scaffold VibeHub monorepo architecture, protocols, and documentation
-                    </div>
-                  </div>
-                  <div className="p-2.5 rounded-lg bg-slate-50 border border-black/[0.04]">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-apple-blue font-bold">9f8a20d</span>
-                      <span className="text-outline">28m ago</span>
-                    </div>
-                    <div className="font-medium text-on-surface">
-                      feat(ui): implement Milky Glass Observability and Apple Fluid design tokens
-                    </div>
-                  </div>
+                  {recentGitCommits && recentGitCommits.length > 0 ? (
+                    recentGitCommits.map((c) => (
+                      <div key={c.hash} className="p-2.5 rounded-lg bg-slate-50 border border-black/[0.04]">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-apple-blue font-bold">{c.hash}</span>
+                          <span className="text-outline">{c.date}</span>
+                        </div>
+                        <div className="font-medium text-on-surface">{c.message}</div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="p-3 text-outline text-xs">Brak ostatnich commitów w repozytorium</div>
+                  )}
                 </div>
               )}
 

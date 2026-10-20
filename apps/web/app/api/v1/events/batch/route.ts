@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { EventBatchRequestSchema } from '@vibehub/event-protocol';
+import { persistEvent } from '@/lib/firestore-service';
 
 export async function POST(req: NextRequest) {
   try {
@@ -21,9 +22,21 @@ export async function POST(req: NextRequest) {
 
     const { events, deviceId, projectId } = parseResult.data;
 
-    // Log zwalidowanego pakietu
+    // Autentyczny zapis zdarzeń do bazy Firestore
+    for (const event of events) {
+      await persistEvent(projectId, {
+        schemaVersion: event.schemaVersion,
+        deviceId: event.deviceId,
+        projectId: event.projectId,
+        occurredAt: event.occurredAt,
+        source: event.source,
+        type: event.type,
+        data: event.data,
+      });
+    }
+
     console.log(
-      `[*] INFO :: Ingested ${events.length} events from device=${deviceId} project=${projectId}`
+      `[+] SUCCESS :: Persisted ${events.length} authentic events to Firestore (vibehub-mesh) from device=${deviceId} project=${projectId}`
     );
 
     return NextResponse.json({

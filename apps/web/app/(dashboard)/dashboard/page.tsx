@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useVibeHubStore, TelemetryEvent } from '@/lib/store';
 
@@ -14,7 +14,21 @@ export default function DashboardPage() {
     devB,
     events,
     simulateNextStep,
+    syncWithSystemTelemetry,
+    initFirestoreLiveListener,
   } = useVibeHubStore();
+
+  useEffect(() => {
+    syncWithSystemTelemetry();
+    const unsub = initFirestoreLiveListener(roomId);
+    const interval = setInterval(() => {
+      syncWithSystemTelemetry();
+    }, 10000);
+    return () => {
+      unsub();
+      clearInterval(interval);
+    };
+  }, [roomId, syncWithSystemTelemetry, initFirestoreLiveListener]);
 
   const [copied, setCopied] = useState(false);
   const [activeFilter, setActiveFilter] = useState<'all' | 'antigravity' | 'claude-code' | 'git'>('all');

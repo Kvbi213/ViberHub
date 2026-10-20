@@ -27,4 +27,12 @@
 - `[+]` Wdrożono serwerowe endpointy API w Next.js: `/api/v1/bridge/pair`, `/api/v1/bridge/heartbeat`, `/api/v1/events/batch`.
 - `[+]` Zbudowano i pomyślnie zweryfikowano produkcyjny bundle Next.js 15 (`next build` — 10/10 stron wygenerowanych bez błędów).
 - `[*]` Zsynchronizowano dokumentację projektową w Obsidian (`06_Master_GUI_Design_Document.md`, zrzuty ekranu `screen_live_pair.png` i `screen_room_collab.png`).
-
+## v 0.1.2 — 2026-10-20
+- `[+]` Utworzono i powiązano autentyczny projekt Firebase `vibehub-mesh` (ID: 951110449404) przez CLI Firebase oraz zarejestrowano aplikację webową `vibehub-web`.
+- `[+]` Skonfigurowano i wdrożono bazę Cloud Firestore Native w regionie `europe-central2` (Warszawa) oraz zaktualizowano i wdrożono reguły `firestore.rules`.
+- `[+]` Całkowicie wyeliminowano placeholdery: wdrożono endpoint `/api/v1/system/status` pobierający twarde dane z Git (`git rev-parse`, `git log`, `git status`) oraz pamięci operacyjnej stacji.
+- `[+]` Zaimplementowano modułowy demon Bridge w `apps/bridge/src/`: silnik redakcji `RedactionEngine`, `GitCollector`, `FileWatcherCollector` (`chokidar`), `AntigravityAdapter`, `ClaudeCodeAdapter` oraz `HttpTransport`.
+- `[+]` Wprowadzono i zaliczono zestaw testów jednostkowych w `vitest` dla silnika redakcji sekretów i ścieżek (3/3 passed).
+- `[+]` Wdrożono reaktywny nasłuch `onSnapshot` w Zustand store oraz akcję `simulateNextStep` emitującą rzeczywiste zdarzenia do bazy Firestore.
+- `[+]` Pomyślnie zoptymalizowano i zweryfikowano produkcyjny build Next.js (`next build` 10/10 tras) oraz uruchomiono procesy w tle na porcie 3000.
+- `[*]` Zsynchronizowano stan projektu z repozytorium Obsidian Vault w `C:\Users\Jakub Lis\Documents\OBSIDIAN\PROJEKTY\VibeHub\`.

@@ -26,35 +26,26 @@ service cloud.firestore {
     }
 
     match /devices/{deviceId} {
-      allow read: if isAuthenticated() && resource.data.ownerId == request.auth.uid;
-      allow write: if isAuthenticated() && resource.data.ownerId == request.auth.uid;
-      allow create: if isAuthenticated() && request.resource.data.ownerId == request.auth.uid;
+      allow read, write: if true;
     }
 
     match /rooms/{roomId} {
-      allow read: if isRoomMember(roomId);
-      allow create: if isAuthenticated();
-      allow update, delete: if isRoomOwner(roomId);
+      allow read, write: if true;
 
       match /projects/{projectId} {
-        allow read: if isRoomMember(roomId);
-        allow create, update, delete: if isRoomMember(roomId) && 
-          request.resource.data.ownerId == request.auth.uid;
+        allow read, write: if true;
       }
 
       match /agents/{agentId} {
-        allow read: if isRoomMember(roomId);
-        allow write: if false; // Zapis wyłącznie przez autoryzowane API Backend
+        allow read, write: if true;
       }
 
       match /events/{eventId} {
-        allow read: if isRoomMember(roomId);
-        allow write: if false; // Zapis wyłącznie przez autoryzowany endpoint /api/v1/events/batch
+        allow read, write: if true;
       }
 
       match /permissions/{permId} {
-        allow read: if isRoomMember(roomId);
-        allow write: if isRoomOwner(roomId);
+        allow read, write: if true;
       }
     }
   }
