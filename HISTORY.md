@@ -46,4 +46,5 @@
 - `[+]` Skonfigurowano integrację zapisu batchu zdarzeń z mikroserwera Vercel bezpośrednio do bazy Cloud Firestore (`viberhub-8842f`) w regionie `europe-central2`.
 - `[+]` Skonfigurowano `apps/web` jako czysty eksport statyczny Next.js 15 (`output: 'export'`), wygenerowano bundle (11/11 tras) i pomyślnie wdrożono na Firebase Hosting.
 - `[*]` Zsynchronizowano `vercel.json` pod lekki build pakietów monorepo bez zbędnego budowania frontendu na Vercel.
+- `[*]` Utworzono katalog `public` z informacyjną stroną statusową i skonfigurowano `outputDirectory: public` w `vercel.json` dla kompilatora Vercel Serverless.
 - `[*]` Zsynchronizowano dokumentację projektową z Obsidian Vault (`C:\Users\Jakub Lis\Documents\OBSIDIAN\PROJEKTY\VibeHub\`).

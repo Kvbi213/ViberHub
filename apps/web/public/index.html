@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VibeHub Microserver Backend</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #0D0E11;
+      color: #E5E7EB;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 32px;
+      max-width: 540px;
+      width: 100%;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+      backdrop-filter: blur(16px);
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-family: monospace;
+      font-weight: 600;
+      background: rgba(52, 199, 89, 0.15);
+      color: #34C759;
+      border: 1px solid rgba(52, 199, 89, 0.3);
+      margin-bottom: 16px;
+    }
+    .pulse {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #34C759;
+      box-shadow: 0 0 10px #34C759;
+    }
+    h1 {
+      font-size: 22px;
+      margin: 0 0 8px 0;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+    p {
+      color: #9CA3AF;
+      font-size: 14px;
+      line-height: 1.5;
+      margin: 0 0 20px 0;
+    }
+    .endpoint {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 8px;
+      font-family: monospace;
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .method {
+      color: #60A5FA;
+      font-weight: bold;
+    }
+    .post {
+      color: #34D399;
+    }
+    .btn {
+      display: inline-block;
+      margin-top: 16px;
+      padding: 10px 20px;
+      background: #0071E3;
+      color: #FFF;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+    .btn:hover {
+      background: #0077ED;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="badge"><span class="pulse"></span> ONLINE — VERCEL SERVERLESS MICROSERVER</div>
+    <h1>VibeHub API Backend</h1>
+    <p>Autentyczny mikroserwer obserwowalności i protokołu zdarzeń agentów AI VibeHub. Zintegrowany z Cloud Firestore w europe-central2.</p>
+    
+    <div class="endpoint">
+      <span><span class="method">GET</span> /api/v1/system/status</span>
+      <span style="color: #6B7280;">telemetria stacji</span>
+    </div>
+    <div class="endpoint">
+      <span><span class="method post">POST</span> /api/v1/events/batch</span>
+      <span style="color: #6B7280;">ingestia zdarzeń</span>
+    </div>
+    <div class="endpoint">
+      <span><span class="method post">POST</span> /api/v1/bridge/pair</span>
+      <span style="color: #6B7280;">parowanie bridge</span>
+    </div>
+    <div class="endpoint">
+      <span><span class="method post">POST</span> /api/v1/bridge/heartbeat</span>
+      <span style="color: #6B7280;">liveness ping</span>
+    </div>
+
+    <a class="btn" href="https://viberhub-8842f.web.app" target="_blank">Otwórz Frontend na Firebase &rarr;</a>
+  </div>
+</body>
+</html>
