@@ -66,4 +66,9 @@
   - Skierowano ruch do publicznej domeny produkcyjnej `https://viber-hub.vercel.app` bez wymuszonego SSO.
 - `[+]` Wprowadzono zautomatyzowany skrypt eksportu i wdrożenia na Firebase Hosting (`scripts/build-firebase.ps1`).
 - `[+]` Zaimplementowano standalone CLI runner w `apps/bridge/src/cli.ts` (`vibehub`, `vibehub-bridge`) obsługujący parowanie (`pair`), start demona telemetrycznego oraz globalne powiązanie w systemie przez `npm link`.
+- `[+]` Wdrożono bramkę wejściową **Auth Gate** (`AuthGate.tsx`) oraz 4-krokowy kreator konfiguracji **Onboarding Wizard** (`OnboardingWizard.tsx`):
+  - Uruchomienie aplikacji bez aktywnej sesji natychmiast prezentuje wybór: Szybki Gość (1-klik), Logowanie lub Nowe Konto.
+  - Nowo zalogowany lub zresetowany operator przechodzi przez interaktywne wprowadzenie: Tożsamość i Rola inżynierska, Wybór pokoju i architektury, Matryca uprawnień Zero-Trust (L1–L4) oraz Weryfikacja CLI Bridge.
+  - Ukończenie konfiguracji trwale utrwala preferencje w Cloud Firestore (`users/{uid}`) i odblokowuje pełny Dashboard.
+  - Dodano możliwość ponownego uruchomienia kreatora bezpośrednio z modalu profilu (`UserProfileModal.tsx`).
 - `[*]` Zsynchronizowano dokumentację projektową w Obsidian Vault (`C:\Users\Jakub Lis\Documents\OBSIDIAN\PROJEKTY\VibeHub\`).

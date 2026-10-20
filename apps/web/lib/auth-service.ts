@@ -20,6 +20,19 @@ export interface UserStats {
   lastActiveRoom: string;
 }
 
+export interface UserPreferences {
+  role?: string;
+  theme?: 'system' | 'light' | 'dark';
+  defaultRoom?: string;
+  stationName?: string;
+  permissions?: {
+    L1_git: boolean;
+    L2_agent: boolean;
+    L3_context: boolean;
+    L4_preview: boolean;
+  };
+}
+
 export interface UserProfileData {
   uid: string;
   email: string | null;
@@ -28,6 +41,8 @@ export interface UserProfileData {
   isAnonymous: boolean;
   createdAt: string;
   lastSeenAt: string;
+  onboardingCompleted?: boolean;
+  preferences?: UserPreferences;
   stats: UserStats;
 }
 
@@ -86,6 +101,7 @@ function createFallbackUser(email: string | null, isAnonymous: boolean, customNa
     isAnonymous,
     createdAt: new Date().toISOString(),
     lastSeenAt: new Date().toISOString(),
+    onboardingCompleted: false,
     stats: { ...DEFAULT_STATS },
   };
 }
@@ -156,8 +172,9 @@ export async function createOrUpdateUserDoc(user: User, customDisplayName?: stri
         console.warn('[!] ALERT :: Could not update lastSeenAt:', err);
       }
     }
-    const full = {
+    const full: UserProfileData = {
       ...existing,
+      onboardingCompleted: existing.onboardingCompleted ?? false,
       stats: updatedStats,
     };
     saveLocalSession(full);
@@ -172,6 +189,7 @@ export async function createOrUpdateUserDoc(user: User, customDisplayName?: stri
     isAnonymous: user.isAnonymous,
     createdAt: new Date().toISOString(),
     lastSeenAt: new Date().toISOString(),
+    onboardingCompleted: false,
     stats: { ...DEFAULT_STATS },
   };
 
@@ -365,4 +383,74 @@ export function subscribeToAuth(callback: (user: any) => void) {
     subscribers.delete(callback);
     unsubFirebase();
   };
+}
+
+export async function completeUserOnboarding(
+  uid: string,
+  preferences: UserPreferences,
+  customDisplayName?: string
+): Promise<UserProfileData | null> {
+  let profile = loadLocalSession();
+  if (!profile || profile.uid !== uid) {
+    profile = await getUserProfile(uid);
+  }
+  if (!profile) return null;
+
+  const nextDisplayName = customDisplayName?.trim() || profile.displayName;
+  const updated: UserProfileData = {
+    ...profile,
+    displayName: nextDisplayName,
+    onboardingCompleted: true,
+    preferences: {
+      ...profile.preferences,
+      ...preferences,
+    },
+  };
+
+  saveLocalSession(updated);
+
+  if (db) {
+    try {
+      const userRef = doc(db, 'users', uid);
+      await updateDoc(userRef, {
+        displayName: nextDisplayName,
+        onboardingCompleted: true,
+        preferences: updated.preferences,
+      });
+    } catch (err) {
+      console.warn('[!] ALERT :: Failed to update onboarding in Firestore:', err);
+    }
+  }
+
+  notifyAuthSubscribers(updated);
+  return updated;
+}
+
+export async function resetUserOnboarding(uid: string): Promise<UserProfileData | null> {
+  let profile = loadLocalSession();
+  if (!profile || profile.uid !== uid) {
+    profile = await getUserProfile(uid);
+  }
+  if (!profile) return null;
+
+  const updated: UserProfileData = {
+    ...profile,
+    onboardingCompleted: false,
+  };
+
+  saveLocalSession(updated);
+
+  if (db) {
+    try {
+      const userRef = doc(db, 'users', uid);
+      await updateDoc(userRef, {
+        onboardingCompleted: false,
+      });
+    } catch (err) {
+      console.warn('[!] ALERT :: Failed to reset onboarding in Firestore:', err);
+    }
+  }
+
+  notifyAuthSubscribers(updated);
+  return updated;
 }

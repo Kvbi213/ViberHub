@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useVibeHubStore } from '@/lib/store';
+import { resetUserOnboarding } from '@/lib/auth-service';
 
 function formatSeconds(totalSec: number): string {
   if (!totalSec || totalSec <= 0) return '0m 0s';
@@ -133,14 +134,23 @@ export function UserProfileModal() {
         </div>
 
         {/* Footer Actions */}
-        <div className="flex items-center justify-between pt-2 border-t border-black/[0.06]">
-          <span className="text-[11px] text-[#8E8E93]">
-            ID: <code className="font-mono">{currentUser.uid.substring(0, 10)}...</code>
-          </span>
+        <div className="flex items-center justify-between pt-2 border-t border-black/[0.06] flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={async () => {
+              await resetUserOnboarding(currentUser.uid);
+              setProfileModalOpen(false);
+            }}
+            className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-[#1C1C1E] font-medium text-xs transition border border-black/[0.06] flex items-center gap-1.5"
+          >
+            <span className="material-symbols-outlined text-[15px]">tune</span>
+            Uruchom Konfigurator Ponownie
+          </button>
+
           <button
             type="button"
             onClick={handleLogout}
-            className="px-4 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-medium text-xs transition border border-rose-200/60 flex items-center gap-1.5"
+            className="px-4 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-medium text-xs transition border border-rose-200/60 flex items-center gap-1.5 ml-auto"
           >
             <span className="material-symbols-outlined text-[16px]">logout</span>
             Wyloguj się

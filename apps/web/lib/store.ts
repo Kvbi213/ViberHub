@@ -64,11 +64,14 @@ interface VibeHubState {
     L4_preview: boolean;
   };
   currentUser: UserProfileData | null;
+  authInitialized: boolean;
+  isOnboardingOpen: boolean;
   activeCoopSessionSeconds: number;
   isAuthModalOpen: boolean;
   isProfileModalOpen: boolean;
   setAuthModalOpen: (open: boolean) => void;
   setProfileModalOpen: (open: boolean) => void;
+  setOnboardingOpen: (open: boolean) => void;
   setCurrentUser: (user: UserProfileData | null) => void;
   tickCoopTimer: () => void;
   persistCoopTime: () => Promise<void>;
@@ -202,12 +205,20 @@ export const useVibeHubStore = create<VibeHubState>((set, get) => ({
   },
 
   currentUser: null,
+  authInitialized: false,
+  isOnboardingOpen: false,
   activeCoopSessionSeconds: 0,
   isAuthModalOpen: false,
   isProfileModalOpen: false,
   setAuthModalOpen: (open) => set({ isAuthModalOpen: open }),
   setProfileModalOpen: (open) => set({ isProfileModalOpen: open }),
-  setCurrentUser: (user) => set({ currentUser: user }),
+  setOnboardingOpen: (open) => set({ isOnboardingOpen: open }),
+  setCurrentUser: (user) =>
+    set((state) => ({
+      currentUser: user,
+      roomId: user?.preferences?.defaultRoom || state.roomId,
+      permissions: user?.preferences?.permissions || state.permissions,
+    })),
 
   tickCoopTimer: () =>
     set((state) => {
@@ -249,9 +260,14 @@ export const useVibeHubStore = create<VibeHubState>((set, get) => ({
     const unsub = subscribeToAuth(async (user) => {
       if (user) {
         const profile = await createOrUpdateUserDoc(user);
-        set({ currentUser: profile });
+        set((state) => ({
+          currentUser: profile,
+          authInitialized: true,
+          roomId: profile.preferences?.defaultRoom || state.roomId,
+          permissions: profile.preferences?.permissions || state.permissions,
+        }));
       } else {
-        set({ currentUser: null });
+        set({ currentUser: null, authInitialized: true });
       }
     });
     return unsub;
