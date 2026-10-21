@@ -206,3 +206,22 @@
   - Zbudowano i wdrożono zaktualizowany frontend na Firebase Hosting (`https://viberhub-8842f.web.app`).
   - Zsynchronizowano mikroserwer Vercel (`https://viber-hub.vercel.app`) przez Git push do `origin main`.
 - `[*]` Zsynchronizowano dokumentację projektową w Obsidian Vault (`C:\Users\Jakub Lis\Documents\OBSIDIAN\PROJEKTY\VibeHub\`).
+
+
+---
+
+## v 0.2.0 — 2026-10-21
+- `[+]` **Przejście na Architekturę MCP-First (Model Context Protocol)**:
+  - Zastąpiono archaiczny model opartego o system plików demona Bridge bezpośrednią integracją MCP stdio JSON-RPC (`vibehub mcp`).
+  - Rozwiązano błędy uprawnień Windows (`EPERM` na katalogach systemowych) i zredukowano obciążenie procesora do zera (brak skanera `chokidar`).
+- `[+]` **Dedykowana Karta Instrukcji Agenta AI w Ustawieniach (`/settings`)**:
+  - Wprowadzono nadrzędną sekcję "Polecenie dla Twojego Agenta AI" z automatycznym kopiowaniem promptu konfigurującego MCP w czacie agenta.
+  - Udostępniono 1-klikowe kopiowanie komendy `vibehub setup-mcp` oraz definicji `mcpServers.vibehub` dla plików `mcp.json`.
+- `[+]` **Globalny Dostęp w Nagłówku (`Shell.tsx`)**:
+  - Dodano podświetlany przycisk `[🤖 Podłącz AI (MCP)]` w nagłówku aplikacji, umożliwiający wgląd w prompt i test łączności z dowolnego ekranu.
+- `[+]` **Kreator Wdrożeniowy (`OnboardingWizard.tsx`)**:
+  - Zaktualizowano krok 4 o rekomendowaną konfigurację serwera MCP zamiast pasywnego parowania maszyny.
+- `[+]` **Wdrożenie produkcyjne**:
+  - Zbudowano i wdrożono najnowszy bundle na Firebase Hosting (`https://viberhub-8842f.web.app`).
+  - Zsynchronizowano zmiany z repozytorium zdalnym `origin/main`.
+- `[*]` Zsynchronizowano dokumentację projektową w Obsidian Vault (`C:\Users\Jakub Lis\Documents\OBSIDIAN\PROJEKTY\VibeHub\`).
