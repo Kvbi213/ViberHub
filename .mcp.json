@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "vibehub": {
+      "command": "vibehub",
+      "args": [
+        "mcp"
+      ],
+      "env": {
+        "VIBEHUB_ROOM_ID": "viberhub-8842f",
+        "VIBEHUB_API_URL": "https://viber-hub.vercel.app/api/v1"
+      }
+    }
+  }
+}

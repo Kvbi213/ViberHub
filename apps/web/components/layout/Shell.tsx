@@ -7,6 +7,7 @@ import { useVibeHubStore } from '@/lib/store';
 import { AuthModal } from '@/components/auth/AuthModal';
 import { UserProfileModal } from '@/components/auth/UserProfileModal';
 import { BridgeDownloadModal } from '@/components/bridge/BridgeDownloadModal';
+import { AgentConnectionModal } from '@/components/bridge/AgentConnectionModal';
 
 function formatTimer(sec: number): string {
   const m = Math.floor(sec / 60);
@@ -18,6 +19,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [hash, setHash] = useState('');
   const [downloadModalOpen, setDownloadModalOpen] = useState(false);
+  const [aiConnectionModalOpen, setAiConnectionModalOpen] = useState(false);
 
   const {
     roomId,
@@ -203,6 +205,17 @@ export function Shell({ children }: { children: React.ReactNode }) {
 
               {/* Action Buttons */}
               <div className="flex items-center gap-2">
+                {/* Podłącz AI / MCP Button */}
+                <button
+                  onClick={() => setAiConnectionModalOpen(true)}
+                  className="apple-btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium text-[13px] shadow-[0_3px_12px_rgba(0,113,227,0.3)] border-t border-white/20 transition cursor-pointer"
+                  title="Skonfiguruj połączenie z agentem AI przez protokół MCP"
+                >
+                  <span className="material-symbols-outlined text-[16px]">smart_toy</span>
+                  <span className="hidden md:inline">Podłącz AI (MCP)</span>
+                  <span className="md:hidden">MCP</span>
+                </button>
+
                 {/* Zgraj Bridge CLI Button */}
                 <button
                   onClick={() => setDownloadModalOpen(true)}
@@ -210,7 +223,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
                   title="Zgraj pliki i narzędzia terminalowe VibeHub CLI"
                 >
                   <span className="material-symbols-outlined text-[16px]">terminal</span>
-                  <span className="hidden md:inline">Zgraj Bridge CLI</span>
+                  <span className="hidden md:inline">Zgraj CLI</span>
                   <span className="md:hidden">CLI</span>
                 </button>
 
@@ -218,8 +231,8 @@ export function Shell({ children }: { children: React.ReactNode }) {
                   href="/settings"
                   className="apple-btn hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/90 border border-black/[0.08] hover:bg-slate-50 text-[#1C1C1E] font-medium text-[13px] shadow-sm"
                 >
-                  <span className="material-symbols-outlined text-[16px] text-[#0071E3]">sensors</span>
-                  Pair Bridge
+                  <span className="material-symbols-outlined text-[16px] text-[#0071E3]">settings</span>
+                  Ustawienia
                 </Link>
 
                 <button
@@ -276,6 +289,11 @@ export function Shell({ children }: { children: React.ReactNode }) {
         isOpen={downloadModalOpen}
         onClose={() => setDownloadModalOpen(false)}
         pairingCode="VH-9428-XK"
+      />
+      <AgentConnectionModal
+        isOpen={aiConnectionModalOpen}
+        onClose={() => setAiConnectionModalOpen(false)}
+        roomId={roomId}
       />
     </div>
   );

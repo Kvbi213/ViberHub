@@ -236,30 +236,39 @@ export function OnboardingWizard() {
             </div>
           )}
 
-          {/* STEP 4: Podłączenie CLI Bridge */}
+          {/* STEP 4: Podłączenie Agenta AI & MCP */}
           {step === 4 && (
             <div className="flex flex-col gap-5">
               <div>
                 <h2 className="text-xl font-bold text-[#1C1C1E] apple-headline">
-                  Krok 4: Integracja ze Stacją Roboczą
+                  Krok 4: Integracja Agenta AI &amp; Serwer MCP
                 </h2>
                 <p className="text-xs text-[#636366] mt-1">
-                  Twój lokalny demon Bridge jest już zainstalowany i gotowy do wysyłania telemetrii z kodu.
+                  Skonfiguruj połączenie z agentem programistycznym (Cursor, Antigravity, Claude Code) przez natywny protokół MCP.
                 </p>
               </div>
 
               <div className="p-4 rounded-2xl bg-slate-50 border border-black/[0.06] flex flex-col gap-3">
-                <span className="text-xs font-semibold text-[#1C1C1E]">
-                  Polecenie parowania w PowerShell / Terminalu:
-                </span>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-[#1C1C1E]">
+                    Polecenie automatycznej konfiguracji MCP dla AI:
+                  </span>
+                  <span className="px-2 py-0.5 rounded-full bg-blue-100 text-[#0071E3] text-[10px] font-mono font-bold">
+                    Rekomendowane MCP
+                  </span>
+                </div>
                 <div className="flex items-center justify-between gap-3 bg-white p-3 rounded-xl border border-black/[0.08]">
                   <code className="text-xs font-mono text-[#0071E3] font-bold">
-                    vibehub pair VH-9428-XK
+                    vibehub setup-mcp
                   </code>
                   <button
                     type="button"
-                    onClick={copyPairingCommand}
-                    className="apple-btn px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-semibold text-[#1C1C1E] flex items-center gap-1"
+                    onClick={() => {
+                      navigator.clipboard.writeText('vibehub setup-mcp');
+                      setCopiedCode(true);
+                      setTimeout(() => setCopiedCode(false), 2000);
+                    }}
+                    className="apple-btn px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-semibold text-[#1C1C1E] flex items-center gap-1 cursor-pointer"
                   >
                     <span className="material-symbols-outlined text-[14px]">
                       {copiedCode ? 'check' : 'content_copy'}
@@ -268,12 +277,12 @@ export function OnboardingWizard() {
                   </button>
                 </div>
                 <span className="text-[11px] text-[#636366]">
-                  Możesz uruchomić to polecenie w dowolnym momencie w swoim projekcie. Możesz też przejść do Dashboardu bez uruchamiania Bridge — agenci będą symulowani w chmurze.
+                  Polecenie automatycznie rejestruje narzędzia VibeHub w konfiguracji Cursor, Antigravity i Claude Desktop.
                 </span>
 
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-xl bg-emerald-50/80 border border-emerald-200/80 gap-2">
                   <div className="text-[11px] text-emerald-950 font-medium">
-                    Nie masz jeszcze komendy vibehub w terminalu?
+                    Pobierz gotową paczkę CLI (.ZIP / .BAT / .PS1):
                   </div>
                   <a
                     href="/vibehub-cli-bundle.zip"

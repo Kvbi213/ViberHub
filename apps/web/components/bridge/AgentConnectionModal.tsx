@@ -26,38 +26,52 @@ export function AgentConnectionModal({
     setTimeout(() => setCopiedKey(null), 2500);
   };
 
-  const aiSystemPrompt = `Jesteś agentem AI pracującym w projekcie zintegrowanym z klastrem VibeHub.
-Twoim celem jest raportowanie postępów, statusu pracy oraz edytowanych plików do pokoju obserwacyjnego VibeHub.
+  const aiSystemPrompt = `Jesteś autonomicznym agentem AI (Cursor / Claude Code / Antigravity / Windsurf / Cline) pracującym w projekcie podłączonym do klastra VibeHub.
+Twoim zadaniem jest natychmiastowe skonfigurowanie serwera MCP oraz ciągłe raportowanie bieżącego statusu, aktywnego narzędzia i diffów kodu do pokoju VibeHub (#${roomId}).
 
-Gdy wykonujesz istotne kroki, generujesz kod lub modyfikujesz plik, wyślij raport telemetrii przez HTTP POST na endpoint:
-URL: https://viber-hub.vercel.app/api/v1/agents/active
-Headers: {"Content-Type": "application/json"}
-Body (JSON):
+INSTRUKCJA DLA CIEBIE (WYKONAJ PO KOLEI):
+
+1. KONFIGURACJA SERWERA MCP:
+Wykonaj w terminalu polecenie automatycznej rejestracji w Twoich edytorach:
+vibehub setup-mcp
+
+(Alternatywnie dopisz serwer 'vibehub' do swojego pliku mcp.json / .cursor/mcp.json / ~/.gemini/antigravity/mcp.json:
 {
-  "roomId": "${roomId}",
-  "agents": [
-    {
-      "id": "ai_agent_${roomId}",
-      "provider": "antigravity", // lub "cursor", "claude-code", "windsurf"
-      "name": "Mój Asystent AI",
-      "model": "Coding AI Model",
-      "status": "working", // "working" | "waiting" | "idle" | "error"
-      "activity": "Krótki opis zadania, które aktualnie wykonujesz",
-      "currentTool": "edit_file",
-      "activeFile": "apps/web/app/rooms/page.tsx",
-      "fileStats": "+ modified",
-      "diffSnippet": [
-        { "line": 1, "type": "+", "text": "dodana linia kodu" },
-        { "line": 2, "type": "-", "text": "usunięta linia kodu" }
-      ],
-      "machine": "Stacja Deweloperska",
-      "operatorName": "Ty",
-      "lastActiveAt": new Date().toISOString()
+  "mcpServers": {
+    "vibehub": {
+      "command": "vibehub",
+      "args": ["mcp"],
+      "env": {
+        "VIBEHUB_ROOM_ID": "${roomId}",
+        "VIBEHUB_API_URL": "https://viber-hub.vercel.app/api/v1"
+      }
     }
-  ]
-}
+  }
+})
 
-Raportuj stan regularnie, aby stan w VibeHub Room Collab był widoczny na żywo w czasie rzeczywistym.`;
+2. ZASADY WYWOŁYWANIA NARZĘDZI MCP W CZASIE PRACY:
+Zawsze wywołuj narzędzie 'vibehub_push_status' w kluczowych momentach:
+- Na początku pracy:
+  vibehub_push_status({ status: "working", activity: "Rozpoczęcie realizacji zadania: [opis]", name: "Twój Model" })
+- Po każdej edycji pliku lub wykonaniu narzędzia (edit_file, write_file, run_command):
+  vibehub_push_status({
+    status: "working",
+    activity: "Krótki opis wykonanej modyfikacji",
+    currentTool: "edit_file",
+    activeFile: "ścieżka/do/edytowanego/pliku",
+    diff: "+ dodany kod\\n- usunięty kod",
+    name: "Twój Model"
+  })
+- Po ukończeniu zadania / oczekiwaniu na użytkownika:
+  vibehub_push_status({ status: "waiting", activity: "Zadanie zakończone, oczekiwanie na decyzję operatora" })
+- Po zakończeniu ważnego etapu architektury:
+  vibehub_checkpoint({ title: "Nazwa kamienia milowego", summary: "Opis wdrożenia", files: ["plik1", "plik2"] })
+
+3. SZYBKI FALLBACK (jeśli sesja MCP nie została jeszcze zrestartowana):
+Wyślij telemetrię bezpośrednio przez HTTP POST:
+Endpoint: https://viber-hub.vercel.app/api/v1/agents/active
+Headers: {"Content-Type": "application/json"}
+Body: {"roomId":"${roomId}","agents":[{"id":"ai_active","provider":"antigravity","name":"AI Coder","status":"working","activity":"Zadanie w toku","lastActiveAt":"'$(Get-Date -Format o)'"}]}`;
 
   const mcpConfigJson = JSON.stringify(
     {
