@@ -8,6 +8,7 @@ import { AuthModal } from '@/components/auth/AuthModal';
 import { UserProfileModal } from '@/components/auth/UserProfileModal';
 import { BridgeDownloadModal } from '@/components/bridge/BridgeDownloadModal';
 import { AgentConnectionModal } from '@/components/bridge/AgentConnectionModal';
+import { OnboardingWizard } from '@/components/onboarding/OnboardingWizard';
 
 function formatTimer(sec: number): string {
   const m = Math.floor(sec / 60);
@@ -33,6 +34,8 @@ export function Shell({ children }: { children: React.ReactNode }) {
     initFirestoreLiveListener,
     setAuthModalOpen,
     setProfileModalOpen,
+    isOnboardingOpen,
+    setOnboardingOpen,
   } = useVibeHubStore();
 
   useEffect(() => {
@@ -295,6 +298,13 @@ export function Shell({ children }: { children: React.ReactNode }) {
         onClose={() => setAiConnectionModalOpen(false)}
         roomId={roomId}
       />
+      {isOnboardingOpen && (
+        <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+          <div className="w-full max-w-3xl my-auto">
+            <OnboardingWizard isModal onClose={() => setOnboardingOpen(false)} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

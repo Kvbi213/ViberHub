@@ -9,7 +9,7 @@ import { BridgeDownloadModal } from '@/components/bridge/BridgeDownloadModal';
 import { AgentConnectionModal } from '@/components/bridge/AgentConnectionModal';
 
 export default function SettingsBridgePage() {
-  const { roomId, activeAgents } = useVibeHubStore();
+  const { roomId, activeAgents, setOnboardingOpen } = useVibeHubStore();
   const [pairingCode, setPairingCode] = useState('VH-9428-XK');
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [devices, setDevices] = useState<DeviceRecord[]>([]);
@@ -126,19 +126,28 @@ Body: {"roomId":"${roomId}","agents":[{"id":"ai_active","provider":"antigravity"
 
   return (
     <div className="flex flex-col w-full max-w-5xl mx-auto p-8 gap-8">
-      <div>
-        <div className="flex items-center gap-2 mb-1">
-          <span className="px-2 py-0.5 rounded-full bg-blue-100 text-[#0071E3] font-mono text-[10px] font-bold">
-            PARADYGMAT MCP-FIRST
-          </span>
-          <span className="text-xs text-[#8E8E93] font-mono">Pokój: #{roomId}</span>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="px-2 py-0.5 rounded-full bg-blue-100 text-[#0071E3] font-mono text-[10px] font-bold">
+              PARADYGMAT MCP-FIRST
+            </span>
+            <span className="text-xs text-[#8E8E93] font-mono">Pokój: #{roomId}</span>
+          </div>
+          <h1 className="text-2xl font-bold tracking-tight text-[#1C1C1E] apple-headline">
+            Integracja Agenta AI &amp; Konfiguracja MCP
+          </h1>
+          <p className="text-sm text-[#636366] mt-1">
+            Podłącz swoje środowisko AI (Cursor, Google Antigravity, Claude Code, Windsurf) przez protokół MCP — bez uciążliwych demonów w tle i problemów z uprawnieniami systemu plików.
+          </p>
         </div>
-        <h1 className="text-2xl font-bold tracking-tight text-[#1C1C1E] apple-headline">
-          Integracja Agenta AI &amp; Konfiguracja MCP
-        </h1>
-        <p className="text-sm text-[#636366] mt-1">
-          Podłącz swoje środowisko AI (Cursor, Google Antigravity, Claude Code, Windsurf) przez protokół MCP — bez uciążliwych demonów w tle i problemów z uprawnieniami systemu plików.
-        </p>
+        <button
+          onClick={() => setOnboardingOpen(true)}
+          className="apple-btn px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-[#1C1C1E] text-xs font-semibold flex items-center gap-1.5 shrink-0 self-start sm:self-center transition border border-black/[0.06] cursor-pointer"
+        >
+          <span className="material-symbols-outlined text-[16px] text-[#0071E3]">tune</span>
+          Otwórz Kreator Konfiguracji
+        </button>
       </div>
 
       {/* PRIMARY CARD: Agent MCP Instruction Prompt */}

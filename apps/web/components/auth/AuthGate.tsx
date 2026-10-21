@@ -83,15 +83,14 @@ export function AuthGate() {
           <div className="flex items-center gap-2.5 px-3 py-1 rounded-full bg-white/80 border border-black/[0.06] shadow-xs mb-1">
             <span className="w-2 h-2 rounded-full bg-[#34C759] status-pulse-green" />
             <span className="font-mono-status text-[11px] text-[#1C1C1E] font-semibold tracking-wide">
-              VIBEHUB OBSERVABILITY PLATFORM v0.1.4
+              VIBEHUB OBSERVABILITY PLATFORM v0.2.1
             </span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#1C1C1E] apple-headline">
             Współpraca i Obserwowalność <span className="text-[#0071E3]">Agentów AI</span>
           </h1>
           <p className="text-sm text-[#636366] leading-relaxed max-w-md">
-            Wielostanowiskowa telemetria dla duetów programistycznych (Google Antigravity &amp; Claude Code).
-            Wybierz sposób wejścia, aby skonfigurować sesję.
+            Wielostanowiskowa telemetria oparta o natywny protokół <strong>MCP (Model Context Protocol)</strong> dla edytorów Cursor, Google Antigravity i Claude Code.
           </p>
         </div>
 
@@ -156,8 +155,7 @@ export function AuthGate() {
                   Błyskawiczny Dostęp (Zero Haseł)
                 </span>
                 <p className="text-[11px] text-slate-600 leading-relaxed">
-                  Utworzy tymczasowy profil lokalny powiązany z Cloud Firestore. Następnie przejdziesz przez
-                  krótkie wprowadzenie konfiguracji środowiska i pokoju.
+                  Utworzy sesję gościa i przekieruje Cię bezpośrednio do kreatora, gdzie wygenerujesz gotowe polecenie MCP dla swojego Agenta AI.
                 </p>
               </div>
 
@@ -177,14 +175,14 @@ export function AuthGate() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full mt-2 py-3 rounded-xl bg-[#0071E3] text-white text-sm font-semibold shadow-[0_4px_16px_rgba(0,113,227,0.3)] hover:bg-blue-600 transition flex items-center justify-center gap-2 disabled:opacity-50"
+                className="w-full mt-2 py-3 rounded-xl bg-[#0071E3] text-white text-sm font-semibold shadow-[0_4px_16px_rgba(0,113,227,0.3)] hover:bg-blue-600 transition flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
               >
                 {loading ? (
                   <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 ) : (
                   <>
                     <span className="material-symbols-outlined text-[18px]">play_arrow</span>
-                    Rozpocznij Konfigurację i Wejdź
+                    Rozpocznij Konfigurację MCP i Wejdź
                   </>
                 )}
               </button>
@@ -269,6 +267,16 @@ export function AuthGate() {
           {/* Tab 3: Register */}
           {tab === 'register' && (
             <form onSubmit={handleEmailAuth} className="flex flex-col gap-3.5">
+              <div className="p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-100 flex flex-col gap-1">
+                <span className="text-xs font-bold text-emerald-800 flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-[16px]">smart_toy</span>
+                  Architektura MCP-First
+                </span>
+                <p className="text-[11px] text-slate-600 leading-relaxed">
+                  Po rejestracji automatycznie przejdziesz do kreatora z gotowym poleceniem MCP do wklejenia w czacie z agentem (Cursor / Antigravity / Claude Code).
+                </p>
+              </div>
+
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs font-semibold text-[#1C1C1E]">Pseudonim Operatora</label>
                 <input
@@ -309,12 +317,12 @@ export function AuthGate() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full mt-1 py-2.5 rounded-xl bg-[#0071E3] text-white text-sm font-semibold shadow-[0_4px_16px_rgba(0,113,227,0.3)] hover:bg-blue-600 transition flex items-center justify-center gap-2 disabled:opacity-50"
+                className="w-full mt-1 py-2.5 rounded-xl bg-[#0071E3] text-white text-sm font-semibold shadow-[0_4px_16px_rgba(0,113,227,0.3)] hover:bg-blue-600 transition flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
               >
                 {loading ? (
                   <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 ) : (
-                  'Utwórz konto i przejdź do konfiguracji'
+                  'Utwórz konto i odbierz polecenie dla AI'
                 )}
               </button>
             </form>
@@ -324,9 +332,9 @@ export function AuthGate() {
         {/* Feature Badges Footer */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-2xl text-center">
           <div className="p-3 rounded-2xl bg-white/60 border border-black/[0.04] flex flex-col items-center gap-1">
-            <span className="material-symbols-outlined text-[20px] text-[#0071E3]">hub</span>
-            <span className="text-xs font-bold text-[#1C1C1E]">Dual Agent Mesh</span>
-            <span className="text-[11px] text-[#636366]">Koordynacja Antigravity &amp; Claude Code</span>
+            <span className="material-symbols-outlined text-[20px] text-[#0071E3]">smart_toy</span>
+            <span className="text-xs font-bold text-[#1C1C1E]">Architektura MCP-First</span>
+            <span className="text-[11px] text-[#636366]">Natywny protokół MCP dla Cursor, Antigravity i Claude</span>
           </div>
           <div className="p-3 rounded-2xl bg-white/60 border border-black/[0.04] flex flex-col items-center gap-1">
             <span className="material-symbols-outlined text-[20px] text-[#34C759]">shield</span>
@@ -334,9 +342,9 @@ export function AuthGate() {
             <span className="text-[11px] text-[#636366]">Automatyczna redakcja kluczy i sekretów</span>
           </div>
           <div className="p-3 rounded-2xl bg-white/60 border border-black/[0.04] flex flex-col items-center gap-1">
-            <span className="material-symbols-outlined text-[20px] text-[#FF9500]">timer</span>
-            <span className="text-xs font-bold text-[#1C1C1E]">Co-op Ranks</span>
-            <span className="text-[11px] text-[#636366]">Śledzenie czasu pair codingu w parze</span>
+            <span className="material-symbols-outlined text-[20px] text-[#FF9500]">monitoring</span>
+            <span className="text-xs font-bold text-[#1C1C1E]">Live Mesh &amp; Diffs</span>
+            <span className="text-[11px] text-[#636366]">Strumieniowanie diffów i statusu agentów na żywo</span>
           </div>
         </div>
       </div>

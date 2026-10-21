@@ -225,3 +225,24 @@
   - Zbudowano i wdrożono najnowszy bundle na Firebase Hosting (`https://viberhub-8842f.web.app`).
   - Zsynchronizowano zmiany z repozytorium zdalnym `origin/main`.
 - `[*]` Zsynchronizowano dokumentację projektową w Obsidian Vault (`C:\Users\Jakub Lis\Documents\OBSIDIAN\PROJEKTY\VibeHub\`).
+
+---
+
+## v 0.2.1 — 2026-10-21
+- `[+]` **Wdrożenie Gotowego Polecenia dla Agenta AI w Początkowej Konfiguracji (`OnboardingWizard.tsx`)**:
+  - Zastąpiono dawny krok powiązania maszyny mostem bezpośrednim panelem konfiguracji MCP-First w Kroku 4 kreatora onboardingu.
+  - Wprowadzono 3-zakładkowy interfejs konfiguracji:
+    - `Gotowy Prompt dla Agenta AI`: Kompletne wytyczne inżynieryjne z dynamicznym podstawieniem pokoju (`#{room}`), komendą rejestracji `vibehub setup-mcp` oraz zasadami wywoływania narzędzi `vibehub_push_status` i `vibehub_checkpoint`.
+    - `Konfiguracja mcp.json`: Gotowy blok JSON do wklejenia w plikach konfiguracyjnych MCP (Cursor, Claude Desktop, Antigravity).
+    - `Szybkie CLI`: Bezpośrednia komenda terminalowa oraz link pobrania paczki narzędziowej `.ZIP`.
+  - Dodano 1-klikowe kopiowanie polecenia z czytelnym powiadomieniem feedbacku `Skopiowano Polecenie dla Agenta!`.
+  - Wdrożono przycisk interaktywnej weryfikacji na żywo `[⚡ Przetestuj Połączenie MCP]`, który wysyła sygnał testowy do klastra VibeHub (`/api/v1/agents/active`) i potwierdza odbiór pakietu.
+- `[+]` **Integracja MCP w Ekranie Uwierzytelniania (`AuthGate.tsx`)**:
+  - Zaktualizowano nagłówek platformy do `v0.2.1` z jasną komunikacją paradygmatu MCP-First.
+  - Zaktualizowano zakładkę "Szybki Gość" oraz "Nowe Konto" z bezpośrednią informacją o natychmiastowym przejściu do konfiguracji agenta AI bez instalacji demonów I/O.
+  - Zastąpiono kafelki stopki informacjami o protokole MCP i braku konfliktów z uprawnieniami systemu plików.
+- `[+]` **Globalna Re-konfiguracja w Szkielecie Aplikacji (`Shell.tsx` & `/settings`)**:
+  - Podpięto stan `isOnboardingOpen` do nakładki modalnej w głównym layoucie `Shell.tsx`, umożliwiając ponowne uruchomienie początkowego kreatora z poziomu widoku Ustawień (`/settings`) lub profilu użytkownika.
+- `[+]` **Wdrożenie Produkcyjne**:
+  - Wyeksportowano produkcyjny bundle Next.js 15 i wdrożono na Firebase Hosting (`https://viberhub-8842f.web.app`).
+- `[*]` Zsynchronizowano dokumentację projektową w Obsidian Vault (`C:\Users\Jakub Lis\Documents\OBSIDIAN\PROJEKTY\VibeHub\`).
