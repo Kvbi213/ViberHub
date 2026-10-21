@@ -527,16 +527,21 @@ Body: {"roomId":"${room}","agents":[{"id":"ai_active","provider":"antigravity","
                     <span>vibehub setup-mcp</span>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-xl bg-emerald-50/80 border border-emerald-200/80 gap-2">
-                    <div className="text-[11px] text-emerald-950 font-medium">
-                      Pobierz gotową paczkę CLI (.ZIP / .BAT / .PS1):
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-xl bg-emerald-50/80 border border-emerald-200/80 gap-3">
+                    <div className="flex flex-col">
+                      <span className="text-xs font-bold text-emerald-950">
+                        Zgraj Paczkę Narzędziową CLI (.ZIP / .BAT / .PS1):
+                      </span>
+                      <span className="text-[11px] text-emerald-800">
+                        Po zgraniu paczki, aby przejść dalej, podaj Agentowi AI prompt z pierwszej zakładki.
+                      </span>
                     </div>
                     <a
                       href="/vibehub-cli-bundle.zip"
                       download="vibehub-cli-bundle.zip"
-                      className="apple-btn px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold flex items-center justify-center gap-1 shadow-xs shrink-0"
+                      className="apple-btn px-3.5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold flex items-center justify-center gap-1.5 shadow-xs shrink-0 cursor-pointer"
                     >
-                      <span className="material-symbols-outlined text-[14px]">download</span>
+                      <span className="material-symbols-outlined text-[15px]">download</span>
                       Zgraj Paczkę CLI (.ZIP)
                     </a>
                   </div>

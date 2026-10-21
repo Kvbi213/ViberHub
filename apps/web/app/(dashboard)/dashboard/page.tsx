@@ -41,7 +41,11 @@ export default function DashboardPage() {
   });
 
   const handleCopyCli = () => {
-    navigator.clipboard.writeText('vibehub pair VH-9428-XK');
+    const prompt = `Jesteś autonomicznym agentem AI (Cursor / Claude Code / Antigravity / Windsurf).
+Skonfiguruj połączenie MCP dla pokoju #${roomId}:
+1. Wykonaj w terminalu: vibehub setup-mcp --room ${roomId}
+2. Raportuj stan pracy przez narzędzie 'vibehub_push_status' oraz twórz 'vibehub_checkpoint'.`;
+    navigator.clipboard.writeText(prompt);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -80,20 +84,23 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Quick Action / Pair Bridge CLI Ribbon */}
+        {/* Quick Action / MCP Agent Prompt Ribbon */}
         <div className="flex items-center gap-2 bg-slate-50/90 border border-black/[0.06] border-t border-white/90 px-3 py-1 rounded-xl shadow-xs max-w-full overflow-hidden">
-          <span className="material-symbols-outlined text-[15px] text-[#0071E3]">terminal</span>
+          <span className="material-symbols-outlined text-[16px] text-[#0071E3]">smart_toy</span>
           <span className="font-mono-code text-[12px] text-[#3A3A3C] truncate tracking-[0.01em]">
-            vibehub pair <span className="text-[#0071E3] font-semibold">VH-9428-XK</span>
+            Agent AI: <span className="text-[#0071E3] font-semibold">Skonfiguruj przez Prompt MCP</span>
           </span>
           <button
             onClick={handleCopyCli}
-            className="apple-btn flex items-center gap-1 bg-white hover:bg-slate-50 text-[#1C1C1E] border border-black/[0.08] border-t border-white/90 px-2.5 py-1 rounded-lg font-mono-status text-[11px] font-semibold shadow-xs ml-1"
+            className="apple-btn flex items-center gap-1 bg-white hover:bg-slate-50 text-[#1C1C1E] border border-black/[0.08] border-t border-white/90 px-2.5 py-1 rounded-lg font-mono-status text-[11px] font-semibold shadow-xs ml-1 cursor-pointer transition"
+            title="Kopiuj gotowy prompt dla Agenta AI"
           >
             <span className="material-symbols-outlined text-[14px]">
               {copied ? 'check' : 'content_copy'}
             </span>
-            <span className={copied ? 'text-emerald-600' : ''}>{copied ? 'COPIED' : 'COPY'}</span>
+            <span className={copied ? 'text-emerald-600 font-bold' : ''}>
+              {copied ? 'SKOPIOWANO PROMPT' : 'KOPIUJ PROMPT'}
+            </span>
           </button>
         </div>
       </div>

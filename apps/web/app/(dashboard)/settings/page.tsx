@@ -295,54 +295,63 @@ Body: {"roomId":"${roomId}","agents":[{"id":"ai_active","provider":"antigravity"
         )}
       </div>
 
-      {/* FALLBACK SECTION: Legacy Bridge Pairing */}
-      <div className="apple-card bg-white/70 apple-glass p-6 rounded-2xl border border-black/[0.06] border-t border-white/80 shadow-glass flex flex-col gap-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-[20px] text-[#636366]">terminal</span>
+      {/* CLI BUNDLE & INSTALLER CARD */}
+      <div className="apple-card bg-white/80 apple-glass p-6 rounded-2xl border border-black/[0.06] border-t border-white/80 shadow-glass flex flex-col gap-4">
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <div className="flex items-center gap-2.5">
+            <span className="material-symbols-outlined text-[20px] text-emerald-600">terminal</span>
             <h2 className="text-sm font-bold text-[#1C1C1E]">
-              Opcjonalny Fallback: Klasyczny Bridge CLI
+              Paczka Narzędziowa VibeHub CLI &amp; Instalator
             </h2>
+            <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-mono font-bold">
+              v0.2.1
+            </span>
           </div>
           <button
             onClick={() => setDownloadModalOpen(true)}
-            className="text-xs text-[#0071E3] hover:underline font-semibold"
+            className="apple-btn px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-medium text-xs shadow-sm flex items-center gap-1.5 cursor-pointer"
             type="button"
           >
-            Zgraj Paczkę CLI (.ZIP)
+            <span className="material-symbols-outlined text-[15px]">download</span>
+            Zgraj Paczkę CLI (.ZIP / .BAT)
           </button>
         </div>
 
         <p className="text-xs text-[#636366] leading-relaxed">
-          Jeśli Twoje środowisko nie obsługuje protokołu MCP, możesz opcjonalnie uruchomić klasyczny demon Bridge za pomocą jednorazowego kodu parowania:
+          Pobierz gotowe narzędzia terminalowe na swoją maszynę roboczą. <strong>Po zgraniu CLI, aby przejść dalej, skonfiguruj swoje środowisko przez prompt Agenta AI (MCP)</strong> — bez konieczności uruchamiania uciążliwych mostów w tle.
         </p>
 
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-slate-50 border border-black/[0.06] p-4 rounded-xl">
           <div className="flex items-center gap-3">
-            <span className="text-2xl font-black font-mono tracking-widest text-[#0071E3] select-all">
-              {pairingCode}
+            <span className="w-9 h-9 rounded-xl bg-blue-100 text-[#0071E3] flex items-center justify-center font-mono font-bold text-sm">
+              MCP
             </span>
-            <span className="text-xs text-[#8E8E93] font-mono">
-              vibehub pair {pairingCode}
-            </span>
+            <div className="flex flex-col">
+              <span className="text-xs font-bold text-[#1C1C1E]">
+                Polecenie rejestracji po zgraniu CLI
+              </span>
+              <span className="text-xs text-[#0071E3] font-mono font-semibold">
+                vibehub setup-mcp --room {roomId}
+              </span>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <button
-              onClick={handleGenerateCode}
-              className="apple-btn px-3 py-1.5 rounded-lg border border-black/[0.08] hover:bg-slate-100 text-xs text-[#1C1C1E] font-semibold"
-              type="button"
-            >
-              Odśwież Kod
-            </button>
-            <button
-              onClick={() => handleCopy(`vibehub pair ${pairingCode}`, 'pair-cmd')}
-              className="apple-btn px-4 py-2 rounded-xl bg-slate-900 text-white text-xs font-semibold shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
+              onClick={() => handleCopy(`vibehub setup-mcp --room ${roomId}`, 'mcp-setup-quick')}
+              className="apple-btn px-3.5 py-1.5 rounded-xl bg-slate-900 text-white text-xs font-semibold shadow-xs flex items-center justify-center gap-1.5 cursor-pointer hover:bg-black transition"
               type="button"
             >
               <span className="material-symbols-outlined text-[15px]">
-                {copiedKey === 'pair-cmd' ? 'check' : 'terminal'}
+                {copiedKey === 'mcp-setup-quick' ? 'check' : 'content_copy'}
               </span>
-              {copiedKey === 'pair-cmd' ? 'Skopiowano!' : 'Kopiuj Polecenie'}
+              {copiedKey === 'mcp-setup-quick' ? 'Skopiowano!' : 'Kopiuj Polecenie'}
+            </button>
+            <button
+              onClick={() => setDownloadModalOpen(true)}
+              className="apple-btn px-3 py-1.5 rounded-xl border border-black/[0.08] hover:bg-slate-100 text-xs text-[#1C1C1E] font-semibold"
+              type="button"
+            >
+              Instrukcja Krok po Kroku
             </button>
           </div>
         </div>
@@ -353,6 +362,7 @@ Body: {"roomId":"${roomId}","agents":[{"id":"ai_active","provider":"antigravity"
         isOpen={downloadModalOpen}
         onClose={() => setDownloadModalOpen(false)}
         pairingCode={pairingCode}
+        roomId={roomId}
       />
       <AgentConnectionModal
         isOpen={aiModalOpen}

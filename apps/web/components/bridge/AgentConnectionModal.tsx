@@ -307,7 +307,7 @@ Invoke-RestMethod -Uri "https://viber-hub.vercel.app/api/v1/agents/active" -Meth
               {mcpConfigJson}
             </pre>
             <p className="text-[11px] text-[#8E8E93]">
-              Wymaga zainstalowanego pakietu CLI (<code className="font-mono">vibehub pair</code> lub skrótu <code className="font-mono">vibehub mcp</code>).
+              Wymaga zainstalowanego pakietu CLI (<code className="font-mono">vibehub setup-mcp</code> lub komendy <code className="font-mono">vibehub mcp</code>).
             </p>
           </div>
         )}

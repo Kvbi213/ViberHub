@@ -243,6 +243,12 @@
   - Zastąpiono kafelki stopki informacjami o protokole MCP i braku konfliktów z uprawnieniami systemu plików.
 - `[+]` **Globalna Re-konfiguracja w Szkielecie Aplikacji (`Shell.tsx` & `/settings`)**:
   - Podpięto stan `isOnboardingOpen` do nakładki modalnej w głównym layoucie `Shell.tsx`, umożliwiając ponowne uruchomienie początkowego kreatora z poziomu widoku Ustawień (`/settings`) lub profilu użytkownika.
+- `[+]` **Dopracowanie GUI i Przebudowa Modalu Pobierania CLI (`BridgeDownloadModal.tsx`)**:
+  - Całkowicie wyeliminowano archaiczne instrukcje odpalania komendy `pair`.
+  - Wprowadzono precyzyjną, 2-etapową procedurę: Krok 1 (Zgranie paczki ZIP / BAT / PowerShell) -> Krok 2 (Aby przejść dalej, skonfiguruj środowisko przez prompt Agenta AI).
+  - Dodano automatyczne przełączanie do Kroku 2 w momencie kliknięcia pobrania paczki.
+  - Zastąpiono dawny pasek `vibehub pair` w Dashboardzie (`dashboard/page.tsx`) eleganckim ribbonem z 1-klikowym kopiowaniem gotowego promptu dla Agenta AI.
+  - Zastąpiono legacy sekcję parowania w `/settings` nowoczesną kartą paczki instalatora CLI i szybkiego promptu MCP.
 - `[+]` **Wdrożenie Produkcyjne**:
   - Wyeksportowano produkcyjny bundle Next.js 15 i wdrożono na Firebase Hosting (`https://viberhub-8842f.web.app`).
 - `[*]` Zsynchronizowano dokumentację projektową w Obsidian Vault (`C:\Users\Jakub Lis\Documents\OBSIDIAN\PROJEKTY\VibeHub\`).

@@ -292,6 +292,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
         isOpen={downloadModalOpen}
         onClose={() => setDownloadModalOpen(false)}
         pairingCode="VH-9428-XK"
+        roomId={roomId}
       />
       <AgentConnectionModal
         isOpen={aiConnectionModalOpen}
