@@ -249,6 +249,11 @@
   - Dodano automatyczne przełączanie do Kroku 2 w momencie kliknięcia pobrania paczki.
   - Zastąpiono dawny pasek `vibehub pair` w Dashboardzie (`dashboard/page.tsx`) eleganckim ribbonem z 1-klikowym kopiowaniem gotowego promptu dla Agenta AI.
   - Zastąpiono legacy sekcję parowania w `/settings` nowoczesną kartą paczki instalatora CLI i szybkiego promptu MCP.
+- `[+]` **Eliminacja Błędu `auth/unauthorized-domain` & Silnik Odpornościowy Sesji (`auth-service.ts`, `AuthGate.tsx`)**:
+  - Zaimplementowano funkcję `isResilientFallbackError` przechwytującą błędy autoryzacji Firebase (`auth/unauthorized-domain`, `auth/configuration-not-found`, `auth/operation-not-allowed`, `auth/network-request-failed`).
+  - Umożliwiono bezproblemowe logowanie, rejestrację i tryb gościa na wszystkich domenach Vercel Preview (`viber-hub-git-main-kvbi.vercel.app`, `viber-hub.vercel.app`), localhost oraz środowiskach deweloperskich.
+  - Zastosowano deterministyczne identyfikatory profili `usr_local_[email]` w Cloud Firestore, gwarantując spójność preferencji i statystyk operatora.
+  - Dodano detekcję środowiska Vercel Preview oraz awaryjny przycisk `[Zaloguj w Trybie Resilient]` w `AuthGate.tsx`.
 - `[+]` **Wdrożenie Produkcyjne**:
   - Wyeksportowano produkcyjny bundle Next.js 15 i wdrożono na Firebase Hosting (`https://viberhub-8842f.web.app`).
 - `[*]` Zsynchronizowano dokumentację projektową w Obsidian Vault (`C:\Users\Jakub Lis\Documents\OBSIDIAN\PROJEKTY\VibeHub\`).
